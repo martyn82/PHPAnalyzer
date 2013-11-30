@@ -13,9 +13,16 @@ use FileSystem\Directory;
 use Synthesize\Rank;
 use Synthesize\Maintainability;
 
+if ( $argc > 1 ) {
+	$root = realpath( $argv[ 1 ] );
+}
+else {
+	$root = getcwd();
+}
+
 /* Entry point */
-function main () {
-	$rootDir = new Directory( realpath( __DIR__ . "/src" ) );
+function main ( $root ) {	
+	$rootDir = new Directory( $root );
 	$fileExtension = "php";
 	
 	$crawler = new Crawler( $rootDir );
@@ -46,4 +53,4 @@ function main () {
 	;
 };
 
-main();
+main( $root );
