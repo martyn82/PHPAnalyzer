@@ -63,7 +63,7 @@ class Maintainability {
 		
 		$ranks = array(
 			$complexityRank,
-// 			$duplicationRank
+			$duplicationRank
 		);
 		
 		return round(
