@@ -10,7 +10,7 @@ class Volume {
 		return array_reduce(
 			(array) $files,
 			function ( $result, File $file ) {
-				return $result + self::getLineCount( $file );
+				return $result + Volume::getLineCount( $file );
 			},
 			0
 		);
@@ -20,7 +20,7 @@ class Volume {
 		return array_reduce(
 			(array) $files,
 			function ( $result, File $file ) {
-				return $result + self::getLinesOfCodeCount( $file );
+				return $result + Volume::getLinesOfCodeCount( $file );
 			},
 			0
 		);
