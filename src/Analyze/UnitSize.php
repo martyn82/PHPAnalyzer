@@ -13,7 +13,7 @@ class UnitSize {
 		$body = self::getUnitBody( $method, $normalizer );
 		return count( $body );
 	}
-	
+
 	public static function getRelativeSizes( array $partitions, $totalSize ) {
 		$small = array_reduce(
 			$partitions[ 'small' ],
@@ -43,7 +43,7 @@ class UnitSize {
 			},
 			0
 		);
-		
+
 		return array(
 			'small' => ( $small * 100 ) / $totalSize,
 			'medium' => ( $medium * 100 ) / $totalSize,
@@ -51,37 +51,37 @@ class UnitSize {
 			'huge' => ( $huge * 100 ) / $totalSize
 		);
 	}
-	
+
 	public static function getPartitions( MethodArray $methods, Normalizer $normalizer ) {
 		$small = array();
 		$medium = array();
 		$large = array();
 		$huge = array();
-		
+
 		foreach ( $methods as $method ) {
 			$methodSize = self::getUnitSize( $method, $normalizer );
-			
+
 			if ( $methodSize <= 10 ) {
 				$small[] = array(
 					'method' => $method->getName(),
 					'size' => $methodSize
 				);
 			}
-			
+
 			if ( $methodSize > 10 && $methodSize <= 20 ) {
 				$medium[] = array(
 					'method' => $method->getName(),
 					'size' => $methodSize
 				);
 			}
-			
+
 			if ( $methodSize > 20 && $methodSize <= 50 ) {
 				$large[] = array(
 					'method' => $method->getName(),
 					'size' => $methodSize
 				);
 			}
-			
+
 			if ( $methodSize > 50 ) {
 				$huge[] = array(
 					'method' => $method->getName(),
@@ -89,7 +89,7 @@ class UnitSize {
 				);
 			}
 		}
-		
+
 		return array(
 			'small' => $small,
 			'medium' => $medium,
@@ -97,7 +97,7 @@ class UnitSize {
 			'huge' => $huge
 		);
 	}
-	
+
 	private static function getUnitBody( Method $method, Normalizer $normalizer ) {
 		$model = $method->getModel();
 		$source = $model->getSource();
@@ -106,22 +106,22 @@ class UnitSize {
 
 		return self::lineSlice( $loc, $method->getStartLine(), $method->getEndLine() );
 	}
-	
+
 	private static function lineSlice( array $lines, $start, $end ) {
 		$slice = array();
-		
+
 		foreach ( $lines as $lineNumber => $line ) {
 			if ( $lineNumber < $start ) {
 				continue;
 			}
-			
+
 			if ( $lineNumber > $end ) {
 				break;
 			}
-			
+
 			$slice[ $lineNumber ] = $line;
 		}
-		
+
 		return $slice;
 	}
 }
