@@ -2,6 +2,8 @@
 <?php
 require realpath( __DIR__ . "/src" ) . "/bootstrap.php";
 
+ini_set( 'memory_limit', '1G' );
+
 if ( $argc > 1 ) {
 	$root = realpath( $argv[ 1 ] );
 }
@@ -9,29 +11,38 @@ else {
 	$root = getcwd();
 }
 
+global $verbose;
+$verbose = true;
+
 /* Entry point */
 function main ( $root ) {
 	$rootDir = new FileSystem\Directory( $root );
 	$fileExtension = "php";
 
+	verbose( "Start analysis for directory <{$rootDir->getName()}>" );
+	verbose( "Crawling directory for <{$fileExtension}> files..." );
+
 	$crawler = new FileSystem\Crawler( $rootDir );
 	$files = $crawler->getFiles( "*.{$fileExtension}" );
+
+	$fileCount = count( $files );
+	verbose( "Found {$fileCount} files" );
+
+	verbose( "Create default code normalizer..." );
 	$normalizer = Extract\Normalizer\NormalizerFactory::createNormalizerByName( $fileExtension );
-
-	$totalLines = Analyze\Volume::getTotalLineCount( $files );
-	$totalLOC = Analyze\Volume::getTotalLinesOfCodeCount( $files );
-
-	$volume = new Report\VolumeReport( $totalLines, $totalLOC );
 
 	$methodArray = array();
 
 	foreach ( $files as $file ) {
+		verbose( "Creating model from file <{$file->getName()}>..." );
 		$model = Model\ModelTree::createFromFile( $file );
 		$methodArray = array_merge( $methodArray, (array) Extract\ModelExtractor::getMethods( $model ) );
 	}
 
+	verbose( "Analyzing method models..." );
 	$methods = new Model\MethodArray( $methodArray );
 
+	verbose( "Partitioning methods into complexity classes..." );
 	$partitions = Analyze\Complexity::getPartitions( $methods, $normalizer );
 
 	$totalExaminedLOC = 0;
@@ -78,6 +89,7 @@ function main ( $root ) {
 		$methodComplexities = array_merge( $methodComplexities, $list );
 	}
 
+	verbose( "Partitioning methods into size classes..." );
 	$smallLOC = 0;
 	$mediumLOC = 0;
 	$largeLOC = 0;
@@ -107,14 +119,19 @@ function main ( $root ) {
 	$medium = new Report\Partition( $mediumLOC, ( $mediumLOC * 100 / $totalExaminedLOC ) );
 	$large = new Report\Partition( $largeLOC, ( $largeLOC * 100 / $totalExaminedLOC ) );
 	$huge = new Report\Partition( $hugeLOC, ( $hugeLOC * 100 / $totalExaminedLOC ) );
-
 	$unitSize = new Report\UnitSizeReport( $small, $medium, $large, $huge );
 
+	verbose( "Counting lines of code..." );
+	$totalLines = Analyze\Volume::getTotalLineCount( $files );
+	$totalLOC = Analyze\Volume::getTotalLinesOfCodeCount( $files );
+	$volume = new Report\VolumeReport( $totalLines, $totalLOC );
+
+	verbose( "Counting duplicates..." );
 	$absoluteDuplication = Analyze\Duplication::getDuplicationCount( $files );
 	$relativeDuplication = ( $absoluteDuplication * 100 / $totalLOC );
-
 	$duplication = new Report\DuplicationReport( $absoluteDuplication, $relativeDuplication );
 
+	verbose( "Generating report..." );
 	$report = new Report\Report( $volume, $complexity, $unitSize, $duplication );
 
 	echo "PHP Analyzer", PHP_EOL,
@@ -195,4 +212,11 @@ function main ( $root ) {
 	;
 };
 
+function verbose( $msg ) {
+	global $verbose;
+
+	if ( $verbose ) {
+		echo "* {$msg}", PHP_EOL;
+	}
+}
 main( $root );
