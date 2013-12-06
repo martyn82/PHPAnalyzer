@@ -16,8 +16,8 @@ $verbose = true;
 
 /* Entry point */
 function main ( $root ) {
-	$rootDir = new FileSystem\Directory( $root );
 	$fileExtension = "php";
+	$rootDir = new FileSystem\Directory( $root );
 
 	verbose( "Start analysis for directory <{$rootDir->getName()}>" );
 	verbose( "Crawling directory for <{$fileExtension}> files..." );
@@ -31,11 +31,14 @@ function main ( $root ) {
 	verbose( "Create default code normalizer..." );
 	$normalizer = Extract\Normalizer\NormalizerFactory::createNormalizerByName( $fileExtension );
 
+	$parser = new Parser\Parser( new Parser\PHPParserAdapter() );
 	$methodArray = array();
 
 	foreach ( $files as $file ) {
+		$fileSource = $file->getContents();
+
 		verbose( "Creating model from file <{$file->getName()}>..." );
-		$model = Model\ModelTree::createFromFile( $file );
+		$model = new Model\ModelTree( $parser->parse( $fileSource ), $fileSource );
 		$methodArray = array_merge( $methodArray, (array) Extract\ModelExtractor::getMethods( $model ) );
 	}
 
