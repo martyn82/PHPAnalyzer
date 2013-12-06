@@ -48,10 +48,45 @@ class Duplication {
 		return array_reduce(
 			$duplicateCodeBlocks,
 			function ( $result, array $bucket ) use ( $blockSize ) {
-				return $result + count( $bucket ) * $blockSize;
+				$indices = array_map(
+					function ( $item ) {
+						return $item[ 'index' ];
+					},
+					$bucket
+				);
+
+				return $result + Duplication::countDuplicateLines( array_unique( $indices ), $blockSize );
 			},
 			0
 		);
+	}
+
+	private static function countDuplicateLines( array $indices, $blockSize ) {
+		if ( empty( $indices ) ) {
+			return 0;
+		}
+
+		if ( count( $indices ) == 1 ) {
+			return $blockSize;
+		}
+
+		sort( $indices );
+
+		$start = array_shift( $indices );
+		$size = $blockSize;
+
+		foreach ( $indices as $index ) {
+			if ( $index < ( $start + $blockSize ) ) {
+				$size += ( $index - $start );
+			}
+			else {
+				$size += $blockSize;
+			}
+
+			$start = $index;
+		}
+
+		return $size;
 	}
 
 	private static function getCodeBlocks( File $file, array $fileSource ) {
