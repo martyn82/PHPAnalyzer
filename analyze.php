@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-require realpath( __DIR__ . "/src" ) . "/bootstrap.php";
+require realpath( __DIR__ . "/lib" ) . "/bootstrap.php";
 
 ini_set( 'memory_limit', '1G' );
 
