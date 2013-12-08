@@ -2,6 +2,13 @@
 <?php
 require realpath( __DIR__ . "/app" ) . "/bootstrap.php";
 
+use \Mend\FileSystem\Directory;
+use \Mend\FileSystem\File;
+use \Mend\Logging\Logger;
+use \Mend\Logging\ConsoleLogWriter;
+use \Mend\Metrics\Synthesize\ReportBuilder;
+use \Mend\Metrics\Synthesize\ReportWriterFactory;
+
 const OUTPUT_TYPE_TEXT = 'text';
 const OUTPUT_TYPE_JSON = 'json';
 $validOutputs = array( OUTPUT_TYPE_TEXT, OUTPUT_TYPE_JSON );
@@ -78,7 +85,7 @@ if ( !is_readable( $options->path ) ) {
 }
 
 if ( $options->verbose ) {
-	\Logging\Logger::setWriter( new \Logging\ConsoleLogWriter( STDERR ) );
+	Logger::setWriter( new ConsoleLogWriter( STDERR ) );
 }
 
 analyze( $options );
@@ -90,19 +97,19 @@ function analyze( $options ) {
 	$report = null;
 
 	if ( is_dir( $options->path ) ) {
-		$directory = new \FileSystem\Directory( $options->path );
-		$report = \Metrics\Synthesize\ReportBuilder::analyzeDirectory( $directory );
+		$directory = new Directory( $options->path );
+		$report = ReportBuilder::analyzeDirectory( $directory );
 	}
 	else if ( is_file( $options->path ) ) {
-		$file = new \FileSystem\File( $options->path );
-		$report = \Metrics\Synthesize\ReportBuilder::analyzeFile( $file );
+		$file = new File( $options->path );
+		$report = ReportBuilder::analyzeFile( $file );
 	}
 	else {
 		err( "Path is neither a file or directory: <{$options->path}>." );
 		exit( 1 );
 	}
 
-	$writer = \Metrics\Synthesize\ReportWriterFactory::createWriterByName( $options->outputType );
+	$writer = ReportWriterFactory::createWriterByName( $options->outputType );
 	$writer->setReport( $report );
 	$output = $writer->write();
 
