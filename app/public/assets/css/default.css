@@ -1,2 +1,7 @@
 @charset "utf-8";
 
+.chart {
+	float: left;
+	height: 400px;
+	width: 600px;
+}

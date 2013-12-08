@@ -4,3 +4,4 @@ vendor/
 .classpath
 .buildpath
 logs/
+app/public/data/data.js

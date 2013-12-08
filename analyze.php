@@ -111,13 +111,19 @@ function analyze( $options ) {
 	}
 
 	if ( $options->outputType == OUTPUT_TYPE_JSON ) {
+		Logger::info( "Serializing report as JSON..." );
+
 		$serializer = new ReportSerializerJson();
 		$output = $serializer->serialize( $report );
 	}
 	else {
+		Logger::info( "Writing report as {$options->outputType}..." );
+
 		$writer = ReportWriterFactory::createWriterByName( $options->outputType );
 		$output = $writer->write( $report );
 	}
+
+	Logger::info( "Done." );
 
 	out( $output );
 	exit( 0 );
