@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Model;
 
-class DuplicationArray extends \ArrayObject {
+use \Mend\Metrics\Arrayable;
+
+class DuplicationArray extends \ArrayObject implements Arrayable {
 	/**
 	 * Constructs a new duplication array.
 	 *
@@ -31,5 +33,19 @@ class DuplicationArray extends \ArrayObject {
 	 */
 	private function _offsetSet( $ofsset, Duplication $value ) {
 		parent::offsetSet( $offset, $value );
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array_map(
+			function ( Arrayable $duplication ) {
+				return $duplication->toArray();
+			},
+			(array) $this
+		);
 	}
  }

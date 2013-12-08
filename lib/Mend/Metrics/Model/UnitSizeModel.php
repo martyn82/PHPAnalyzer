@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Model;
 
-class UnitSizeModel {
+use \Mend\Metrics\Arrayable;
+
+class UnitSizeModel implements Arrayable {
 	const LEVEL_SMALL = 1;
 	const LEVEL_MEDIUM = 2;
 	const LEVEL_LARGE = 3;
@@ -44,5 +46,17 @@ class UnitSizeModel {
 	 */
 	public function getLevel() {
 		return $this->level;
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'size' => $this->size,
+			'level' => $this->level
+		);
 	}
 }

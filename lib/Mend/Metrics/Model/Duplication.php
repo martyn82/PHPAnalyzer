@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Model;
 
-class Duplication {
+use \Mend\Metrics\Arrayable;
+
+class Duplication implements Arrayable {
 	/**
 	 * @var string
 	 */
@@ -39,5 +41,17 @@ class Duplication {
 	 */
 	public function getLocations() {
 		return $this->locations;
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'block' => $this->block,
+			'locations' => $this->locations->toArray()
+		);
 	}
 }

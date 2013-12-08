@@ -2,8 +2,9 @@
 namespace Mend\Metrics\Report;
 
 use \Mend\Metrics\Model\MethodArray;
+use \Mend\Metrics\Arrayable;
 
-class Partition {
+class Partition implements Arrayable {
 	private $absoluteLOC;
 	private $relativeLOC;
 	private $methods;
@@ -52,5 +53,18 @@ class Partition {
 	 */
 	public function getMethods() {
 		return $this->methods;
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'absoluteLOC' => $this->absoluteLOC,
+			'relativeLOC' => $this->relativeLOC,
+			'methods' => $this->methods->toArray()
+		);
 	}
 }

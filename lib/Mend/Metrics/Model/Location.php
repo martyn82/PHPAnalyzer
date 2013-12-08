@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Model;
 
-class Location {
+use \Mend\Metrics\Arrayable;
+
+class Location implements Arrayable {
 	/**
 	 * @var string
 	 */
@@ -55,5 +57,18 @@ class Location {
 	 */
 	public function getEndLine() {
 		return $this->endLine;
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'fileName' => $this->fileName,
+			'startLine' => $this->startLine,
+			'endLine' => $this->endLine
+		);
 	}
 }

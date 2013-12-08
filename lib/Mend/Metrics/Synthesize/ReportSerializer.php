@@ -1,13 +1,13 @@
 <?php
-namespace Serialize;
+namespace Mend\Metrics\Synthesize;
 
-use \Metrics\Report\Report;
+use \Mend\Metrics\Report\Report;
 
 abstract class ReportSerializer {
 	/**
 	 * Serializes the given report.
 	 *
-	 * @param \Metrics\Report\Report $report
+	 * @param Report $report
 	 *
 	 * @return string
 	 */
@@ -18,7 +18,7 @@ abstract class ReportSerializer {
 	 *
 	 * @param string $string
 	 *
-	 * @return \Metrics\Report\Report
+	 * @return Report
 	 */
 	abstract public function unserialize( $string );
 }

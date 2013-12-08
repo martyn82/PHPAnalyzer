@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Model;
 
-class DuplicationModel extends DuplicationArray {
+use \Mend\Metrics\Arrayable;
+
+class DuplicationModel extends DuplicationArray implements Arrayable {
 	private $duplicatedLinesOfCode;
 
 	/**
@@ -20,5 +22,17 @@ class DuplicationModel extends DuplicationArray {
 	 */
 	public function getDuplicatedLinesOfCode() {
 		return $this->duplicatedLinesOfCode;
+	}
+
+	/**
+	 * Converts this object to an array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'duplicatedLinesOfCode' => $this->duplicatedLinesOfCode,
+			'duplications' => parent::toArray()
+		);
 	}
 }

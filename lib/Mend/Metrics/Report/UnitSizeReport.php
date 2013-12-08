@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Report;
 
-class UnitSizeReport implements Rank {
+use \Mend\Metrics\Arrayable;
+
+class UnitSizeReport implements Rank, Arrayable {
 	private $small;
 	private $medium;
 	private $large;
@@ -81,5 +83,20 @@ class UnitSizeReport implements Rank {
 		}
 
 		return self::RANK_VERY_BAD;
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'small' => $this->small()->toArray(),
+			'medium' => $this->medium()->toArray(),
+			'large' => $this->large()->toArray(),
+			'veryLarge' => $this->veryLarge()->toArray(),
+			'rank' => $this->getRank()
+		);
 	}
 }

@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Report;
 
-class Report {
+use \Mend\Metrics\Arrayable;
+
+class Report implements Arrayable {
 	/**
 	 * @var VolumeReport
 	 */
@@ -94,5 +96,20 @@ class Report {
 	 */
 	public function duplication() {
 		return $this->duplication;
+	}
+
+	/**
+	 * Converts this Report to an array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'volume' => $this->volume->toArray(),
+			'unitSize' => $this->unitSize->toArray(),
+			'complexity' => $this->complexity->toArray(),
+			'duplication' => $this->duplication->toArray(),
+			'maintainability' => $this->maintainability()->toArray()
+		);
 	}
 }

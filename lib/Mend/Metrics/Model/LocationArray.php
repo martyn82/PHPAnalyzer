@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Model;
 
-class LocationArray extends \ArrayObject {
+use \Mend\Metrics\Arrayable;
+
+class LocationArray extends \ArrayObject implements Arrayable {
 	/**
 	 * Constructs a new location array.
 	 *
@@ -31,5 +33,19 @@ class LocationArray extends \ArrayObject {
 	 */
 	private function _offsetSet( $offset, Location $value ) {
 		parent::offsetSet( $offset, $value );
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array_map(
+			function ( Arrayable $location ) {
+				return $location->toArray();
+			},
+			(array) $this
+		);
 	}
 }

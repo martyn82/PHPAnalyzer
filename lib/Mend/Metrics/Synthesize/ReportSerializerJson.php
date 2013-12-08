@@ -1,18 +1,18 @@
 <?php
-namespace Serialize;
+namespace Mend\Metrics\Synthesize;
 
-use \Metrics\Report\Report;
+use \Mend\Metrics\Report\Report;
 
 class ReportSerializerJson extends ReportSerializer {
 	/**
 	 * Serializes the given report.
 	 *
-	 * @param \Metrics\Report\Report $report
+	 * @param Report $report
 	 *
 	 * @return string
 	 */
 	public function serialize( Report $report ) {
-
+		return json_encode( $report->toArray() );
 	}
 
 	/**
@@ -20,9 +20,9 @@ class ReportSerializerJson extends ReportSerializer {
 	 *
 	 * @param string $string
 	 *
-	 * @return \Metrics\Report\Report
+	 * @return Report
 	 */
 	public function unserialize( $string ) {
-
+		return json_decode( $string );
 	}
 }

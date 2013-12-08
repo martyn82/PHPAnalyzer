@@ -2,6 +2,9 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
+
+		<link rel="stylesheet" type="text/css" media="all" href="/assets/css/default.css" />
+
 		<title>PHP Analyzer</title>
 	</head>
 	<body>
@@ -10,11 +13,11 @@
 		</header>
 
 		<div>
-		<?php
-		echo $this->report->volume()->getTotalLinesOfCode();
-		?>
 		</div>
 
 		<footer></footer>
+
+		<script type="text/javascript" src="/data/load.php"></script>
+		<script type="text/javascript" src="/assets/js/main.js"></script>
 	</body>
 </html>

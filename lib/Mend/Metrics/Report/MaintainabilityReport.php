@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Report;
 
-class MaintainabilityReport {
+use \Mend\Metrics\Arrayable;
+
+class MaintainabilityReport implements Arrayable {
 	/**
 	 * @var Report
 	 */
@@ -94,5 +96,20 @@ class MaintainabilityReport {
 	private function computeRank( array $ranks ) {
 		$ranks = array_filter( $ranks );
 		return (int) round( array_sum( $ranks ) / count( $ranks ) );
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'analyzabilityRank' => $this->getAnalyzabilityRank(),
+			'changeabilityRank' => $this->getChangeabilityRank(),
+			'stabilityRank' => $this->getStabilityRank(),
+			'testabilityRank' => $this->getTestabilityRank(),
+			'rank' => $this->getRank()
+		);
 	}
 }

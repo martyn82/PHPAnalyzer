@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Report;
 
-class ComplexityReport implements Rank {
+use \Mend\Metrics\Arrayable;
+
+class ComplexityReport implements Rank, Arrayable {
 	private $low;
 	private $moderate;
 	private $high;
@@ -81,5 +83,20 @@ class ComplexityReport implements Rank {
 		}
 
 		return self::RANK_VERY_BAD;
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'low' => $this->low()->toArray(),
+			'moderate' => $this->moderate()->toArray(),
+			'high' => $this->high()->toArray(),
+			'veryHigh' => $this->veryHigh()->toArray(),
+			'rank' => $this->getRank()
+		);
 	}
 }

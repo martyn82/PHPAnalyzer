@@ -8,6 +8,7 @@ use \Mend\Logging\Logger;
 use \Mend\Logging\ConsoleLogWriter;
 use \Mend\Metrics\Synthesize\ReportBuilder;
 use \Mend\Metrics\Synthesize\ReportWriterFactory;
+use \Mend\Metrics\Synthesize\ReportSerializerJson;
 
 const OUTPUT_TYPE_TEXT = 'text';
 const OUTPUT_TYPE_JSON = 'json';
@@ -109,9 +110,14 @@ function analyze( $options ) {
 		exit( 1 );
 	}
 
-	$writer = ReportWriterFactory::createWriterByName( $options->outputType );
-	$writer->setReport( $report );
-	$output = $writer->write();
+	if ( $options->outputType == OUTPUT_TYPE_JSON ) {
+		$serializer = new ReportSerializerJson();
+		$output = $serializer->serialize( $report );
+	}
+	else {
+		$writer = ReportWriterFactory::createWriterByName( $options->outputType );
+		$output = $writer->write( $report );
+	}
 
 	out( $output );
 	exit( 0 );

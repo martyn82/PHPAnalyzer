@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Report;
 
-class VolumeReport implements Rank {
+use \Mend\Metrics\Arrayable;
+
+class VolumeReport implements Rank, Arrayable {
 	private $totalLines;
 	private $totalLinesOfCode;
 
@@ -57,5 +59,18 @@ class VolumeReport implements Rank {
 		}
 
 		return self::RANK_VERY_GOOD;
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'totalLines' => $this->totalLines,
+			'totalLinesOfCode' => $this->totalLinesOfCode,
+			'rank' => $this->getRank()
+		);
 	}
 }

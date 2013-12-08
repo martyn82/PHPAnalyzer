@@ -1,7 +1,9 @@
 <?php
 namespace Mend\Metrics\Model;
 
-class ComplexityModel {
+use \Mend\Metrics\Arrayable;
+
+class ComplexityModel implements Arrayable {
 	const LEVEL_LOW = 1;
 	const LEVEL_MODERATE = 2;
 	const LEVEL_HIGH = 3;
@@ -44,5 +46,17 @@ class ComplexityModel {
 	 */
 	public function getLevel() {
 		return $this->level;
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'complexity' => $this->complexity,
+			'level' => $this->level
+		);
 	}
 }

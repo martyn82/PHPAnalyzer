@@ -4,8 +4,9 @@ namespace Mend\Metrics\Model;
 use \Mend\Metrics\Model\Location;
 use \Mend\Metrics\Model\ComplexityModel;
 use \Mend\Metrics\Model\UnitSizeModel;
+use \Mend\Metrics\Arrayable;
 
-class Method {
+class Method implements Arrayable {
 	/**
 	 * @var \PHPParser_Node
 	 */
@@ -84,5 +85,19 @@ class Method {
 			$this->complexity = $value;
 		}
 		return $this->complexity;
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'name' => $this->getName(),
+			'unitSize' => $this->unitSize->toArray(),
+			'complexity' => $this->complexity->toArray(),
+			'location' => $this->location->toArray()
+		);
 	}
 }

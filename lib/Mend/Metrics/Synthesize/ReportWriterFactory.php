@@ -1,8 +1,6 @@
 <?php
 namespace Mend\Metrics\Synthesize;
 
-use \Mend\Metrics\Synthesize\ReportWriterText;
-
 class ReportWriterFactory {
 	const WRITER_TEXT = 'text';
 

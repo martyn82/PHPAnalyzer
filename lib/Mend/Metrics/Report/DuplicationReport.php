@@ -2,8 +2,9 @@
 namespace Mend\Metrics\Report;
 
 use \Mend\Metrics\Model\DuplicationArray;
+use \Mend\Metrics\Arrayable;
 
-class DuplicationReport implements Rank {
+class DuplicationReport implements Rank, Arrayable {
 	private $absoluteLOC;
 	private $relativeLOC;
 	private $duplications;
@@ -79,5 +80,19 @@ class DuplicationReport implements Rank {
 		}
 
 		return self::RANK_VERY_GOOD;
+	}
+
+	/**
+	 * Converts this object to array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'absoluteLOC' => $this->absoluteLOC,
+			'relativeLOC' => $this->relativeLOC,
+			'duplications' => $this->duplications->toArray(),
+			'rank' => $this->getRank()
+		);
 	}
 }

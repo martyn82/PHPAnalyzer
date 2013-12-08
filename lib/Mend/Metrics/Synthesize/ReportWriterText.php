@@ -84,17 +84,11 @@ TPL;
 	/**
 	 * Writes the report.
 	 *
-	 * @return string
+	 * @param Report $report
 	 *
-	 * @throws \Exception
+	 * @return string
 	 */
-	public function write() {
-		$report = $this->getReport();
-
-		if ( is_null( $report ) ) {
-			throw new \Exception( "No report set." );
-		}
-
+	public function write( Report $report ) {
 		return $this->fillTemplate( $this->template, $report );
 	}
 
