@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>PHP Analyzer</title>
+	</head>
+	<body>
+		<header>
+			<h1>Analysis results</h1>
+		</header>
+
+		<div>
+		<?php
+		echo $this->report->volume()->getTotalLinesOfCode();
+		?>
+		</div>
+
+		<footer></footer>
+	</body>
+</html>

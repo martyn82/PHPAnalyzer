@@ -3,4 +3,4 @@ vendor/
 .project
 .classpath
 .buildpath
-composer.lock
+logs/

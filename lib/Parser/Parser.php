@@ -1,21 +1,25 @@
 <?php
 namespace Parser;
 
-use Parser\ParserAdapter;
+use \Parser\Adapter;
+
+use \Logging\Logger;
 
 class Parser {
 	/**
-	 * @var ParserAdapter
+	 * @var \Parser\Adapter
 	 */
 	private $adapter;
 
 	/**
 	 * Constructs a new Parser.
 	 *
-	 * @param ParserAdapter $adapter
+	 * @param \Parser\Adapter $adapter
 	 */
-	public function __construct( ParserAdapter $adapter ) {
+	public function __construct( Adapter $adapter ) {
 		$this->adapter = $adapter;
+
+		Logger::info( "Parser constructed with adapter " . get_class( $adapter ) );
 	}
 
 	/**
@@ -23,9 +27,15 @@ class Parser {
 	 *
 	 * @param string $source
 	 *
-	 * @return AST\ParserNodeArray
+	 * @return array
 	 */
 	public function parse( $source ) {
-		return $this->adapter->parse( $source );
+		Logger::info( "Start parsing..." );
+
+		$ast = $this->adapter->parse( $source );
+
+		Logger::info( "Parsing done." );
+
+		return $ast;
 	}
 }
