@@ -11,7 +11,7 @@ class ReportWriterFactory {
 	 *
 	 * @return ReportWriter
 	 *
-	 * @throws \Exception
+	 * @throws \ClassNotFoundException
 	 */
 	public static function createWriterByName( $name ) {
 		switch ( $name ) {
@@ -19,6 +19,6 @@ class ReportWriterFactory {
 				return new ReportWriterText();
 		}
 
-		throw new \Exception( "No report writer with name <{$name}>." );
+		throw new \ClassNotFoundException( "No report writer with name <{$name}>." );
 	}
 }

@@ -138,8 +138,8 @@ TPL;
 				'%projectLocation%'
 			),
 			array(
-				$report->getKey(),
-				'-'
+				$report->getName(),
+				$report->getPath()
 			),
 			$template
 		);

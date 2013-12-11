@@ -3,6 +3,7 @@ namespace Mend\Metrics\Synthesize;
 
 use \Mend\FileSystem\Crawler;
 use \Mend\FileSystem\Directory;
+use \Mend\FileSystem\DirectoryArray;
 use \Mend\FileSystem\File;
 use \Mend\FileSystem\FileArray;
 
@@ -36,6 +37,25 @@ class ReportBuilder {
 	 * @var array
 	 */
 	private static $normalizers = array();
+
+	/**
+	 * Analyzes the given directories.
+	 *
+	 * @param Project $project
+	 * @param DirectoryArray $directories
+	 *
+	 * @return Report
+	 */
+	public static function analyzeDirectories( Project $project, DirectoryArray $directories ) {
+		$files = array();
+
+		foreach ( $directories as $directory ) {
+			$crawler = new Crawler( $directory );
+			$files = array_merge( $files, (array) $crawler->getFiles( "*.php" ) );
+		}
+
+		return self::analyzeFiles( $project, new FileArray( array_unique( $files ) ) );
+	}
 
 	/**
 	 * Analyzes a directory.

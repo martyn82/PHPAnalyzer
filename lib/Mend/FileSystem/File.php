@@ -17,11 +17,11 @@ class File {
 	/**
 	 * @param string $location
 	 *
-	 * @throws \Exception
+	 * @throws FileSystemException
 	 */
 	public function __construct( $location ) {
 		if ( !is_file( $location ) ) {
-			throw new \Exception( "Given location is not a valid file." );
+			throw new FileSystemException( "Given location is not a valid file." );
 		}
 
 		$this->location = $location;
@@ -51,7 +51,7 @@ class File {
 	 *
 	 * @return string
 	 *
-	 * @throws \Exception
+	 * @throws FileSystemException
 	 */
 	public function getContents() {
 		if ( !is_null( $this->contents ) ) {
@@ -60,12 +60,21 @@ class File {
 		}
 
 		if ( !is_readable( $this->location ) ) {
-			throw new \Exception( "File is not readable." );
+			throw new FileSystemException( "File is not readable." );
 		}
 
 		Logger::info( "Reading file contents of file <{$this->getName()}>." );
 
 		$this->contents = file_get_contents( $this->location );
 		return $this->contents;
+	}
+
+	/**
+	 * Converts this object to a string.
+	 *
+	 * @return string
+	 */
+	public function __toString() {
+		return $this->location;
 	}
 }

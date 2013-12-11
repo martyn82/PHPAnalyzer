@@ -16,7 +16,7 @@ class SourceNormalizerFactory {
 	 *
 	 * @return Normalizer
 	 *
-	 * @throws \Exception
+	 * @throws \ClassNotFoundException
 	 */
 	public static function createNormalizerByExtension( $extension ) {
 		Logger::info( "Factoring normalizer for <{$extension}>." );
@@ -26,6 +26,6 @@ class SourceNormalizerFactory {
 				return new PHPSourceNormalizer();
 		}
 
-		throw new \Exception( "No normalizer for <.{$extension}> files." );
+		throw new \ClassNotFoundException( "No normalizer for <.{$extension}> files." );
 	}
 }

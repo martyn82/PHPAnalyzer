@@ -12,11 +12,11 @@ class ConsoleLogWriter extends LogWriter {
 	 *
 	 * @param resource $handle
 	 *
-	 * @throws \Exception
+	 * @throws LogException
 	 */
 	public function __construct( $handle ) {
 		if ( !is_resource( $handle ) ) {
-			throw new \Exception( "The given handle is not a valid log writer handle." );
+			throw new LogException( "The given handle is not a valid log writer handle." );
 		}
 
 		$this->handle = $handle;

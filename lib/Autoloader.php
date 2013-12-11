@@ -1,4 +1,6 @@
 <?php
+require_once realpath( __DIR__ ) . "/ClassNotFoundException.php";
+
 class Autoloader {
 	/**
 	 * @var string
@@ -38,7 +40,7 @@ class Autoloader {
 	 *
 	 * @param string $className
 	 *
-	 * @throws \Exception
+	 * @throws \ClassNotFoundException
 	 */
 	public static function load( $className ) {
 		$ns = self::getNamespace( $className );
@@ -50,7 +52,7 @@ class Autoloader {
 		$path = self::getPath( $className );
 
 		if ( !is_file( $path ) ) {
-			throw new \Exception( "Failed to load class <{$className}> at <{$path}>." );
+			throw new \ClassNotFoundException( "Failed to load class <{$className}> at <{$path}>." );
 		}
 
 		require_once $path;
@@ -98,11 +100,11 @@ class Autoloader {
 	 * @return string
 	 */
 	private static function getPath( $className ) {
-		$parts = explode( "\\", $className );
-		array_shift( $parts );
-
 		$ns = self::getNamespace( $className );
 		$root = self::getNamespacePath( $ns );
+
+		$parts = explode( "\\", $className );
+		array_shift( $parts );
 
 		return realpath( $root )
 			. self::DIRECTORY_SEPARATOR
