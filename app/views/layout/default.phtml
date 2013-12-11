@@ -1,27 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="<?php echo $this->culture->locale ?>" dir="<?php echo $this->culture->readingDirection ?>">
 	<head>
-		<meta charset="UTF-8" />
-
+		<meta charset="<?php echo $this->culture->charset ?>" />
 		<link rel="stylesheet" type="text/css" media="all" href="/assets/css/default.css" />
-
-		<title>PHP Analyzer</title>
+		<title><?php echo $this->title ?></title>
 	</head>
+
 	<body>
-		<header>
-			<h1>Analysis results</h1>
-		</header>
-
-		<div id="chart-complexity" class="chart"></div>
-		<div id="chart-unitsize" class="chart"></div>
-		<div id="chart-duplication" class="chart"></div>
-		<div id="chart-ranks" class="chart"></div>
-
-		<footer>
-		</footer>
+		<?php echo $this->noEscape( 'content' ) ?>
 
 		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 		<script type="text/javascript" src="/data/load.php"></script>
+		<script type="text/javascript" src="/assets/js/tabview.js"></script>
 		<script type="text/javascript" src="/assets/js/main.js"></script>
 	</body>
 </html>

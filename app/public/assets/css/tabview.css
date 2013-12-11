@@ -1,0 +1,75 @@
+@charset "utf-8";
+
+.tab-view {
+	position: relative;
+}
+.tab-view nav {
+	border-bottom: 1px solid #eee;
+	display: block;
+}
+.tab-view nav:after {
+	clear: both;
+	content: ' ';
+	display: block;
+	height: 0;
+	visibility: hidden;
+}
+.tab-view nav ul {
+	list-type: none;
+}
+.tab-view nav ul li {
+	display: block;
+	float: left;
+	min-width: 75px;
+	position: relative;
+}
+.tab-view nav ul li:first-child {
+	border-left: 1px solid #eee;
+}
+.tab-view nav a.active {
+	background: #fff;
+	border-bottom-color: #fff;
+	top: 1px;
+	z-index: 1;
+}
+.tab-view nav a {
+	background: #fefefe;
+	border-color: #eee;
+	border-style: solid;
+	border-width: 1px 1px 1px 0;
+	color: #333;
+	display: block;
+	height: 1em;
+	padding: 8px 10px;
+	position: relative;
+	text-decoration: none;
+	top: 4px;
+}
+.tab-view nav a:hover {
+	background-color: #fff;
+	color: #999;
+}
+.tab-view nav a.active:hover {
+	background-color: transparent;
+}
+.tab-view .tab-sheet {
+	background: #fff;
+	border: 1px solid #eee;
+	margin-top: -1px;
+	position: absolute;
+	visibility: hidden;
+	width: 100%;
+}
+.tab-view .tab-sheet:after {
+	clear: both;
+	content: ' ';
+	display: block;
+	height: 0;
+	visibility: hidden;
+}
+.tab-view .tab-sheet.active {
+	visibility: visible;
+}
+.tab-view .tab-sheet {
+	box-shadow: 5px 5px 5px rgba(0,0,0,.1);
+}

@@ -57,12 +57,12 @@ class View {
 	 * @throws \Exception
 	 */
 	public function render( $scriptFile ) {
-		if ( !file_exists( $scriptFile ) ) {
+		if ( !is_file( $scriptFile ) ) {
 			throw new \Exception( "No such view script: <{$scriptFile}>" );
 		}
 
 		ob_start();
-		include $scriptFile;
+		require $scriptFile;
 		$output = ob_get_contents();
 		ob_end_clean();
 
@@ -70,16 +70,45 @@ class View {
 	}
 
 	/**
+	 * Does not escape the value with given name.
+	 *
+	 * @param string $name
+	 *
+	 * @return mixed
+	 */
+	public function noEscape( $name ) {
+		return $this->get( $name, false );
+	}
+
+	/**
 	 * Magic getter to return view var values.
 	 *
 	 * @param string $name
+	 *
+	 * @return mixed
+	 *
+	 * @throws \Exception
 	 */
 	public function __get( $name ) {
+		return $this->get( $name );
+	}
+
+	/**
+	 * Retrieves a view var value.
+	 *
+	 * @param string $name
+	 * @param boolean $useAutoEscape
+	 *
+	 * @return mixed
+	 *
+	 * @throws \Exception
+	 */
+	private function get( $name, $useAutoEscape = true ) {
 		if ( !isset( $this->vars[ $name ] ) ) {
 			throw new \Exception( "Undefined view var: <{$name}>." );
 		}
 
-		if ( $this->autoEscape ) {
+		if ( $this->autoEscape && $useAutoEscape ) {
 			return $this->escape( $this->vars[ $name ] );
 		}
 

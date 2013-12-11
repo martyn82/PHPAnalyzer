@@ -1,7 +1,27 @@
 @charset "utf-8";
 
+@import "tabview.css";
+
+body {
+	color: #333;
+	font-family: arial, helvetica, sans-serif;
+	font-size: 9pt;
+	margin: 0;
+	padding: 20px;
+}
+.tab-sheet {
+	height: 600px;
+}
 .chart {
 	float: left;
 	height: 400px;
 	width: 600px;
+}
+.data-list {
+	float: left;
+	height: 100%;
+	list-style: none;
+	overflow: scroll;
+	white-space: nowrap;
+	width: 50%;
 }

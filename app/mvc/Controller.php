@@ -3,9 +3,14 @@ namespace MVC;
 
 abstract class Controller {
 	/**
-	 * @var \MVC\View
+	 * @var View
 	 */
-	protected $view;
+	private $view;
+
+	/**
+	 * @var Layout
+	 */
+	private $layout;
 
 	/**
 	 * @var string
@@ -15,15 +20,29 @@ abstract class Controller {
 	/**
 	 * @var string
 	 */
+	private $layoutScript;
+
+	/**
+	 * @var string
+	 */
 	private $currentAction;
+
+	/**
+	 * @var string
+	 */
+	private $currentController;
 
 	/**
 	 * Constructs a new controller.
 	 *
 	 * @param string $viewScriptPath
+	 * @param string $layoutScript
 	 */
-	public function __construct( $viewScriptPath ) {
+	public function __construct( $viewScriptPath, $layoutScript ) {
 		$this->viewScriptPath = $viewScriptPath;
+		$this->layoutScript = $layoutScript;
+
+		$this->layout = new Layout();
 		$this->view = new View();
 	}
 
@@ -34,7 +53,7 @@ abstract class Controller {
 	 */
 	public function dispatch( $action ) {
 		if ( !method_exists( $this, 'action' . ucfirst( $action ) ) ) {
-			$controller = get_class( $this );
+			$controller = $this->getController();
 			throw new \Exception( "The action <{$action}> does not exist in controller <{$controller}>." );
 		}
 
@@ -51,24 +70,38 @@ abstract class Controller {
 	/**
 	 * Template method called before dispatch.
 	 */
-	protected function preDispatch() {}
+	protected function preDispatch() {
+		/* noop */
+	}
 
 	/**
 	 * Template method called after dispatch.
 	 */
 	protected function postDispatch() {
-		$renderedView = $this->render( $this->currentAction );
+		$renderedView = $this->render( $this->currentAction, $this->getController() );
 		$this->sendResponse( $renderedView );
 	}
 
 	/**
-	 * Renders the view and sends response.
+	 * Renders the view.
 	 *
 	 * @param string $viewScript
+	 * @param string $basePath
+	 *
+	 * @return string
 	 */
-	protected function render( $viewScript ) {
-		$viewScriptPath = $this->viewScriptPath . DIRECTORY_SEPARATOR . $viewScript . ".phtml";
-		return $this->view->render( $viewScriptPath );
+	protected function render( $viewScript, $basePath = null ) {
+		$basePath = $basePath ? DIRECTORY_SEPARATOR . $basePath : '';
+		$viewScriptPath = $this->viewScriptPath . $basePath . DIRECTORY_SEPARATOR . $viewScript . ".phtml";
+
+		$content = $this->view->render( $viewScriptPath );
+
+		if ( is_null( $this->layout ) ) {
+			return $content;
+		}
+
+		$this->layout->setContent( $content );
+		return $this->layout->render( $this->layoutScript );
 	}
 
 	/**
@@ -88,5 +121,51 @@ abstract class Controller {
 		}
 
 		print $body;
+	}
+
+	/**
+	 * Retrieves the current view.
+	 *
+	 * @return View
+	 */
+	protected function getView() {
+		return $this->view;
+	}
+
+	/**
+	 * Retrieves the layout view.
+	 *
+	 * @return Layout
+	 */
+	protected function getLayout() {
+		return $this->layout;
+	}
+
+	/**
+	 * Retrieves the current controller name.
+	 *
+	 * @return string
+	 */
+	private function getController() {
+		if ( is_null( $this->currentController ) ) {
+			$fullClassName = get_class( $this );
+
+			$classParts = explode( "\\", $fullClassName );
+			$className = end( $classParts );
+
+			$controllerName = substr( $className, 0, strrpos( $className, 'Controller' ) );
+			$this->currentController = strtolower( $controllerName );
+		}
+
+		return $this->currentController;
+	}
+
+	/**
+	 * Retrieves the current action name.
+	 *
+	 * @return string
+	 */
+	private function getAction() {
+		return $this->currentAction;
 	}
 }

@@ -8,6 +8,9 @@ google.setOnLoadCallback( function () {
 		throw Error( "No Report data!" );
 	}
 	
+	var tabElement = document.getElementById( 'tabs' );
+	var tabView = new TabView( tabElement );
+	
 	console.log( Report );
 	
 	drawComplexityChart( Report.complexity, 'chart-complexity' );
@@ -16,6 +19,37 @@ google.setOnLoadCallback( function () {
 	
 	drawRanksChart( Report, 'chart-ranks' );
 } );
+
+function makeList( data, id ) {
+	var list = document.createElement( 'ul' ),
+	item,
+	method;
+
+	for ( var i = 0; i < data.methods.length; i++ ) {
+		method = data.methods[ i ];
+	
+		item = document.createElement( 'li' );
+		item.appendChild(
+			document.createTextNode(
+				method.location.fileName
+				+ '::' + method.name
+				+ ' (lines: ' + method.unitSize.size + ','
+				+ 'complexity: ' + method.complexity.complexity
+				+ ')'
+			)
+		);
+		list.appendChild( item );
+	}
+
+	var container = document.getElementById( id );
+	container.innerHTML = '';
+	
+	var p = document.createElement( 'p' );
+	p.appendChild( document.createTextNode( data.methods.length + ' methods' ) );
+	
+	container.appendChild( p );
+	container.appendChild( list );
+};
 
 function drawComplexityChart( complexity, elementId ) {
 	var table = new google.visualization.DataTable();
@@ -38,6 +72,28 @@ function drawComplexityChart( complexity, elementId ) {
 	
 	var chart = new google.visualization.PieChart( document.getElementById( elementId ) );
 	chart.draw( table, options );
+	
+
+	google.visualization.events.addListener( chart, 'click', function ( event ) {
+		var data;
+		switch ( event.targetID ) {
+			case 'slice#0':
+				data = complexity.low;
+				break;
+			case 'slice#1':
+				data = complexity.moderate;
+				break;
+			case 'slice#2':
+				data = complexity.high;
+				break;
+			case 'slice#3':
+				data = complexity.veryHigh;
+				break;
+			default:
+				return;
+		}
+		makeList( data, 'methods-complexity' );
+	} );
 };
 
 function drawUnitSizeChart( unitSize, elementId ) {
@@ -61,6 +117,27 @@ function drawUnitSizeChart( unitSize, elementId ) {
 	
 	var chart = new google.visualization.PieChart( document.getElementById( elementId ) );
 	chart.draw( table, options );
+	
+	google.visualization.events.addListener( chart, 'click', function ( event ) {
+		var data;
+		switch ( event.targetID ) {
+			case 'slice#0':
+				data = unitSize.small;
+				break;
+			case 'slice#1':
+				data = unitSize.medium;
+				break;
+			case 'slice#2':
+				data = unitSize.large;
+				break;
+			case 'slice#3':
+				data = unitSize.veryLarge;
+				break;
+			default:
+				return;
+		}
+		makeList( data, 'methods-unitsize' );
+	} );
 };
 
 function drawDuplicationChart( duplication, volume, elementId ) {
@@ -82,6 +159,55 @@ function drawDuplicationChart( duplication, volume, elementId ) {
 	
 	var chart = new google.visualization.PieChart( document.getElementById( elementId ) );
 	chart.draw( table, options );
+	
+	google.visualization.events.addListener( chart, 'click', function ( event ) {
+		var blocks;
+		
+		switch ( event.targetID ) {
+			case 'slice#0':
+				blocks = [];
+				break;
+			case 'slice#1':
+				blocks = duplication.duplications.duplications;
+				break;
+			default:
+				return;
+		}
+		
+		var list = document.createElement( 'ul' ),
+			item,
+			inner,
+			span,
+			innerItem,
+			location;
+		
+		for ( var i = 0; i < blocks.length; i++ ) {
+			item = document.createElement( 'li' );
+			span = document.createElement( 'span' );
+			span.appendChild( document.createTextNode( blocks[ i ].block ) );
+			item.appendChild( span );
+			
+			inner = document.createElement( 'ul' );
+			
+			for ( var j = 0; j < blocks[ i ].locations.length; j++ ) {
+				location = blocks[ i ].locations[ j ];
+				innerItem = document.createElement( 'li' );
+				innerItem.appendChild( document.createTextNode( location.fileName + '(' + location.startLine + ',' + location.endLine + ')' ) );
+				inner.appendChild( innerItem );
+			}
+			
+			item.appendChild( inner );
+			list.appendChild( item );
+		}
+		
+		var container = document.getElementById( 'methods-duplication' );
+		container.innerHTML = '';
+		
+		var p = document.createElement( 'p' );
+		p.appendChild( document.createTextNode( blocks.length + ' duplicated blocks' ) );
+		container.appendChild( p );
+		container.appendChild( list );
+	} );
 };
 
 function drawRanksChart( report, elementId ) {
