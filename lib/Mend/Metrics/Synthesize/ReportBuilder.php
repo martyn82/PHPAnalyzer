@@ -24,6 +24,7 @@ use \Mend\Metrics\Model\UnitSizeModel;
 use \Mend\Metrics\Report\ComplexityReport;
 use \Mend\Metrics\Report\DuplicationReport;
 use \Mend\Metrics\Report\Partition;
+use \Mend\Metrics\Report\Project;
 use \Mend\Metrics\Report\Report;
 use \Mend\Metrics\Report\UnitSizeReport;
 use \Mend\Metrics\Report\VolumeReport;
@@ -32,41 +33,49 @@ use \Mend\Logging\Logger;
 
 class ReportBuilder {
 	/**
+	 * @var array
+	 */
+	private static $normalizers = array();
+
+	/**
 	 * Analyzes a directory.
 	 *
+	 * @param Project $project
 	 * @param Directory $directory
 	 *
 	 * @return Report
 	 */
-	public static function analyzeDirectory( Directory $directory ) {
+	public static function analyzeDirectory( Project $project, Directory $directory ) {
 		Logger::info( "Analyze directory <{$directory->getName()}>..." );
 
 		$crawler = new Crawler( $directory );
 		$files = $crawler->getFiles( "*.php" );
 
-		return self::analyzeFiles( $files );
+		return self::analyzeFiles( $project, $files );
 	}
 
 	/**
 	 * Analyzes a file.
 	 *
+	 * @param Project $project
 	 * @param File $file
 	 *
 	 * @return Report
 	 */
-	public static function analyzeFile( File $file ) {
+	public static function analyzeFile( Project $project, File $file ) {
 		Logger::info( "Analyze file <{$file->getName()}>..." );
-		return self::analyzeFiles( new FileArray( array( $file ) ) );
+		return self::analyzeFiles( $project, new FileArray( array( $file ) ) );
 	}
 
 	/**
 	 * Analyzes an array of files.
 	 *
+	 * @param Project $project
 	 * @param FileArray $files
 	 *
 	 * @return Report
 	 */
-	public static function analyzeFiles( FileArray $files ) {
+	public static function analyzeFiles( Project $project, FileArray $files ) {
 		Logger::info( "Analyze files..." );
 
 		$models = self::getModelsFromFiles( $files );
@@ -74,7 +83,7 @@ class ReportBuilder {
 
 		self::analyzeMethods( $methods );
 
-		return self::createReport( $files, $methods );
+		return self::createReport( $project, $files, $methods );
 	}
 
 	/**
@@ -160,7 +169,11 @@ class ReportBuilder {
 	private static function analyzeMethodSize( Method $method ) {
 		Logger::info( "Analyze method size <{$method->getName()}>..." );
 
-		$unitSize = UnitSizeAnalyzer::getUnitSize( $method, $normalizer );
+		$fileName = $method->getLocation()->getFileName();
+		$fileNameParts = explode( '.', $fileName );
+		$fileExtension = end( $fileNameParts );
+
+		$unitSize = UnitSizeAnalyzer::getUnitSize( $method, self::getNormalizer( $fileExtension ) );
 		$sizeLevel = UnitSizeAnalyzer::getSizeLevel( $unitSize );
 
 		return new UnitSizeModel( $unitSize, $sizeLevel );
@@ -169,12 +182,13 @@ class ReportBuilder {
 	/**
 	 * Creates the report for given files and methods.
 	 *
+	 * @param Project $project
 	 * @param FileArray $files
 	 * @param MethodArray $methods
 	 *
 	 * @return Report
 	 */
-	private static function createReport( FileArray $files, MethodArray $methods ) {
+	private static function createReport( Project $project, FileArray $files, MethodArray $methods ) {
 		Logger::info( "Create report for files and methods..." );
 
 		$volumeReport = self::createVolumeReport( $files );
@@ -183,7 +197,7 @@ class ReportBuilder {
 		$unitSizeReport = self::createUnitSizeReport( $methods, $volumeReport );
 		$complexityReport = self::createComplexityReport( $methods, $volumeReport );
 
-		$result = new Report( $volumeReport, $unitSizeReport, $complexityReport, $duplicationReport );
+		$result = new Report( $project, $volumeReport, $unitSizeReport, $complexityReport, $duplicationReport );
 
 		Logger::info( "Report done." );
 		return $result;
@@ -303,5 +317,22 @@ class ReportBuilder {
 
 		list( $low, $moderate, $high, $veryHigh ) = $classes;
 		return new ComplexityReport( $low, $moderate, $high, $veryHigh );
+	}
+
+	/**
+	 * Retrieves a source normalizer for given file extension.
+	 *
+	 * @param string $fileExtension
+	 *
+	 * @return SourceNormalizer
+	 */
+	private static function getNormalizer( $fileExtension ) {
+		if ( !isset( self::$normalizers[ $fileExtension ] ) ) {
+			self::$normalizers[ $fileExtension ] = SourceNormalizerFactory::createNormalizerByExtension(
+				$fileExtension
+			);
+		}
+
+		return self::$normalizers[ $fileExtension ];
 	}
 }

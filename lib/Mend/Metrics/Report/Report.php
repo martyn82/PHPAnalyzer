@@ -30,23 +30,40 @@ class Report implements Arrayable {
 	private $maintainability;
 
 	/**
+	 * @var Project
+	 */
+	private $project;
+
+	/**
 	 * Constructs a new report.
 	 *
+	 * @param Project $project
 	 * @param VolumeReport $volume
 	 * @param UnitSizeReport $unitSize
 	 * @param ComplexityReport $complexity
 	 * @param DuplicationReport $duplication
 	 */
 	public function __construct(
+		Project $project,
 		VolumeReport $volume,
 		UnitSizeReport $unitSize,
 		ComplexityReport $complexity,
 		DuplicationReport $duplication
 	) {
+		$this->project = $project;
 		$this->volume = $volume;
 		$this->unitSize = $unitSize;
 		$this->complexity = $complexity;
 		$this->duplication = $duplication;
+	}
+
+	/**
+	 * Retrieves the Project.
+	 *
+	 * @return Project
+	 */
+	public function project() {
+		return $this->project;
 	}
 
 	/**
@@ -105,6 +122,7 @@ class Report implements Arrayable {
 	 */
 	public function toArray() {
 		return array(
+			'project' => $this->project->toArray(),
 			'volume' => $this->volume->toArray(),
 			'unitSize' => $this->unitSize->toArray(),
 			'complexity' => $this->complexity->toArray(),

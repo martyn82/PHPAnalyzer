@@ -28,10 +28,10 @@ class DuplicationArray extends \ArrayObject implements Arrayable {
 	/**
 	 * Wrapper for type safety.
 	 *
-	 * @param integer $ofsset
+	 * @param integer $offset
 	 * @param Duplication $value
 	 */
-	private function _offsetSet( $ofsset, Duplication $value ) {
+	private function _offsetSet( $offset, Duplication $value ) {
 		parent::offsetSet( $offset, $value );
 	}
 

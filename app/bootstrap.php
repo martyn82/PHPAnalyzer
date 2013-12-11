@@ -4,12 +4,6 @@ date_default_timezone_set( 'Europe/Amsterdam' );
 error_reporting( -1 );
 ini_set( 'display_errors', '1' );
 
-set_error_handler(
-	function ( $errorNumber, $errorMessage, $file, $line, array $context = null ) {
-		throw new \ErrorException( $errorMessage, $errorNumber, $errorNumber, $file, $line );
-	}
-);
-
 if ( !defined( 'ROOT_DIR' ) ) {
 	define( 'ROOT_DIR', realpath( __DIR__ ) );
 }

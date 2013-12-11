@@ -6,111 +6,126 @@ use \Mend\FileSystem\Directory;
 use \Mend\FileSystem\File;
 use \Mend\Logging\Logger;
 use \Mend\Logging\ConsoleLogWriter;
+use \Mend\Metrics\Report\Project;
 use \Mend\Metrics\Synthesize\ReportBuilder;
 use \Mend\Metrics\Synthesize\ReportWriterFactory;
 use \Mend\Metrics\Synthesize\ReportSerializerJson;
 
-const OUTPUT_TYPE_TEXT = 'text';
-const OUTPUT_TYPE_JSON = 'json';
-$validOutputs = array( OUTPUT_TYPE_TEXT, OUTPUT_TYPE_JSON );
+// Possible output formats
+const OUTPUT_FORMAT_TEXT = 'text';
+const OUTPUT_FORMAT_JSON = 'json';
 
 // Create default options
 $options = new stdClass();
-$options->outputType = OUTPUT_TYPE_TEXT;
 $options->memoryLimit = '1G';
-$options->path = getcwd();
+$options->outputFormat = OUTPUT_FORMAT_TEXT;
+$options->path = null;
+$options->project = null;
 $options->verbose = false;
 
-// Iterate through script arguments
-for ( $index = 0; $index < count( $argv ); $index++ ) {
-	if ( $index == 0 ) {
-		continue;
-	}
+// Script argument options
+$params  = '';
+$params .= 'm:'; // Memory limit
+$params .= 'o:'; // Output format
+$params .= 'p:'; // Project key
+$params .= 'v';  // Verbosity flag
+$params .= 'h';  // Help
 
-	$arg = $argv[ $index ];
+// Read options
+$opts = getopt( $params );
 
-	switch ( $arg ) {
-		case '--':
-			// ignore
-			break;
+// Read path for analysis
+$pathArg = end( $argv );
 
-		case '-h':
+if ( $pathArg != $argv[ 0 ] ) {
+	$options->path = realpath( $pathArg );
+}
+else {
+	$options->path = null;
+}
+
+foreach ( $opts as $opt => $val ) {
+	switch ( $opt ) {
+		case 'h':
 			help( $argv );
 			exit( 0 );
-
-		case '-m':
-			$index++;
-			$options->memoryLimit = $argv[ $index ] ?: $options->memoryLimit;
+		case 'm':
+			$options->memoryLimit = $val;
 			break;
-
-		case '-o':
-			$index++;
-
-			if ( !in_array( $argv[ $index ], array( OUTPUT_TYPE_TEXT, OUTPUT_TYPE_JSON ) ) ) {
-				err( "'{$argv[ $index ]}' is an invalid output type." );
-				exit( 1 );
-			}
-
-			$options->outputType = $argv[ $index ];
+		case 'o':
+			$options->outputFormat = $val;
 			break;
-
-		case '-v':
+		case 'p':
+			$options->project = $val;
+			break;
+		case 'v':
 			$options->verbose = true;
-			break;
-
-		default:
-			if ( count( $argv ) == $index + 1 ) {
-				$path = realpath( $argv[ $index ] );
-
-				if ( empty( $path ) ) {
-					err( "Invalid option: {$arg}" );
-					exit( 1 );
-				}
-
-				$options->path = $path;
-			}
 			break;
 	}
 }
 
-ini_set( 'memory_limit', $options->memoryLimit );
-
-if ( $options->path == null ) {
-	err( "No path given to analyze." );
-	exit( 1 );
-}
-
-if ( !is_readable( $options->path ) ) {
-	err( "Specified path is not readable: <{$options->path}>." );
-	exit( 1 );
-}
-
-if ( $options->verbose ) {
-	Logger::setWriter( new ConsoleLogWriter( STDERR ) );
-}
-
+validateOptions( $options );
 analyze( $options );
 
 // --------------------------------------------
 
+/* Validates options */
+function validateOptions( $options ) {
+	// validate project
+	if ( $options->project == null ) {
+		err( "No project specified." );
+		exit( 1 );
+	}
+
+	// validate output format
+	if ( !in_array( $options->outputFormat, array( OUTPUT_FORMAT_TEXT, OUTPUT_FORMAT_JSON ) ) ) {
+		err( "Invalid output format: <{$options->outputFormat}>." );
+		exit( 1 );
+	}
+
+	// validate memory limit
+	if ( preg_match( '/^\d+[MG]$/', $options->memoryLimit ) == 0 ) {
+		err( "Invalid memory specification: <{$options->memoryLimit}>" );
+		exit( 1 );
+	}
+
+	// validate path
+	if ( $options->path == null ) {
+		err( "No path given to analyze." );
+		exit( 1 );
+	}
+
+	if ( !is_readable( $options->path ) ) {
+		err( "Specified path is not readable: <{$options->path}>." );
+		exit( 1 );
+	}
+};
+
 /* Analyze */
 function analyze( $options ) {
+	ini_set( 'memory_limit', $options->memoryLimit );
+
+	if ( $options->verbose ) {
+		Logger::setWriter( new ConsoleLogWriter( STDERR ) );
+	}
+
+	$project = new Project( $options->project );
 	$report = null;
 
 	if ( is_dir( $options->path ) ) {
 		$directory = new Directory( $options->path );
-		$report = ReportBuilder::analyzeDirectory( $directory );
+		$report = ReportBuilder::analyzeDirectory( $project, $directory );
 	}
 	else if ( is_file( $options->path ) ) {
 		$file = new File( $options->path );
-		$report = ReportBuilder::analyzeFile( $file );
+		$report = ReportBuilder::analyzeFile( $project, $file );
 	}
 	else {
 		err( "Path is neither a file or directory: <{$options->path}>." );
 		exit( 1 );
 	}
 
-	if ( $options->outputType == OUTPUT_TYPE_JSON ) {
+	if ( $options->outputFormat == OUTPUT_FORMAT_JSON ) {
 		Logger::info( "Serializing report as JSON..." );
 
 		$serializer = new ReportSerializerJson();
@@ -119,7 +134,7 @@ function analyze( $options ) {
 	else {
 		Logger::info( "Writing report as {$options->outputType}..." );
 
-		$writer = ReportWriterFactory::createWriterByName( $options->outputType );
+		$writer = ReportWriterFactory::createWriterByName( $options->outputFormat );
 		$output = $writer->write( $report );
 	}
 
@@ -136,13 +151,17 @@ function help( array $argv ) {
 	$help = <<<HELP
 usage: {$script} [options] [location]
 
-Options:
-    -h         Prints this Help
-    -o         Specify output type: [text|json] default: text.
-    -v         Outputs verbose messages.
+Required:
+    -p         Specify a unique project name.
 
 Location:
-    Specify a file or directory to analyze.
+    Specify a file or directory to analyze (required).
+
+Options:
+    -h         Prints this Help
+    -m         Specify memory limit (default: 1G)
+    -o         Specify output type: [text|json] (default: text)
+    -v         Outputs verbose messages.
 
 Example usage:
     {$script} .         Analyzes the current directory recursively.
