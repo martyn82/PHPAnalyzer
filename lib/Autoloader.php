@@ -1,6 +1,4 @@
 <?php
-require_once realpath( __DIR__ ) . "/ClassNotFoundException.php";
-
 class Autoloader {
 	/**
 	 * @var string
@@ -8,124 +6,108 @@ class Autoloader {
 	const DIRECTORY_SEPARATOR = DIRECTORY_SEPARATOR;
 
 	/**
+	 * @var string
+	 */
+	const NAMESPACE_SEPARATOR = '\\';
+
+	/**
 	 * @var array
 	 */
-	private static $namespaces = array();
+	private $prefixes = array();
 
 	/**
-	 * Registers itself to SPL.
+	 * Registers this autoloader.
 	 */
-	public static function enable() {
-		spl_autoload_register( array( __CLASS__, 'load' ) );
+	public function register() {
+		spl_autoload_register( array( $this, 'loadClass' ) );
 	}
 
 	/**
-	 * Registers a namespace to a path.
+	 * Adds a namespace to the loader.
 	 *
-	 * @param string $namespace
-	 * @param string $path
-	 *
-	 * @throws \Exception
+	 * @param string $prefix
+	 * @param string $baseDir
+	 * @param boolean $prepend
 	 */
-	public static function registerNamespace( $namespace, $path ) {
-		if ( isset( self::$namespaces[ $namespace ] ) ) {
-			throw new \Exception( "The namespace <{$namespace}> is already registered." );
+	public function addNamespace( $prefix, $baseDir, $prepend = false ) {
+		$prefix = trim( $prefix, self::NAMESPACE_SEPARATOR ) . self::NAMESPACE_SEPARATOR;
+		$baseDir = realpath( $baseDir ) . self::DIRECTORY_SEPARATOR;
+
+		if ( !isset( $this->prefixes[ $prefix ] ) ) {
+			$this->prefixes[ $prefix ] = array();
 		}
 
-		self::$namespaces[ $namespace ] = realpath( $path );
-	}
-
-	/**
-	 * Load the given class.
-	 *
-	 * @param string $className
-	 *
-	 * @throws \ClassNotFoundException
-	 */
-	public static function load( $className ) {
-		$ns = self::getNamespace( $className );
-
-		if ( !self::isNamespaceRegistered( $ns ) ) {
+		if ( $prepend ) {
+			array_unshift( $this->prefixes[ $prefix ], $baseDir );
 			return;
 		}
 
-		$path = self::getPath( $className );
+		array_push( $this->prefixes[ $prefix ], $baseDir );
+	}
 
-		if ( !is_file( $path ) ) {
-			throw new \ClassNotFoundException( "Failed to load class <{$className}> at <{$path}>." );
+	/**
+	 * Loads the class.
+	 *
+	 * @param string $className
+	 *
+	 * @return boolean
+	 */
+	public function loadClass( $className ) {
+		$prefix = $className;
+
+		while ( $pos = strrpos( $prefix, self::NAMESPACE_SEPARATOR ) ) {
+			$prefix = substr( $className, 0, $pos + 1 );
+			$relativeClass = substr( $className, $pos + 1 );
+
+			if ( $this->loadMappedFile( $prefix, $relativeClass ) ) {
+				return true;
+			}
+
+			$prefix = rtrim( $prefix, self::NAMESPACE_SEPARATOR );
 		}
 
-		require_once $path;
+		return false;
 	}
 
 	/**
-	 * Determines whether the namespace was registered.
+	 * Loads class file.
 	 *
-	 * @param string $namespace
-	 *
-	 * @return boolean
-	 */
-	private static function isNamespaceRegistered( $namespace ) {
-		return isset( self::$namespaces[ $namespace ] );
-	}
-
-	/**
-	 * Retrieves the namespace of the given class name.
-	 *
-	 * @param string $className
-	 *
-	 * @return string
-	 */
-	private static function getNamespace( $className ) {
-		$parts = explode( "\\", $className );
-		return reset( $parts );
-	}
-
-	/**
-	 * Retrieves the path to the namespace.
-	 *
-	 * @param string $namespace
-	 *
-	 * @return string
-	 */
-	private static function getNamespacePath( $namespace ) {
-		return self::$namespaces[ $namespace ];
-	}
-
-	/**
-	 * Creates the full path to the class.
-	 *
-	 * @param string $className
-	 *
-	 * @return string
-	 */
-	private static function getPath( $className ) {
-		$ns = self::getNamespace( $className );
-		$root = self::getNamespacePath( $ns );
-
-		$parts = explode( "\\", $className );
-		array_shift( $parts );
-
-		return realpath( $root )
-			. self::DIRECTORY_SEPARATOR
-			. implode( self::DIRECTORY_SEPARATOR, $parts )
-			. ".php";
-	}
-
-	/**
-	 * Determines whether the given class should not be loaded.
-	 *
+	 * @param string $prefix
 	 * @param string $className
 	 *
 	 * @return boolean
 	 */
-	private static function shouldIgnore( $className ) {
-		foreach ( self::$ignores as $ignorePrefix ) {
-			if ( strpos( $className, $ignorePrefix ) === 0 ) {
+	private function loadMappedFile( $prefix, $className ) {
+		if ( !isset( $this->prefixes[ $prefix ] ) ) {
+			return false;
+		}
+
+		foreach ( $this->prefixes[ $prefix ] as $baseDir ) {
+			$fileName = $baseDir
+				. str_replace( self::NAMESPACE_SEPARATOR, self::DIRECTORY_SEPARATOR, $className )
+				. '.php';
+
+			if ( $this->includeFile( $fileName ) ) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Includes the file.
+	 *
+	 * @param string $fileName
+	 *
+	 * @return boolean
+	 */
+	private function includeFile( $fileName ) {
+		if ( !file_exists( $fileName ) ) {
+			return false;
+		}
+
+		require $fileName;
+		return true;
 	}
 }
