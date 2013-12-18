@@ -5,6 +5,11 @@ use \Mend\Logging\Logger;
 
 class SourceExtractor {
 	/**
+	 * @var array
+	 */
+	private static $normalizers = array();
+
+	/**
 	 * Retrieves a numbered array that is a map of line number to source line from given source string.
 	 *
 	 * @param string $source
@@ -30,7 +35,7 @@ class SourceExtractor {
 	public static function getLinesOfCode( $source, $language ) {
 		Logger::info( "Analyzing source lines of code..." );
 
-		$normalizer = SourceNormalizerFactory::createNormalizerByExtension( $language );
+		$normalizer = self::getNormalizer( $language );
 		$lines = self::getLines( (string) $source );
 
 		$lineIterator = new LineIterator( $lines );
@@ -48,5 +53,20 @@ class SourceExtractor {
 
 		Logger::info( "Analysis of source lines of code done." );
 		return $linesOfCode;
+	}
+
+	/**
+	 * Retrieves a normalizer by extension.
+	 *
+	 * @param string $extension
+	 *
+	 * @return SourceNormalizer
+	 */
+	private static function getNormalizer( $extension ) {
+		if ( !isset( self::$normalizers[ $extension ] ) ) {
+			self::$normalizers[ $extension ] = SourceNormalizerFactory::createNormalizerByExtension( $extension );
+		}
+
+		return self::$normalizers[ $extension ];
 	}
 }
