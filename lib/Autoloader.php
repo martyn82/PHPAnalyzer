@@ -31,7 +31,7 @@ class Autoloader {
 	 */
 	public function addNamespace( $prefix, $baseDir, $prepend = false ) {
 		$prefix = trim( $prefix, self::NAMESPACE_SEPARATOR ) . self::NAMESPACE_SEPARATOR;
-		$baseDir = realpath( $baseDir ) . self::DIRECTORY_SEPARATOR;
+		$baseDir = rtrim( $baseDir, self::DIRECTORY_SEPARATOR ) . self::DIRECTORY_SEPARATOR;
 
 		if ( !isset( $this->prefixes[ $prefix ] ) ) {
 			$this->prefixes[ $prefix ] = array();
@@ -102,12 +102,13 @@ class Autoloader {
 	 *
 	 * @return boolean
 	 */
-	private function includeFile( $fileName ) {
+	protected function includeFile( $fileName ) {
 		if ( !file_exists( $fileName ) ) {
 			return false;
 		}
 
-		require $fileName;
+		$dir = realpath( dirname( $fileName ) );
+		require $dir . self::DIRECTORY_SEPARATOR . basename( $fileName );
 		return true;
 	}
 }

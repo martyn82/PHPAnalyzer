@@ -196,6 +196,8 @@ TabView = ( function () {
 	 * @param {Object} event
 	 */
 	C.prototype.onTabClicked = function ( sender, event ) {
+		event.preventDefault();
+
 		var key = sender.getAttribute( 'href' ).substring( 1 );
 		this.activateTab( key );
 	};

@@ -1,4 +1,7 @@
-<h1>Analysis results</h1>
+<h1>
+	<span>Analysis results for:</span>
+	<span id="project-name"></span>
+</h1>
 
 <div class="tab-view" id="tabs">
 	<nav>
@@ -19,20 +22,24 @@
 	</nav>
 
 	<section class="tab-sheet active" id="tab-project">
+		<div id="chart-volume-time" class="chart"></div>
 		<div id="chart-ranks" class="chart"></div>
 	</section>
 
 	<section class="tab-sheet" id="tab-complexity">
+		<div id="chart-complexity-time" class="chart"></div>
 		<div id="chart-complexity" class="chart"></div>
 		<div id="methods-complexity" class="data-list"></div>
 	</section>
 
 	<section class="tab-sheet" id="tab-unitsize">
+		<div id="chart-unitsize-time" class="chart"></div>
 		<div id="chart-unitsize" class="chart"></div>
 		<div id="methods-unitsize" class="data-list"></div>
 	</section>
 
 	<section class="tab-sheet" id="tab-duplication">
+		<div id="chart-duplication-time" class="chart"></div>
 		<div id="chart-duplication" class="chart"></div>
 		<div id="methods-duplication" class="data-list"></div>
 	</section>
