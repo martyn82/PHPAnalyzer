@@ -7,6 +7,7 @@ use \Mend\FileSystem\FileArray;
 use \Mend\Metrics\Extract\SourceExtractor;
 
 use \Mend\Logging\Logger;
+use Mend\Metrics\Extract\ModelExtractor;
 
 class VolumeAnalyzer {
 	/**
@@ -45,6 +46,50 @@ class VolumeAnalyzer {
 			},
 			0
 		);
+	}
+
+	/**
+	 * Counts the number of files.
+	 *
+	 * @param FileArray $files
+	 *
+	 * @return integer
+	 */
+	public static function getFileCount( FileArray $files ) {
+		return count( $files );
+	}
+
+	/**
+	 * Counts the number of packages.
+	 *
+	 * @param FileArray $files
+	 *
+	 * @return integer
+	 */
+	public static function getPackageCount( FileArray $files ) {
+		return 0; // TODO implement
+	}
+
+	/**
+	 * Counts the number of classes.
+	 *
+	 * @param FileArray $files
+	 *
+	 * @return integer
+	 */
+	public static function getClassCount( FileArray $files ) {
+		return 0; // TODO implement
+	}
+
+	/**
+	 * Counts the number of methods.
+	 *
+	 * @param FileArray $files
+	 *
+	 * @return integer
+	 */
+	public static function getMethodCount( FileArray $files ) {
+		return 0; // TODO implement
 	}
 
 	/**

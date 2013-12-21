@@ -21,11 +21,6 @@ class VolumeResource extends Resource {
 
 		$volume = $data[ 'volume' ];
 
-// 			'classCount' => (int) $volume[ 'classCount' ],
-// 			'fileCount' => (int) $volume[ 'fileCount' ],
-// 			'methodCount' => (int) $volume[ 'methodCount' ],
-// 			'packageCount' => (int) $volume[ 'packageCount' ],
-
 		return $volume;
 	}
 }

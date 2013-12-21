@@ -235,8 +235,12 @@ class ReportBuilder {
 
 		$totalLineCount = VolumeAnalyzer::getTotalLineCount( $files );
 		$totalLOC = VolumeAnalyzer::getTotalLinesOfCodeCount( $files );
+		$fileCount = VolumeAnalyzer::getFileCount( $files );
+		$packageCount = VolumeAnalyzer::getPackageCount( $files );
+		$classCount = VolumeAnalyzer::getClassCount( $files );
+		$methodCount = VolumeAnalyzer::getMethodCount( $files );
 
-		return new VolumeReport( $totalLineCount, $totalLOC );
+		return new VolumeReport( $totalLineCount, $totalLOC, $fileCount );
 	}
 
 	/**

@@ -23,6 +23,10 @@ Volume
 Total lines              : %totalLines%
 Total lines of code      : %totalLOC%
 Blank / commented lines  : %blankAndComments%
+Number of files          : %fileCount%
+Number of packages       : %packageCount%
+Number of classes        : %classCount%
+Number of methods        : %methodCount%
 ---------------------------------------------
 Volume rank              : %volumeScore%
 
@@ -159,12 +163,20 @@ TPL;
 				'%totalLines%',
 				'%totalLOC%',
 				'%blankAndComments%',
+				'%fileCount%',
+				'%packageCount%',
+				'%classCount%',
+				'%methodCount%',
 				'%volumeScore%'
 			),
 			array(
 				$report->getTotalLines(),
 				$report->getTotalLinesOfCode(),
 				$report->getTotalLines() - $report->getTotalLinesOfCode(),
+				$report->getFileCount(),
+				$report->getPackageCount(),
+				$report->getClassCount(),
+				$report->getMethodCount(),
 				$this->rankToString( $report->getRank() )
 			),
 			$template
