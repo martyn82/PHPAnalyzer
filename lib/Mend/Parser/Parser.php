@@ -3,8 +3,6 @@ namespace Mend\Parser;
 
 use \Mend\Parser\Adapter;
 
-use \Mend\Logging\Logger;
-
 class Parser {
 	/**
 	 * @var Adapter
@@ -18,8 +16,6 @@ class Parser {
 	 */
 	public function __construct( Adapter $adapter ) {
 		$this->adapter = $adapter;
-
-		Logger::info( "Parser constructed with adapter " . get_class( $adapter ) );
 	}
 
 	/**
@@ -30,12 +26,6 @@ class Parser {
 	 * @return array
 	 */
 	public function parse( $source ) {
-		Logger::info( "Start parsing..." );
-
-		$ast = $this->adapter->parse( $source );
-
-		Logger::info( "Parsing done." );
-
-		return $ast;
+		return $this->adapter->parse( $source );
 	}
 }

@@ -1,6 +1,9 @@
 <?php
 namespace Mend\Metrics\Model;
 
+use Mend\Parser\Node\Node;
+use Mend\Parser\Node\PHPNode;
+
 abstract class ModelVisitor implements \PHPParser_NodeVisitor {
 	/**
 	 * @var array
@@ -39,9 +42,9 @@ abstract class ModelVisitor implements \PHPParser_NodeVisitor {
 	/**
 	 * Notifies to record this node as a result.
 	 *
-	 * @param \PHPParser_Node $node
+	 * @param Node $node
 	 */
-	abstract protected function addResult( \PHPParser_Node $node );
+	abstract protected function addResult( Node $node );
 
 	/**
 	 * Visits the given node.
@@ -52,7 +55,7 @@ abstract class ModelVisitor implements \PHPParser_NodeVisitor {
 		$nodeClass = get_class( $node );
 
 		if ( in_array( $nodeClass, $this->nodeTypes ) ) {
-			$this->addResult( $node );
+			$this->addResult( new PHPNode( $node ) );
 		}
 	}
 

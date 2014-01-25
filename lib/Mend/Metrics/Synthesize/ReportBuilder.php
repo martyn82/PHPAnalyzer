@@ -240,7 +240,7 @@ class ReportBuilder {
 		$classCount = VolumeAnalyzer::getClassCount( $files );
 		$methodCount = VolumeAnalyzer::getMethodCount( $files );
 
-		return new VolumeReport( $totalLineCount, $totalLOC, $fileCount );
+		return new VolumeReport( $totalLineCount, $totalLOC, $fileCount, $packageCount, $classCount, $methodCount );
 	}
 
 	/**

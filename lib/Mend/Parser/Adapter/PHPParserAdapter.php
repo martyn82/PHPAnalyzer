@@ -2,7 +2,6 @@
 namespace Mend\Parser\Adapter;
 
 use \Mend\Parser\Adapter;
-use \Mend\Parser\AST\PHPNodeArray;
 
 use \PHPParser_Parser;
 use \PHPParser_Lexer;

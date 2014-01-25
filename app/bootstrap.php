@@ -24,5 +24,3 @@ require_once LIB_DIR . "/Autoloader.php";
 $autoLoader = new Autoloader();
 $autoLoader->addNamespace( "Mend", LIB_DIR . "/Mend" );
 $autoLoader->register();
-
-\Mend\Logging\Logger::setWriter( new \Mend\Logging\NullLogWriter() );
