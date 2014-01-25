@@ -17,6 +17,7 @@ class NodeFilter {
 			(array) $nodes,
 			function ( Node $node ) use ( & $names, $self ) {
 				$name = $self->getClassName( $node );
+
 				if ( in_array( $name, $names ) ) {
 					return false;
 				}

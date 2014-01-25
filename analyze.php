@@ -28,10 +28,12 @@ echo "Project: ", $project->getName(), PHP_EOL,
 
 $mapper = new PHPNodeMapper();
 $allPackages = array();
+$extractors = array();
 
 foreach ( $files as $file ) {
 	$entityExtractor = new EntityExtractor( $file, new PHPParserAdapter(), $mapper );
 	$allPackages = array_merge( $allPackages, (array) $entityExtractor->getPackages() );
+	$extractors[ $file->getName() ] = $entityExtractor;
 }
 
 $packages = array_reduce(
@@ -56,21 +58,22 @@ $unitSizeAnalyzer = new UnitSizeAnalyzer();
 foreach ( $packages as $name => $bucket ) {
 	$classes = array_reduce(
 		$bucket,
-		function ( array $result, Package $package ) use ( $entityExtractor ) {
-			$classes = $entityExtractor->getClasses( $package );
+		function ( array $result, Package $package ) use ( $extractors ) {
+			$extractor = $extractors[ $package->getSourceUrl()->getFilename() ];
+			$classes = $extractor->getClasses( $package );
+			$package->classes( $classes );
 			$result = array_merge( $result, (array) $classes );
 			return $result;
 		},
 		array()
 	);
 
-	print_r($classes[0]);exit;
-
 	echo "\t", $name, PHP_EOL,
 		"\t\tclasses: ", count( $classes ), PHP_EOL;
 
 	foreach ( $classes as $class ) {
-		$methods = $entityExtractor->getMethods( $class );
+		$extractor = $extractors[ $class->getSourceUrl()->getFilename() ];
+		$methods = $extractor->getMethods( $class );
 		$class->methods( $methods );
 
 		echo "\t\t", $class->getName(), PHP_EOL,
