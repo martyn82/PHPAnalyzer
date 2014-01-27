@@ -1,7 +1,7 @@
 <?php
 namespace Mend\Metrics\Report\Partition;
 
-use Mend\Metrics\Model\Code\MethodArray;
+use Mend\Source\Code\Model\MethodArray;
 
 class MethodPartition extends CodePartition {
 	/**

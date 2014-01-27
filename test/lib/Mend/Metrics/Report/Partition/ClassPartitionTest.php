@@ -1,13 +1,13 @@
 <?php
 namespace Mend\Metrics\Report\Partition;
 
-use Mend\Metrics\Model\Code\ClassModelArray;
+use Mend\Source\Code\Model\ClassModelArray;
 
 class ClassPartitionTest extends \TestCase {
 	public function testAccessors() {
 		$absolute = mt_rand( 0, PHP_INT_MAX );
 		$relative = (float) mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
-		$classes = $this->getMock( '\Mend\Metrics\Model\Code\ClassModelArray' );
+		$classes = $this->getMock( '\Mend\Source\Code\Model\ClassModelArray' );
 
 		$partition = new ClassPartition( $absolute, $relative, $classes );
 

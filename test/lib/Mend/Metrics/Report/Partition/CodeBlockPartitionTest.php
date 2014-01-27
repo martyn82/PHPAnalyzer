@@ -1,13 +1,13 @@
 <?php
 namespace Mend\Metrics\Report\Partition;
 
-use Mend\Metrics\Extract\CodeBlockTable;
+use Mend\Metrics\Duplication\CodeBlockTable;
 
 class CodeBlockPartitionTest extends \TestCase {
 	public function testAccessors() {
 		$absolute = mt_rand( 0, PHP_INT_MAX );
 		$relative = (float) mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
-		$blocks = $this->getMock( '\Mend\Metrics\Extract\CodeBlockTable' );
+		$blocks = $this->getMock( '\Mend\Metrics\Duplication\CodeBlockTable' );
 
 		$partition = new CodeBlockPartition( $absolute, $relative, $blocks );
 

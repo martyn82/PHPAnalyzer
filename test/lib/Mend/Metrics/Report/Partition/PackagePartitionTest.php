@@ -1,13 +1,13 @@
 <?php
 namespace Mend\Metrics\Report\Partition;
 
-use Mend\Metrics\Model\Code\PackageArray;
+use Mend\Source\Code\Model\PackageArray;
 
 class PackagePartitionTest extends \TestCase {
 	public function testAccessors() {
 		$absolute = mt_rand( 0, PHP_INT_MAX );
 		$relative = (float) mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
-		$packages = $this->getMock( '\Mend\Metrics\Model\Code\PackageArray' );
+		$packages = $this->getMock( '\Mend\Source\Code\Model\PackageArray' );
 
 		$partition = new PackagePartition( $absolute, $relative, $packages );
 

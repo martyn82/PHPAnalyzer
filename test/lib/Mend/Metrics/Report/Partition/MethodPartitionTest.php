@@ -1,13 +1,13 @@
 <?php
 namespace Mend\Metrics\Report\Partition;
 
-use Mend\Metrics\Model\Code\MethodArray;
+use Mend\Source\Code\Model\MethodArray;
 
 class MethodPartitionTest extends \TestCase {
 	public function testAccessors() {
 		$absolute = mt_rand( 0, PHP_INT_MAX );
 		$relative = (float) mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
-		$methods = $this->getMock( '\Mend\Metrics\Model\Code\MethodArray' );
+		$methods = $this->getMock( '\Mend\Source\Code\Model\MethodArray' );
 
 		$partition = new MethodPartition( $absolute, $relative, $methods );
 

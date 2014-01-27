@@ -5,16 +5,15 @@ require_once realpath( __DIR__ . "/app" ) . "/bootstrap.php";
 use Mend\IO\FileSystem\Directory;
 use Mend\IO\FileSystem\File;
 
-use Mend\Metrics\Analyze\Complexity\ComplexityAnalyzer;
-use Mend\Metrics\Analyze\UnitSize\UnitSizeAnalyzer;
-use Mend\Metrics\Extract\EntityExtractor;
-use Mend\Metrics\Model\Project;
-use Mend\Metrics\Model\ProjectReader;
-use Mend\Metrics\Report\ProjectReport;
-
+use Mend\Metrics\Complexity\ComplexityAnalyzer;
+use Mend\Metrics\UnitSize\UnitSizeAnalyzer;
+use Mend\Metrics\Project\ProjectReport;
+use Mend\Metrics\Project\Project;
+use Mend\Metrics\Project\ProjectReader;
 use Mend\Parser\Adapter\PHPParserAdapter;
 use Mend\Parser\Node\PHPNodeMapper;
-use Mend\Metrics\Model\Code\Package;
+use Mend\Source\Code\Model\Package;
+use Mend\Source\Extract\EntityExtractor;
 
 $projectRoot = new Directory( LIB_DIR );
 $project = new Project( 'Test', 'test', $projectRoot );

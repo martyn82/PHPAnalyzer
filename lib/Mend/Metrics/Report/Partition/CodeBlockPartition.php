@@ -1,7 +1,7 @@
 <?php
 namespace Mend\Metrics\Report\Partition;
 
-use Mend\Metrics\Extract\CodeBlockTable;
+use Mend\Metrics\Duplication\CodeBlockTable;
 
 class CodeBlockPartition extends CodePartition {
 	/**
