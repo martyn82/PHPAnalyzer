@@ -8,7 +8,6 @@ use Mend\IO\FileSystem\FileArray;
 use Mend\IO\Stream\FileStreamReader;
 
 use Mend\Source\SourceLineFilter;
-use Mend\Source\SourceLineFilterFactory;
 
 class VolumeAnalyzerTest extends \TestCase {
 	private static $CODE_FRAGMENT_1 = <<<PHP

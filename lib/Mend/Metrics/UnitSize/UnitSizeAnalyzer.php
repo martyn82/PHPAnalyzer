@@ -6,7 +6,7 @@ use Mend\Source\Code\Model\Method;
 use Mend\Source\Code\Location\SourceUrl;
 use Mend\Source\Extract\SourceFileExtractor;
 use Mend\Source\Filter\SourceLineFilter;
-use Mend\Source\Filter\SourceLineFilterFactory;
+use Mend\FactoryCreator;
 
 class UnitSizeAnalyzer {
 	/**
@@ -99,8 +99,9 @@ class UnitSizeAnalyzer {
 	 */
 	private function getFilter( File $file ) {
 		if ( is_null( $this->filter ) ) {
-			$filterFactory = new SourceLineFilterFactory();
-			$this->filter = $filterFactory->createByFileExtension( $file->getExtension() );
+			$creator = new FactoryCreator();
+			$factory = $creator->createFactoryByFileExtension( $file->getExtension() );
+			$this->filter = $factory->createSourceLineFilter();
 		}
 
 		return $this->filter;

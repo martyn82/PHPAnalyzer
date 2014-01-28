@@ -1,11 +1,11 @@
 <?php
 namespace Mend\Metrics\Report\Partition;
 
-use Mend\Source\Code\Model\PackageArray;
+use Mend\Source\Code\Model\PackageHashTable;
 
 class PackagePartition extends CodePartition {
 	/**
-	 * @var PackageArray
+	 * @var PackageHashTable
 	 */
 	private $packages;
 
@@ -15,7 +15,7 @@ class PackagePartition extends CodePartition {
 	 * @return PackagePartition
 	 */
 	public static function createEmpty() {
-		return new self( 0, 0, new PackageArray() );
+		return new self( 0, 0, new PackageHashTable() );
 	}
 
 	/**
@@ -23,9 +23,9 @@ class PackagePartition extends CodePartition {
 	 *
 	 * @param integer $absolute
 	 * @param float $relative
-	 * @param PackageArray $packages
+	 * @param PackageHashTable $packages
 	 */
-	public function __construct( $absolute, $relative, PackageArray $packages ) {
+	public function __construct( $absolute, $relative, PackageHashTable $packages ) {
 		parent::__construct( $absolute, $relative );
 		$this->packages = $packages;
 	}
@@ -33,7 +33,7 @@ class PackagePartition extends CodePartition {
 	/**
 	 * Retrieves the packages in this partition.
 	 *
-	 * @return PackageArray
+	 * @return PackageHashTable
 	 */
 	public function getPackages() {
 		return $this->packages;

@@ -3,7 +3,6 @@ namespace Mend\Source\Extract;
 
 use Mend\IO\FileSystem\File;
 use Mend\IO\Stream\FileStreamReader;
-use Mend\Source\Filter\SourceLineFilterFactory;
 
 class SourceFileExtractorTest extends \TestCase {
 	private static $CODE_FRAGMENT_1 = <<<PHP
@@ -40,7 +39,8 @@ PHP;
 	 * @param array $lines
 	 */
 	public function testSourceLines( $source, array $lines ) {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array( '/tmp/foo' ), '', false );
+		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array( '/tmp/foo' ), '', false );
+		$file->expects( self::any() )->method( 'getExtension' )->will( self::returnValue( 'php' ) );
 
 		$extractor = $this->getMock(
 			'\Mend\Source\Extract\SourceFileExtractor',

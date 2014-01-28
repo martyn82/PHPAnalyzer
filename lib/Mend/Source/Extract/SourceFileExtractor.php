@@ -3,7 +3,8 @@ namespace Mend\Source\Extract;
 
 use Mend\IO\FileSystem\File;
 use Mend\IO\Stream\FileStreamReader;
-use Mend\Source\Filter\SourceLineFilterFactory;
+use Mend\Factory;
+use Mend\FactoryCreator;
 
 class SourceFileExtractor {
 	/**
@@ -27,12 +28,20 @@ class SourceFileExtractor {
 	private $lines;
 
 	/**
+	 * @var Factory
+	 */
+	private $factory;
+
+	/**
 	 * Constructs a new source file analyzer instance.
 	 *
 	 * @param File $file
 	 */
 	public function __construct( File $file ) {
 		$this->file = $file;
+
+		$creator = new FactoryCreator();
+		$this->factory = $creator->createFactoryByFileExtension( $file->getExtension() );
 	}
 
 	/**
@@ -42,8 +51,7 @@ class SourceFileExtractor {
 	 */
 	public function getSourceLineFilter() {
 		if ( is_null( $this->filter ) ) {
-			$factory = new SourceLineFilterFactory();
-			$this->filter = $factory->createByFileExtension( $this->getFileExtension() );
+			$this->filter = $this->factory->createSourceLineFilter();
 		}
 
 		return $this->filter;

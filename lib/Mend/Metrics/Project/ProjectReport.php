@@ -53,6 +53,17 @@ class ProjectReport {
 	}
 
 	/**
+	 * Determines whether a report with given name exists.
+	 *
+	 * @param string $name
+	 *
+	 * @return boolean
+	 */
+	public function hasReport( $name ) {
+		return $this->reports->hasKey( $name );
+	}
+
+	/**
 	 * Retrieves all reports.
 	 *
 	 * @return Map
