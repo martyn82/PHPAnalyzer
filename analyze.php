@@ -3,110 +3,77 @@
 require_once realpath( __DIR__ . "/app" ) . "/bootstrap.php";
 
 use Mend\IO\FileSystem\Directory;
+use Mend\Metrics\Duplication\DuplicationReport;
+use Mend\Metrics\Project\EntityReport;
 use Mend\Metrics\Project\Project;
-use Mend\Metrics\Report\ReportBuilder;
 use Mend\Metrics\Project\ProjectReader;
+use Mend\Metrics\Report\ProjectReportBuilder;
 use Mend\Metrics\Report\ReportType;
+use Mend\Metrics\Volume\VolumeReport;
+use Mend\Source\Code\Model\ClassModel;
+use Mend\Source\Code\Model\Method;
+use Mend\Source\Code\Model\Package;
 
 $projectRoot = new Directory( LIB_DIR );
 $project = new Project( 'Test', 'test', $projectRoot );
 $reader = new ProjectReader( $project );
 $files = $reader->getFiles();
 
-$builder = new ReportBuilder( $project );
+$builder = new ProjectReportBuilder( $project );
 $report = $builder
+	->extractEntities()
+	->extractVolume()
 	->analyzeComplexity()
 	->analyzeUnitSize()
+	->computeDuplications()
 	->getReport();
 
-echo count( $report->getReport( ReportType::REPORT_ENTITY )->methods()->getMethods() );
+echo "Project :", $project->getName(), PHP_EOL,
+	"Location: ", $project->getRoot()->getName(), PHP_EOL;
 
-// use Mend\IO\FileSystem\Directory;
-// use Mend\IO\FileSystem\File;
+$volume = $report->getReport( ReportType::REPORT_VOLUME );
+/* @var $volume VolumeReport */
 
-// use Mend\Metrics\Complexity\ComplexityAnalyzer;
-// use Mend\Metrics\UnitSize\UnitSizeAnalyzer;
-// use Mend\Metrics\Project\ProjectReport;
-// use Mend\Metrics\Project\Project;
-// use Mend\Metrics\Project\ProjectReader;
-// use Mend\Parser\Adapter\PHPParserAdapter;
-// use Mend\Parser\Node\PHPNodeMapper;
-// use Mend\Source\Code\Model\Package;
-// use Mend\Source\Extract\EntityExtractor;
+$entities = $report->getReport( ReportType::REPORT_ENTITY );
+/* @var $entities EntityReport */
 
-// $projectRoot = new Directory( LIB_DIR );
-// $project = new Project( 'Test', 'test', $projectRoot );
-// $projectReport = new ProjectReport( $project );
+$duplications = $report->getReport( ReportType::REPORT_DUPLICATION );
+/* @var $duplications DuplicationReport */
 
-// $projectReader = new ProjectReader( $project );
-// $files = $projectReader->getFiles();
+echo
+	"Total lines     : ", $volume->totalLines()->getAbsolute(), PHP_EOL,
+	"Total comments  : ", $volume->totalLinesOfComments()->getAbsolute(), " (", $volume->totalLinesOfComments()->getRelative(), "%)", PHP_EOL,
+	"Total blanks    : ", $volume->totalBlankLines()->getAbsolute(), " (", $volume->totalBlankLines()->getRelative(), "%)", PHP_EOL,
+	"Total LOC       : ", $volume->totalLinesOfCode()->getAbsolute(), " (", $volume->totalLinesOfCode()->getRelative(), "%)", PHP_EOL,
+	"No. packages    : ", count( $entities->packages()->getPackages() ), PHP_EOL,
+	"No. classes     : ", count( $entities->classes()->getClasses() ), PHP_EOL,
+	"No. methods     : ", count( $entities->methods()->getMethods() ), PHP_EOL,
+	"Code clones     : ", count( $duplications->duplications()->getBlocks() ), PHP_EOL,
+	"Duplicated lines: ", $duplications->duplications()->getAbsolute(), " (", $duplications->duplications()->getRelative(), "%)", PHP_EOL;
 
-// echo "Project: ", $project->getName(), PHP_EOL,
-// 	"\tfiles: ", count( $files ), PHP_EOL;
+$packages = $entities->packages()->getPackages();
 
-// $mapper = new PHPNodeMapper();
-// $allPackages = array();
-// $extractors = array();
+foreach ( $packages as $packageName => $bucket ) {
+	echo $packageName, PHP_EOL;
 
-// foreach ( $files as $file ) {
-// 	$entityExtractor = new EntityExtractor( $file, new PHPParserAdapter(), $mapper );
-// 	$allPackages = array_merge( $allPackages, (array) $entityExtractor->getPackages() );
-// 	$extractors[ $file->getName() ] = $entityExtractor;
-// }
+	$classes = array_reduce(
+		$bucket,
+		function ( array $result, Package $package ) {
+			$result = array_merge( $result, (array) $package->classes() );
+			return $result;
+		},
+		array()
+	);
 
-// $packages = array_reduce(
-// 	$allPackages,
-// 	function ( array $result, Package $package ) {
-// 		$name = (string) $package->getName();
-// 		if ( array_key_exists( $name, $result ) ) {
-// 			$result[ $name ][] = $package;
-// 		}
-// 		else {
-// 			$result[ $name ] = array( $package );
-// 		}
+	foreach ( $classes as $class ) {
+		/* @var $class ClassModel */
+		echo "\t", $class->getName(), PHP_EOL;
 
-// 		return $result;
-// 	},
-// 	array()
-// );
-
-// $complexityAnalyzer = new ComplexityAnalyzer();
-// $unitSizeAnalyzer = new UnitSizeAnalyzer();
-
-// foreach ( $packages as $name => $bucket ) {
-// 	$classes = array_reduce(
-// 		$bucket,
-// 		function ( array $result, Package $package ) use ( $extractors ) {
-// 			$extractor = $extractors[ $package->getSourceUrl()->getFilename() ];
-// 			$classes = $extractor->getClasses( $package );
-// 			$package->classes( $classes );
-// 			$result = array_merge( $result, (array) $classes );
-// 			return $result;
-// 		},
-// 		array()
-// 	);
-
-// 	echo "\t", $name, PHP_EOL,
-// 		"\t\tclasses: ", count( $classes ), PHP_EOL;
-
-// 	foreach ( $classes as $class ) {
-// 		$extractor = $extractors[ $class->getSourceUrl()->getFilename() ];
-// 		$methods = $extractor->getMethods( $class );
-// 		$class->methods( $methods );
-
-// 		echo "\t\t", $class->getName(), PHP_EOL,
-// 			"\t\t\tmethods: ", count( $methods ), PHP_EOL;
-
-// 		foreach ( $methods as $method ) {
-// 			$complexity = $complexityAnalyzer->computeComplexity( $method, $mapper );
-// 			$method->complexity( $complexity );
-
-// 			$unitSize = $unitSizeAnalyzer->calculateMethodSize( $method );
-// 			$method->unitSize( $unitSize );
-
-// 			echo "\t\t\t", $method->getName(), PHP_EOL,
-// 				"\t\t\t\tcomplexity: ", $method->complexity()->getComplexity(), PHP_EOL,
-// 				"\t\t\t\tunitsize  : ", $method->unitSize()->getUnitSize(), PHP_EOL;
-// 		}
-// 	}
-// }
+		foreach ( $class->methods() as $method ) {
+			/* @var $method Method */
+			echo "\t\t", $method->getName(), PHP_EOL,
+				"\t\t\tcomplexity: ", $method->complexity()->getComplexity(), " [", $method->complexity()->getLevel(), "]", PHP_EOL,
+				"\t\t\tunit size : ", $method->unitSize()->getUnitSize(), " [", $method->unitSize()->getCategory(), "]", PHP_EOL;
+		}
+	}
+}

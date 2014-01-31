@@ -5,6 +5,7 @@ use Mend\IO\FileSystem\File;
 use Mend\IO\FileSystem\FileArray;
 use Mend\Network\Web\Url;
 use Mend\Source\Code\Location\SourceUrl;
+use Mend\Source\Extract\SourceFileExtractor;
 
 class CodeBlockExtractor {
 	/**
@@ -18,17 +19,17 @@ class CodeBlockExtractor {
 	 * @param FileArray $files
 	 * @param integer $blockSize
 	 *
-	 * @return array
+	 * @return CodeBlockArray
 	 */
 	public function getCodeBlocks( FileArray $files, $blockSize = self::DEFAULT_CODE_BLOCK_SIZE ) {
 		$blocks = array();
 
 		foreach ( $files as $file ) {
 			$fileBlocks = $this->getCodeBlocksFromFile( $file, (int) $blockSize );
-			$blocks = array_merge( $blocks, $fileBlocks );
+			$blocks = array_merge( $blocks, (array) $fileBlocks );
 		}
 
-		return $blocks;
+		return new CodeBlockArray( $blocks );
 	}
 
 	/**

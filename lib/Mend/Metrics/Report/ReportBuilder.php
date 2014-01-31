@@ -2,45 +2,25 @@
 namespace Mend\Metrics\Report;
 
 use Mend\Collections\Map;
-use Mend\Factory;
 use Mend\FactoryCreator;
 use Mend\IO\FileSystem\File;
 use Mend\IO\FileSystem\FileArray;
-use Mend\Metrics\Complexity\ComplexityAnalyzer;
 use Mend\Metrics\Project\Project;
 use Mend\Metrics\Project\ProjectReader;
-use Mend\Metrics\Project\ProjectReport;
-use Mend\Metrics\Project\EntityReport;
-use Mend\Metrics\Report\Partition\PackagePartition;
-use Mend\Metrics\UnitSize\UnitSizeAnalyzer;
 use Mend\Parser\Node\Node;
 use Mend\Parser\Node\PHPNode;
-use Mend\Source\Code\Model\ClassModel;
-use Mend\Source\Code\Model\Package;
-use Mend\Source\Code\Model\PackageArray;
-use Mend\Source\Code\Model\PackageHashTable;
 use Mend\Source\Extract\EntityExtractor;
-use Mend\Source\Code\Model\ClassModelArray;
-use Mend\Source\Code\Model\MethodArray;
-use Mend\Metrics\Report\Partition\ClassPartition;
-use Mend\Metrics\Report\Partition\MethodPartition;
-use Mend\Metrics\Report\Partition\FilePartition;
 
-class ReportBuilder {
+abstract class ReportBuilder {
 	/**
-	 * @var Project
-	 */
-	private $project;
-
-	/**
-	 * @var ProjectReport
+	 * @var Report
 	 */
 	private $report;
 
 	/**
-	 * @var Map
+	 * @var Project
 	 */
-	private $factories;
+	private $project;
 
 	/**
 	 * @var Map
@@ -48,108 +28,64 @@ class ReportBuilder {
 	private $entityExtractors;
 
 	/**
-	 * @var ProjectReader
-	 */
-	private $projectReader;
-
-	/**
 	 * @var FileArray
 	 */
 	private $files;
 
 	/**
-	 * Constructs a new report builder for given project.
+	 * @var Map
+	 */
+	private $factories;
+
+	/**
+	 * @var ProjectReader
+	 */
+	private $projectReader;
+
+	/**
+	 * Constructs a new report builder.
 	 *
 	 * @param Project $project
 	 */
 	public function __construct( Project $project ) {
 		$this->project = $project;
-		$this->report = new ProjectReport( $this->project );
-		$this->factories = new Map();
+		$this->projectReader = new ProjectReader( $this->project );
 		$this->entityExtractors = new Map();
+		$this->factories = new Map();
+
+		$this->init();
+	}
+
+	/**
+	 * Initializer.
+	 */
+	abstract protected function init();
+
+	/**
+	 * Sets the report.
+	 *
+	 * @param Report $report
+	 */
+	protected function setReport( Report $report ) {
+		$this->report = $report;
 	}
 
 	/**
 	 * Retrieves the built report.
 	 *
-	 * @return ProjectReport
+	 * @return Report
 	 */
 	public function getReport() {
 		return $this->report;
 	}
 
 	/**
-	 * Retrieves the entity report.
+	 * Retrieves the project.
 	 *
-	 * @return EntityReport
+	 * @return Project
 	 */
-	private function getEntityReport() {
-		if ( !$this->isEntityReportAvailable() ) {
-			$this->report->addReport( ReportType::REPORT_ENTITY, new EntityReport() );
-		}
-
-		return $this->report->getReport( ReportType::REPORT_ENTITY );
-	}
-
-	/**
-	 * Determines whether the entity report is generated.
-	 *
-	 * @return boolean
-	 */
-	private function isEntityReportAvailable() {
-		return $this->report->hasReport( ReportType::REPORT_ENTITY );
-	}
-
-	/**
-	 * Extracts entities from project.
-	 *
-	 * @return ReportBuilder
-	 */
-	public function extractEntities() {
-		$files = $this->getFiles();
-		$packagesTable = new PackageHashTable();
-		$classesArray = array();
-		$methodsArray = array();
-
-		foreach ( $files as $file ) {
-			/* @var $file File */
-			$extractor = $this->getEntityExtractor( $file );
-			$packages = $extractor->getPackages();
-
-			foreach ( $packages as $package ) {
-				/* @var $package Package */
-				$classes = $extractor->getClasses( $package );
-				$classesArray = array_merge( $classesArray, (array) $classes );
-
-				foreach ( $classes as $class ) {
-					/* @var $class ClassModel */
-					$methods = $extractor->getMethods( $class );
-					$methodsArray = array_merge( $methodsArray, (array) $methods );
-					$class->methods( $methods );
-				}
-
-				$package->classes( $classes );
-				$packagesTable->add( $package->getName(), $package );
-			}
-		}
-
-		$packagesTable->ksort();
-
-		$report = $this->getEntityReport();
-
-		$packagePartition = new PackagePartition( 0, 0, $packagesTable );
-		$report->packages( $packagePartition );
-
-		$classPartition = new ClassPartition( 0, 0, new ClassModelArray( $classesArray ) );
-		$report->classes( $classPartition );
-
-		$methodPartition = new MethodPartition( 0, 0, new MethodArray( $methodsArray ) );
-		$report->methods( $methodPartition );
-
-		$filePartition = new FilePartition( 0, 0, $files );
-		$report->files( $filePartition );
-
-		return $this;
+	protected function getProject() {
+		return $this->project;
 	}
 
 	/**
@@ -159,7 +95,7 @@ class ReportBuilder {
 	 *
 	 * @return EntityExtractor
 	 */
-	private function getEntityExtractor( File $file ) {
+	protected function getEntityExtractor( File $file ) {
 		$name = $file->getName();
 
 		if ( !$this->entityExtractors->hasKey( $name ) ) {
@@ -175,47 +111,16 @@ class ReportBuilder {
 	}
 
 	/**
-	 * Analyzes complexity for the current report.
+	 * Retrieves the files from project.
 	 *
-	 * @return ReportBuilder
+	 * @return FileArray
 	 */
-	public function analyzeComplexity() {
-		$entityReport = $this->getEntityReport();
-		$methods = $entityReport->methods()->getMethods();
-
-		$complexityAnalyzer = new ComplexityAnalyzer();
-
-		foreach ( $methods as $method ) {
-			/* @var $method Method */
-			$factory = $this->getFactoryByNode( $method->getNode() );
-			$mapper = $factory->createNodeMapper( $factory );
-			$result = $complexityAnalyzer->computeComplexity( $method, $mapper );
-			$method->complexity( $result );
+	protected function getFiles() {
+		if ( is_null( $this->files ) ) {
+			$this->files = $this->projectReader->getFiles();
 		}
 
-		return $this;
-	}
-
-	/**
-	 * Analyzes unit size for the current report.
-	 *
-	 * @return ReportBuilder
-	 */
-	public function analyzeUnitSize() {
-		$this->extractEntities();
-
-		$entityReport = $this->getEntityReport();
-		$methods = $entityReport->methods()->getMethods();
-
-		$unitSizeAnalyzer = new UnitSizeAnalyzer();
-
-		foreach ( $methods as $method ) {
-			/* @var $method Method */
-			$result = $unitSizeAnalyzer->calculateMethodSize( $method );
-			$method->unitSize( $result );
-		}
-
-		return $this;
+		return $this->files;
 	}
 
 	/**
@@ -225,7 +130,7 @@ class ReportBuilder {
 	 *
 	 * @return Factory
 	 */
-	private function getFactoryByFile( File $file ) {
+	protected function getFactoryByFile( File $file ) {
 		$extension = strtolower( $file->getExtension() );
 		return $this->getFactoryByType( $extension );
 	}
@@ -239,7 +144,7 @@ class ReportBuilder {
 	 *
 	 * @throws \UnexpectedValueException
 	 */
-	private function getFactoryByNode( Node $node ) {
+	protected function getFactoryByNode( Node $node ) {
 		if ( $node instanceof PHPNode ) {
 			return $this->getFactoryByType( FactoryCreator::EXTENSION_PHP );
 		}
@@ -254,7 +159,7 @@ class ReportBuilder {
 	 *
 	 * @return Factory
 	 */
-	private function getFactoryByType( $type ) {
+	protected function getFactoryByType( $type ) {
 		if ( !$this->factories->hasKey( $type ) ) {
 			$creator = new FactoryCreator();
 			$factory = $creator->createFactoryByFileExtension( $type );
@@ -264,32 +169,5 @@ class ReportBuilder {
 		}
 
 		return $this->factories->get( $type );
-	}
-
-	/**
-	 * Retrieves the project reader.
-	 *
-	 * @return ProjectReader
-	 */
-	private function getProjectReader() {
-		if ( is_null( $this->projectReader ) ) {
-			$this->projectReader = new ProjectReader( $this->project );
-		}
-
-		return $this->projectReader;
-	}
-
-	/**
-	 * Retrieves the files of the project.
-	 *
-	 * @return FileArray
-	 */
-	private function getFiles() {
-		if ( is_null( $this->files ) ) {
-			$reader = $this->getProjectReader();
-			$this->files = $reader->getFiles();
-		}
-
-		return $this->files;
 	}
 }

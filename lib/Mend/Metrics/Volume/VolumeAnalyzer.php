@@ -1,10 +1,10 @@
 <?php
 namespace Mend\Metrics\Volume;
 
+use Mend\IO\FileSystem\File;
 use Mend\IO\FileSystem\FileArray;
-
-use Mend\Source\Filter\SourceLineFilter;
 use Mend\Source\Extract\SourceFileExtractor;
+use Mend\Source\Filter\SourceLineFilter;
 
 class VolumeAnalyzer {
 	/**
