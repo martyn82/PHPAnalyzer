@@ -20,7 +20,7 @@ class VolumeReportBuilder extends ReportBuilder {
 	 * @return VolumeReportBuilder
 	 */
 	public function extractVolume() {
-		$files = $this->getFiles();
+		$files = $this->getFiles( $this->getFileExtensions() );
 
 		$volumeAnalyzer = new VolumeAnalyzer( $files );
 

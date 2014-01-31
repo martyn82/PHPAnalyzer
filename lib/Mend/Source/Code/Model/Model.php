@@ -36,6 +36,15 @@ abstract class Model {
 	}
 
 	/**
+	 * Determines whether the model has a node.
+	 *
+	 * @return boolean
+	 */
+	public function hasNode() {
+		return !is_null( $this->node );
+	}
+
+	/**
 	 * Retrieves the AST node.
 	 *
 	 * @return Node

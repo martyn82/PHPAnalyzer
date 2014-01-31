@@ -28,11 +28,6 @@ abstract class ReportBuilder {
 	private $entityExtractors;
 
 	/**
-	 * @var FileArray
-	 */
-	private $files;
-
-	/**
 	 * @var Map
 	 */
 	private $factories;
@@ -43,12 +38,19 @@ abstract class ReportBuilder {
 	private $projectReader;
 
 	/**
+	 * @var array
+	 */
+	private $fileExtensions;
+
+	/**
 	 * Constructs a new report builder.
 	 *
 	 * @param Project $project
+	 * @param array $fileExtensions
 	 */
-	public function __construct( Project $project ) {
+	public function __construct( Project $project, array $fileExtensions = null ) {
 		$this->project = $project;
+		$this->fileExtensions = $fileExtensions;
 		$this->projectReader = new ProjectReader( $this->project );
 		$this->entityExtractors = new Map();
 		$this->factories = new Map();
@@ -60,6 +62,15 @@ abstract class ReportBuilder {
 	 * Initializer.
 	 */
 	abstract protected function init();
+
+	/**
+	 * Retrieves the file extensions.
+	 *
+	 * @return array
+	 */
+	protected function getFileExtensions() {
+		return $this->fileExtensions;
+	}
 
 	/**
 	 * Sets the report.
@@ -113,14 +124,12 @@ abstract class ReportBuilder {
 	/**
 	 * Retrieves the files from project.
 	 *
+	 * @param array $extensions
+	 *
 	 * @return FileArray
 	 */
-	protected function getFiles() {
-		if ( is_null( $this->files ) ) {
-			$this->files = $this->projectReader->getFiles();
-		}
-
-		return $this->files;
+	protected function getFiles( array $extensions = null ) {
+		return $this->projectReader->getFiles( $extensions );
 	}
 
 	/**

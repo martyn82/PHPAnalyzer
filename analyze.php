@@ -2,11 +2,12 @@
 <?php
 require_once realpath( __DIR__ . "/app" ) . "/bootstrap.php";
 
+ini_set( 'memory_limit', '2G' );
+
 use Mend\IO\FileSystem\Directory;
 use Mend\Metrics\Duplication\DuplicationReport;
 use Mend\Metrics\Project\EntityReport;
 use Mend\Metrics\Project\Project;
-use Mend\Metrics\Project\ProjectReader;
 use Mend\Metrics\Report\Formatter\TextReportFormatter;
 use Mend\Metrics\Report\ProjectReportBuilder;
 use Mend\Metrics\Report\ReportType;
@@ -16,10 +17,10 @@ use Mend\Metrics\Volume\VolumeReport;
 
 $projectRoot = new Directory( LIB_DIR );
 $project = new Project( 'Test', 'test', $projectRoot );
-$reader = new ProjectReader( $project );
-$files = $reader->getFiles();
 
-$builder = new ProjectReportBuilder( $project );
+$fileExtensions = array( 'php' );
+
+$builder = new ProjectReportBuilder( $project, $fileExtensions );
 $report = $builder
 	->extractEntities()
 	->extractVolume()

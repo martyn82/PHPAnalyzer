@@ -8,6 +8,11 @@ abstract class Node {
 	private $innerNode;
 
 	/**
+	 * @var boolean
+	 */
+	protected $isEmpty;
+
+	/**
 	 * Sets the inner node.
 	 *
 	 * @param mixed $node

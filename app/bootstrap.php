@@ -2,13 +2,12 @@
 date_default_timezone_set( 'Europe/Amsterdam' );
 
 define( 'APPLICATION_ENV', getenv( 'APPLICATION_ENV' ) ? : 'production' );
+define( 'E_ALL_ERRORS', -1 );
 
-if ( APPLICATION_ENV == 'development' ) {
-	ini_set( 'display_startup_errors', 1 );
-	ini_set( 'display_errors', '1' );
-}
+ini_set( 'display_startup_errors', 1 );
+ini_set( 'display_errors', 'stdout' );
 
-error_reporting( -1 );
+error_reporting( E_ALL_ERRORS );
 
 if ( !defined( 'ROOT_DIR' ) ) {
 	define( 'ROOT_DIR', realpath( __DIR__ ) );

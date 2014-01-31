@@ -16,6 +16,8 @@ use Mend\Metrics\Report\ReportBuilder;
 use Mend\Source\Code\Model\ClassModelArray;
 use Mend\Source\Code\Model\MethodArray;
 use Mend\Source\Code\Model\PackageHashTable;
+use Mend\Source\Code\Model\Package;
+use Mend\Parser\Node\PHPNode;
 
 class EntityReportBuilder extends ReportBuilder {
 	/**
@@ -31,7 +33,8 @@ class EntityReportBuilder extends ReportBuilder {
 	 * @return EntityReportBuilder
 	 */
 	public function extractEntities() {
-		$files = $this->getFiles();
+		$files = $this->getFiles( $this->getFileExtensions() );
+
 		$packagesTable = new PackageHashTable();
 		$classesArray = array();
 		$methodsArray = array();
@@ -43,7 +46,9 @@ class EntityReportBuilder extends ReportBuilder {
 
 			foreach ( $packages as $package ) {
 				/* @var $package Package */
-				$classes = $extractor->getClasses( $package );
+				$forPackage = $package->isDefault() ? null : $package;
+
+				$classes = $extractor->getClasses( $forPackage );
 				$classesArray = array_merge( $classesArray, (array) $classes );
 
 				foreach ( $classes as $class ) {
@@ -61,6 +66,7 @@ class EntityReportBuilder extends ReportBuilder {
 		$packagesTable->ksort();
 
 		$report = $this->getReport();
+		/* @var $report EntityReport */
 
 		$packagePartition = new PackagePartition( 0, 0, $packagesTable );
 		$report->packages( $packagePartition );

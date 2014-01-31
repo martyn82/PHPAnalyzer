@@ -24,12 +24,19 @@ class ProjectReportBuilder {
 	private $report;
 
 	/**
+	 * @var array
+	 */
+	private $fileExtensions;
+
+	/**
 	 * Constructs a new project report builder.
 	 *
 	 * @param Project $project
+	 * @param array $extensions
 	 */
-	public function __construct( Project $project ) {
+	public function __construct( Project $project, array $extensions = null ) {
 		$this->project = $project;
+		$this->fileExtensions = $extensions;
 		$this->report = new ProjectReport( $project );
 	}
 
@@ -49,6 +56,15 @@ class ProjectReportBuilder {
 	 */
 	public function getReport() {
 		return $this->report;
+	}
+
+	/**
+	 * Retrieves the file extensions.
+	 *
+	 * @return array
+	 */
+	private function getFileExtensions() {
+		return $this->fileExtensions;
 	}
 
 	/**
@@ -83,7 +99,7 @@ class ProjectReportBuilder {
 	 * @return ProjectReportBuilder
 	 */
 	public function extractEntities() {
-		$entityBuilder = new EntityReportBuilder( $this->getProject() );
+		$entityBuilder = new EntityReportBuilder( $this->getProject(), $this->getFileExtensions() );
 		$entityBuilder->extractEntities();
 
 		$report = $entityBuilder->getReport();
@@ -98,7 +114,7 @@ class ProjectReportBuilder {
 	 * @return ProjectReportBuilder
 	 */
 	public function extractVolume() {
-		$volumeBuilder = new VolumeReportBuilder( $this->getProject() );
+		$volumeBuilder = new VolumeReportBuilder( $this->getProject(), $this->getFileExtensions() );
 		$volumeBuilder->extractVolume();
 
 		$report = $volumeBuilder->getReport();
@@ -113,7 +129,7 @@ class ProjectReportBuilder {
 	 * @return ProjectReportBuilder
 	 */
 	public function analyzeComplexity() {
-		$complexityBuilder = new ComplexityReportBuilder( $this->getProject() );
+		$complexityBuilder = new ComplexityReportBuilder( $this->getProject(), $this->getFileExtensions() );
 		$complexityBuilder->analyzeComplexity( $this->getEntityReport(), $this->getVolumeReport() );
 
 		$report = $complexityBuilder->getReport();
@@ -128,7 +144,7 @@ class ProjectReportBuilder {
 	 * @return ProjectReportBuilder
 	 */
 	public function analyzeUnitSize() {
-		$unitSizeBuilder = new UnitSizeReportBuilder( $this->getProject() );
+		$unitSizeBuilder = new UnitSizeReportBuilder( $this->getProject(), $this->getFileExtensions() );
 		$unitSizeBuilder->analyzeUnitSize( $this->getEntityReport(), $this->getVolumeReport() );
 
 		$report = $unitSizeBuilder->getReport();
@@ -143,13 +159,11 @@ class ProjectReportBuilder {
 	 * @return ProjectReportBuilder
 	 */
 	public function computeDuplications() {
-		$projectReport = $this->getReport();
-
-		$duplicationBuilder = new DuplicationReportBuilder( $this->getProject() );
+		$duplicationBuilder = new DuplicationReportBuilder( $this->getProject(), $this->getFileExtensions() );
 		$duplicationBuilder->computeDuplications( $this->getVolumeReport() );
 
 		$report = $duplicationBuilder->getReport();
-		$projectReport->addReport( ReportType::REPORT_DUPLICATION, $report );
+		$this->getReport()->addReport( ReportType::REPORT_DUPLICATION, $report );
 
 		return $this;
 	}

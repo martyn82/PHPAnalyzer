@@ -212,6 +212,10 @@ class EntityExtractor {
 			$packages[] = new Package( $node, $url );
 		}
 
+		if ( count( $packages ) == 0 ) {
+			$packages[] = Package::createDefault();
+		}
+
 		return $packages;
 	}
 

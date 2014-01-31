@@ -1,6 +1,7 @@
 <?php
 namespace Mend\Metrics\Project;
 
+use Mend\Collections\Map;
 use Mend\IO\DirectoryStream;
 use Mend\IO\FileSystem\Directory;
 use Mend\IO\FileSystem\File;
@@ -13,7 +14,7 @@ class ProjectReader {
 	private $project;
 
 	/**
-	 * @var FileArray
+	 * @var Map
 	 */
 	private $files;
 
@@ -24,19 +25,35 @@ class ProjectReader {
 	 */
 	public function __construct( Project $project ) {
 		$this->project = $project;
+		$this->files = new Map();
 	}
 
 	/**
 	 * Retrieves the files from the project.
 	 *
+	 * @param array $extensions
+	 *
 	 * @return FileArray
 	 */
-	public function getFiles() {
-		if ( is_null( $this->files ) ) {
-			$this->files = $this->getFilesFromDirectory( $this->getProjectRoot() );
+	public function getFiles( array $extensions = null ) {
+		$key = $this->getHash( $extensions );
+
+		if ( !$this->files->hasKey( $key ) ) {
+			$this->files->set( $key, $this->getFilesFromDirectory( $this->getProjectRoot(), $extensions ) );
 		}
 
-		return $this->files;
+		return $this->files->get( $key );
+	}
+
+	/**
+	 * Creates a hash for given array.
+	 *
+	 * @param array $values
+	 *
+	 * @return string
+	 */
+	private function getHash( array $values = null ) {
+		return implode( '|', (array) $values );
 	}
 
 	/**
@@ -52,23 +69,26 @@ class ProjectReader {
 	 * Retrieves the files from given directory.
 	 *
 	 * @param Directory $directory
+	 * @param array $extensions
 	 *
 	 * @return FileArray
 	 */
-	private function getFilesFromDirectory( Directory $directory ) {
+	private function getFilesFromDirectory( Directory $directory, array $extensions = null ) {
 		$stream = new DirectoryStream( $directory );
-		return new FileArray( $this->getFilesFromStream( $stream->getIterator() ) );
+		return new FileArray( $this->getFilesFromStream( $stream->getIterator(), $extensions ) );
 	}
 
 	/**
 	 * Retrieves the files from given iterator.
 	 *
 	 * @param \DirectoryIterator $stream
+	 * @param array $extensions
 	 *
 	 * @return array
 	 */
-	private function getFilesFromStream( \DirectoryIterator $stream ) {
+	private function getFilesFromStream( \DirectoryIterator $stream, array $extensions = null ) {
 		$files = array();
+		$extensions = is_array( $extensions ) ? $extensions : array();
 
 		foreach ( $stream as $iterator ) {
 			/* @var $iterator \DirectoryIterator */
@@ -77,13 +97,18 @@ class ProjectReader {
 			}
 
 			if ( $iterator->isFile() ) {
+				if ( !empty( $extensions ) && !in_array( $iterator->getExtension(), $extensions ) ) {
+					continue;
+				}
+
 				$files[] = new File( $iterator->getPath() . DIRECTORY_SEPARATOR . $iterator->getFilename() );
 			}
 			else if ( $iterator->isDir() ) {
 				$files = array_merge(
 					$files,
 					$this->getFilesFromStream(
-							new \DirectoryIterator( $iterator->getPath() . DIRECTORY_SEPARATOR . $iterator->getFilename() )
+						new \DirectoryIterator( $iterator->getPath() . DIRECTORY_SEPARATOR . $iterator->getFilename() ),
+						$extensions
 					)
 				);
 			}

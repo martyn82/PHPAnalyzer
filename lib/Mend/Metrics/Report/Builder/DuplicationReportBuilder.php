@@ -24,7 +24,7 @@ class DuplicationReportBuilder extends ReportBuilder {
 	 * @return DuplicationReportBuilder
 	 */
 	public function computeDuplications( VolumeReport $volume ) {
-		$files = $this->getFiles();
+		$files = $this->getFiles( $this->getFileExtensions() );
 
 		$codeBlockExtractor = new CodeBlockExtractor();
 		$codeBlocks = $codeBlockExtractor->getCodeBlocks( $files );
