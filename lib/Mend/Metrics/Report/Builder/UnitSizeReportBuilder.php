@@ -37,7 +37,6 @@ class UnitSizeReportBuilder extends ReportBuilder {
 			$method->unitSize( $result );
 		}
 
-		$this->sortBySize( $methods );
 		$this->partition( $methods, $volumeReport );
 
 		return $this;
@@ -96,23 +95,5 @@ class UnitSizeReportBuilder extends ReportBuilder {
 		$report->medium( new MethodPartition( $mediumCount, $mediumCount / $totalCount * 100, $mediums ) );
 		$report->large( new MethodPartition( $largeCount, $largeCount / $totalCount * 100, $larges ) );
 		$report->veryLarge( new MethodPartition( $veryLargeCount, $veryLargeCount / $totalCount * 100, $veryLarges ) );
-	}
-
-	/**
-	 * Sorts the given methods by unit size.
-	 *
-	 * @param MethodArray & $methods
-	 */
-	private function sortBySize( MethodArray & $methods ) {
-		$methods->uasort( function ( Method $a, Method $b ) {
-			$sizeA = $a->unitSize()->getUnitSize();
-			$sizeB = $b->unitSize()->getUnitSize();
-
-			if ( $sizeA == $sizeB ) {
-				return 0;
-			}
-
-			return $sizeA > $sizeB ? 1 : -1;
-		} );
 	}
 }
