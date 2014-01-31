@@ -3,22 +3,16 @@
 require_once realpath( __DIR__ . "/app" ) . "/bootstrap.php";
 
 use Mend\IO\FileSystem\Directory;
-use Mend\Metrics\Complexity\ComplexityReport;
 use Mend\Metrics\Duplication\DuplicationReport;
 use Mend\Metrics\Project\EntityReport;
 use Mend\Metrics\Project\Project;
 use Mend\Metrics\Project\ProjectReader;
-use Mend\Metrics\Report\ProjectReportBuilder;
 use Mend\Metrics\Report\Formatter\TextReportFormatter;
+use Mend\Metrics\Report\ProjectReportBuilder;
 use Mend\Metrics\Report\ReportType;
 use Mend\Metrics\Report\Writer\ReportWriter;
 use Mend\Metrics\UnitSize\UnitSizeReport;
 use Mend\Metrics\Volume\VolumeReport;
-use Mend\Source\Code\Model\ClassModel;
-use Mend\Source\Code\Model\Method;
-use Mend\Source\Code\Model\Package;
-use Mend\IO\Stream\FileStreamWriter;
-use Mend\IO\FileSystem\File;
 
 $projectRoot = new Directory( LIB_DIR );
 $project = new Project( 'Test', 'test', $projectRoot );
