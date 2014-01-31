@@ -7,9 +7,10 @@ use Mend\Metrics\Project\ProjectReport;
 use Mend\Metrics\Report\Builder\ComplexityReportBuilder;
 use Mend\Metrics\Report\Builder\EntityReportBuilder;
 use Mend\Metrics\Report\Builder\UnitSizeReportBuilder;
-use Mend\Metrics\UnitSize\UnitSizeAnalyzer;
 use Mend\Metrics\Report\Builder\VolumeReportBuilder;
 use Mend\Metrics\Report\Builder\DuplicationReportBuilder;
+use Mend\Metrics\UnitSize\UnitSizeAnalyzer;
+use Mend\Metrics\Volume\VolumeReport;
 
 class ProjectReportBuilder {
 	/**
@@ -64,6 +65,19 @@ class ProjectReportBuilder {
 	}
 
 	/**
+	 * Retrieves the volume report.
+	 *
+	 * @return VolumeReport
+	 */
+	private function getVolumeReport() {
+		if ( !$this->report->hasReport( ReportType::REPORT_VOLUME ) ) {
+			$this->report->addReport( ReportType::REPORT_VOLUME, new VolumeReport() );
+		}
+
+		return $this->report->getReport( ReportType::REPORT_VOLUME );
+	}
+
+	/**
 	 * Extracts entities from project.
 	 *
 	 * @return ProjectReportBuilder
@@ -100,7 +114,7 @@ class ProjectReportBuilder {
 	 */
 	public function analyzeComplexity() {
 		$complexityBuilder = new ComplexityReportBuilder( $this->getProject() );
-		$complexityBuilder->analyzeComplexity( $this->getEntityReport() );
+		$complexityBuilder->analyzeComplexity( $this->getEntityReport(), $this->getVolumeReport() );
 
 		$report = $complexityBuilder->getReport();
 		$this->getReport()->addReport( ReportType::REPORT_COMPLEXITY, $report );
@@ -115,7 +129,7 @@ class ProjectReportBuilder {
 	 */
 	public function analyzeUnitSize() {
 		$unitSizeBuilder = new UnitSizeReportBuilder( $this->getProject() );
-		$unitSizeBuilder->analyzeUnitSize( $this->getEntityReport() );
+		$unitSizeBuilder->analyzeUnitSize( $this->getEntityReport(), $this->getVolumeReport() );
 
 		$report = $unitSizeBuilder->getReport();
 		$this->getReport()->addReport( ReportType::REPORT_UNITSIZE, $report );
@@ -130,10 +144,9 @@ class ProjectReportBuilder {
 	 */
 	public function computeDuplications() {
 		$projectReport = $this->getReport();
-		$volumeReport = $projectReport->getReport( ReportType::REPORT_VOLUME );
 
 		$duplicationBuilder = new DuplicationReportBuilder( $this->getProject() );
-		$duplicationBuilder->computeDuplications( $volumeReport );
+		$duplicationBuilder->computeDuplications( $this->getVolumeReport() );
 
 		$report = $duplicationBuilder->getReport();
 		$projectReport->addReport( ReportType::REPORT_DUPLICATION, $report );

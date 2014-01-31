@@ -50,9 +50,9 @@ class UnitSizeReport extends Report {
 	/**
 	 * Gets/sets large partition.
 	 *
-	 * @param CodePartition $partition
+	 * @param MethodPartition $partition
 	 *
-	 * @return CodePartition
+	 * @return MethodPartition
 	 */
 	public function large( MethodPartition $partition = null ) {
 		if ( !is_null( $partition ) ) {

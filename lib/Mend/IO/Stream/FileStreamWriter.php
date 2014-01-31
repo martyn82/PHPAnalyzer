@@ -2,6 +2,7 @@
 namespace Mend\IO\Stream;
 
 use Mend\IO\FileSystem\File;
+use Mend\IO\IOException;
 
 class FileStreamWriter extends StreamWriter {
 	/**
