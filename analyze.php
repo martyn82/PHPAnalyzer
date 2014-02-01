@@ -84,4 +84,3 @@ $reportString = $writer->getReportAsString();
 
 print $reportString;
 print PHP_EOL;
-
