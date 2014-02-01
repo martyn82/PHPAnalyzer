@@ -2,11 +2,11 @@
 <?php
 require_once realpath( __DIR__ . "/cli" ) . "/bootstrap.php";
 
+use Mend\Config\ConfigProvider;
+use Mend\Config\IniConfigReader;
 use Mend\IO\FileSystem\Directory;
 use Mend\IO\FileSystem\File;
 use Mend\IO\Stream\FileStreamReader;
-use Mend\Config\ConfigProvider;
-use Mend\Config\IniConfigReader;
 use Mend\Metrics\Complexity\ComplexityReport;
 use Mend\Metrics\Duplication\DuplicationReport;
 use Mend\Metrics\Project\EntityReport;
@@ -29,6 +29,11 @@ $projectRoot = $configProvider->getString( 'project:path' );
 $fileExtensions = $configProvider->getArray( 'analysis:extensions' );
 $memoryLimit = $configProvider->getString( 'system:memory' );
 $templatePath = $configProvider->getString( 'report:template' );
+$reportType = $configProvider->getString( 'report:type' );
+
+if ( !preg_match( '/\d+(M|G)/', $memoryLimit ) ) {
+	stopError( "Invalid memory limit: '{$memoryLimit}'" );
+}
 
 ini_set( 'memory_limit', $memoryLimit );
 
@@ -62,10 +67,21 @@ $templateReader->open();
 $template = $templateReader->read();
 $templateReader->close();
 
-require_once CLI_DIR . "/config/var-mapping.php";
 $variableMapping = mapVariables( $project, $complexities, $duplications, $entities, $unitSizes, $volume );
 
-$formatter = new TextReportFormatter( $template, $variableMapping );
-$writer = new ReportWriter( $report, $formatter );
+switch ( $reportType ) {
+	case 'text':
+		$formatter = new TextReportFormatter( $template, $variableMapping );
+		break;
 
-echo $writer->getReportAsString(), PHP_EOL;
+	default:
+		stopError( "Invalid report type: '{$reportType}'" );
+		break;
+}
+
+$writer = new ReportWriter( $report, $formatter );
+$reportString = $writer->getReportAsString();
+
+print $reportString;
+print PHP_EOL;
+
