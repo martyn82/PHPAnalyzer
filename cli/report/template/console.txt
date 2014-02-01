@@ -1,0 +1,59 @@
+Project Metrics
+----------------------------------------------
+Name           : %project.name%
+Location       : %project.root.name%
+
+Entities
+----------------------------------------------
+Files count    : %entities.files.count%
+Packages count : %entities.packages.count%
+Classes count  : %entities.classes.count%
+Methods count  : %entities.methods.count%
+
+Volume facts
+----------------------------------------------
+Total lines    : %volume.lines.abs% (%volume.lines.rel% %%)
+Lines of code  : %volume.loc.abs% (%volume.loc.rel% %%)
+Comments       : %volume.comments.abs% (%volume.comments.rel% %%)
+Blank          : %volume.blank.abs% (%volume.blank.rel% %%)
+
+Duplication
+----------------------------------------------
+Code clones    : %duplication.clones.count%
+Line count     : %duplication.lines.abs% (%duplication.lines.rel% %%)
+
+Complexity
+----------------------------------------------
+Very high risk
+Methods count  : %complexity.veryHigh.methods.count%
+Line count     : %complexity.veryHigh.lines.abs% (%complexity.veryHigh.lines.rel% %%)
+
+High risk
+Methods count  : %complexity.high.methods.count%
+Line count     : %complexity.high.lines.abs% (%complexity.high.lines.rel% %%)
+
+Moderate risk
+Methods count  : %complexity.moderate.methods.count%
+Line count     : %complexity.moderate.lines.abs% (%complexity.moderate.lines.rel% %%)
+
+Low risk
+Methods count  : %complexity.low.methods.count%
+Line count     : %complexity.low.lines.abs% (%complexity.low.lines.rel% %%)
+
+Unit size
+----------------------------------------------
+Very large methods
+Methods count  : %unitSize.veryLarge.methods.count%
+Line count     : %unitSize.veryLarge.lines.abs% (%unitSize.veryLarge.lines.rel% %%)
+
+Large methods
+Methods count  : %unitSize.large.methods.count%
+Line count     : %unitSize.large.lines.abs% (%unitSize.large.lines.rel% %%)
+
+Medium sized methods
+Methods count  : %unitSize.medium.methods.count%
+Line count     : %unitSize.medium.lines.abs% (%unitSize.medium.lines.rel% %%)
+
+Small methods
+Methods count  : %unitSize.small.methods.count%
+Line count     : %unitSize.small.lines.abs% (%unitSize.small.lines.rel% %%)
