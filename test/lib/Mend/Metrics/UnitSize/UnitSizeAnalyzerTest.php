@@ -1,8 +1,6 @@
 <?php
 namespace Mend\Metrics\UnitSize;
 
-require_once PARSER_BOOTSTRAP;
-
 use Mend\IO\FileSystem\File;
 use Mend\IO\Stream\FileStreamReader;
 use Mend\Network\Web\Url;

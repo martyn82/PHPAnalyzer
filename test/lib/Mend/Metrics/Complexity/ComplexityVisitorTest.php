@@ -1,8 +1,6 @@
 <?php
 namespace Mend\Metrics\Complexity;
 
-require_once PARSER_BOOTSTRAP;
-
 use Mend\Metrics\Model\ModelVisitor;
 use Mend\Parser\Node\Node;
 use Mend\Parser\Node\NodeType;

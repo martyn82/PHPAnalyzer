@@ -1,8 +1,6 @@
 <?php
 namespace Mend\Metrics\Complexity;
 
-require_once PARSER_BOOTSTRAP;
-
 use Mend\Network\Web\Url;
 use Mend\Parser\Adapter\PHPParserAdapter;
 use Mend\Parser\Parser;
