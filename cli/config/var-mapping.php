@@ -4,29 +4,26 @@ use Mend\Metrics\Complexity\ComplexityReport;
 use Mend\Metrics\Duplication\DuplicationReport;
 use Mend\Metrics\Project\EntityReport;
 use Mend\Metrics\Project\Project;
+use Mend\Metrics\Project\ProjectReport;
+use Mend\Metrics\Report\ReportType;
 use Mend\Metrics\UnitSize\UnitSizeReport;
 use Mend\Metrics\Volume\VolumeReport;
 
 /**
- * Maps given reports to their variables.
+ * Maps given report to their variables.
  *
- * @param Project $project
- * @param ComplexityReport $complexities
- * @param DuplicationReport $duplications
- * @param EntityReport $entities
- * @param VolumeReport $volume
- * @param UnitSizeReport $unitSizes
+ * @param ProjectReport $report
  *
  * @return array
  */
-function mapVariables(
-	Project $project,
-	ComplexityReport $complexities,
-	DuplicationReport $duplications,
-	EntityReport $entities,
-	UnitSizeReport $unitSizes,
-	VolumeReport $volume
-) {
+$mapVariables = function ( ProjectReport $report ) {
+	$project = $report->getProject();
+	$complexities = $report->getReport( ReportType::REPORT_COMPLEXITY );
+	$duplications = $report->getReport( ReportType::REPORT_DUPLICATION );
+	$entities = $report->getReport( ReportType::REPORT_ENTITY );
+	$unitSizes = $report->getReport( ReportType::REPORT_UNITSIZE );
+	$volume = $report->getReport( ReportType::REPORT_VOLUME );
+
 	return array(
 		// project values
 		"project.name" => $project->getName(),
@@ -81,4 +78,4 @@ function mapVariables(
 		"unitSize.small.lines.abs" => $unitSizes->small()->getAbsolute(),
 		"unitSize.small.lines.rel" => round( $unitSizes->small()->getRelative(), 2 )
 	);
-}
+};

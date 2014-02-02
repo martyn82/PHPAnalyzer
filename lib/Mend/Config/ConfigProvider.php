@@ -20,33 +20,36 @@ class ConfigProvider {
 	 * Retrieves a string value.
 	 *
 	 * @param string $name
+	 * @param mixed $default
 	 *
 	 * @return string
 	 */
-	public function getString( $name ) {
-		return (string) $this->reader->getValue( $name );
+	public function getString( $name, $default = null ) {
+		return (string) $this->getValue( $name, $default );
 	}
 
 	/**
 	 * Retrieves an integer value.
 	 *
 	 * @param string $name
+	 * @param mixed $default
 	 *
 	 * @return integer
 	 */
-	public function getInteger( $name ) {
-		return (int) $this->reader->getValue( $name );
+	public function getInteger( $name, $default = null ) {
+		return (int) $this->getValue( $name, $default );
 	}
 
 	/**
 	 * Retrieves a boolean value.
 	 *
 	 * @param string $name
+	 * @param mixed $default
 	 *
 	 * @return boolean
 	 */
-	public function getBoolean( $name ) {
-		$value = $this->reader->getValue( $name );
+	public function getBoolean( $name, $default = null ) {
+		$value = $this->getValue( $name, $default );
 
 		if ( !is_string( $value ) ) {
 			return (bool) $value;
@@ -59,21 +62,23 @@ class ConfigProvider {
 	 * Retrieves a float value.
 	 *
 	 * @param string $name
+	 * @param mixed $default
 	 *
 	 * @return float
 	 */
-	public function getFloat( $name ) {
-		return (float) $this->reader->getValue( $name );
+	public function getFloat( $name, $default = null ) {
+		return (float) $this->getValue( $name, $default );
 	}
 
 	/**
 	 * Retrieves an array value.
 	 *
 	 * @param string $name
+	 * @param mixed $default
 	 *
 	 * @return array
 	 */
-	public function getArray( $name ) {
+	public function getArray( $name, $default = null ) {
 		return explode( ',', $this->getString( $name ) );
 	}
 
@@ -81,10 +86,15 @@ class ConfigProvider {
 	 * Retrieves a generic value.
 	 *
 	 * @param string $name
+	 * @param mixed $default
 	 *
 	 * @return mixed
 	 */
-	public function getValue( $name ) {
+	public function getValue( $name, $default = null ) {
+		if ( !$this->reader->entryExists( $name ) ) {
+			return $default;
+		}
+
 		return $this->reader->getValue( $name );
 	}
 }

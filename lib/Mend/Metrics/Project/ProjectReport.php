@@ -26,6 +26,15 @@ class ProjectReport {
 	}
 
 	/**
+	 * Retrieves the project.
+	 *
+	 * @return Project
+	 */
+	public function getProject() {
+		return $this->project;
+	}
+
+	/**
 	 * Adds a named report.
 	 *
 	 * @param string $name
