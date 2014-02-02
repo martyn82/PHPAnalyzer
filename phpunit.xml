@@ -8,5 +8,11 @@
 	processIsolation="false"
 	strict="true"
 	verbose="false"
-	bootstrap="bootstrap.php"
-></phpunit>
+	bootstrap="test/bootstrap.php"
+>
+	<testsuites>
+		<testsuite name="AllTests">
+			<directory>test/</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
