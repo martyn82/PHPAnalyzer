@@ -17,10 +17,10 @@ class HashTableTest extends \TestCase {
 		$hashTable->add( 0, 'string1' );
 		$hashTable->add( 0, 'string2' );
 
-		unset( $hashTable[ 0 ][ 0 ] );
+		unset( $hashTable[ 0 ][ 0 ] ); // should unset the element at index 0 of the bucket with index 0
 
+		self::assertArrayNotHasKey( 0, $hashTable[ 0 ] );
 		self::assertEquals( 1, count( $hashTable[ 0 ] ) );
-		self::assertEquals( null, $hashTable[ 0 ][ 0 ] );
 		self::assertEquals( 'string2', $hashTable[ 0 ][ 1 ] );
 	}
 

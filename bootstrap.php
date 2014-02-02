@@ -9,17 +9,9 @@ ini_set( 'display_errors', 'stdout' );
 
 error_reporting( E_ALL_ERRORS );
 
-if ( !defined( 'ROOT_DIR' ) ) {
-	define( 'ROOT_DIR', realpath( __DIR__ ) );
-}
-
-if ( !defined( 'LIB_DIR' ) ) {
-	define( 'LIB_DIR', realpath( __DIR__ . "/lib" ) );
-}
-
-if ( !defined( 'CLI_DIR' ) ) {
-	define( 'CLI_DIR', realpath( __DIR__ . "/cli" ) );
-}
+define( 'ROOT_DIR', realpath( __DIR__ ) );
+define( 'LIB_DIR', realpath( __DIR__ . "/lib" ) );
+define( 'CLI_DIR', realpath( __DIR__ . "/cli" ) );
 
 require_once ROOT_DIR . "/vendor/nikic/php-parser/lib/bootstrap.php";
 require_once LIB_DIR . "/Autoloader.php";

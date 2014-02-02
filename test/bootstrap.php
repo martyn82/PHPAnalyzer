@@ -1,23 +1,14 @@
 <?php
-if ( !defined( 'ROOT_DIR' ) ) {
-	define( 'ROOT_DIR', realpath( __DIR__ ) );
-}
+require_once realpath( __DIR__ . "/.." ) . "/bootstrap.php";
 
-if ( !defined( 'LIB_DIR' ) ) {
-	define( 'LIB_DIR', realpath( __DIR__ . "/../lib" ) );
-}
+define( 'TEST_DIR', realpath( __DIR__ . "/test" ) );
 
-if ( !defined( 'TEST_DIR' ) ) {
-	define( 'TEST_DIR', __DIR__ );
-}
-
-date_default_timezone_set( 'Europe/Amsterdam' );
-
-require_once realpath( ROOT_DIR . '/../vendor/nikic/php-parser/lib' ) . '/bootstrap.php';
 require_once __DIR__ . "/TestCase.php";
-require_once LIB_DIR . "/Autoloader.php";
 
-$autoLoader = new Autoloader();
-$autoLoader->addNamespace( "Mend", LIB_DIR . "/Mend" );
+if ( !isset( $autoLoader ) ) {
+	$autoLoader = new Autoloader();
+	$autoLoader->addNamespace( "Mend", LIB_DIR . "/Mend" );
+	$autoLoader->register();
+}
+
 $autoLoader->addNamespace( "Mend", TEST_DIR . "/lib/Mend" );
-$autoLoader->register();

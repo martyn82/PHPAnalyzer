@@ -38,7 +38,12 @@ class File implements FileSystem {
 	 */
 	public function getExtension() {
 		$parts = pathinfo( $this->location );
-		return $parts[ 'extension' ];
+
+		if ( !empty( $parts[ 'extension' ] ) ) {
+			return $parts[ 'extension' ];
+		}
+
+		return '';
 	}
 
 	/**
