@@ -3,6 +3,8 @@ namespace Mend\Source\Code\Location;
 
 class LocationTest extends \TestCase {
 	public function testAccessors() {
+		$i = 0;
+
 		while ( $i < 100 ) {
 			$line = mt_rand( 1, PHP_INT_MAX );
 			$column = mt_rand( 1, PHP_INT_MAX );
