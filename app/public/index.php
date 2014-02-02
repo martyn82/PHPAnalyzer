@@ -1,4 +1,5 @@
 <?php
+use Mend\Network\Web\WebResponse;
 require_once realpath( __DIR__ . "/.." ) . "/bootstrap.php";
 
 if ( !defined( 'APP_DIR' ) ) {
@@ -13,5 +14,11 @@ $autoLoader->register();
 $viewScriptsPath = realpath( APP_DIR . "/views" );
 $layoutViewScript = realpath( APP_DIR . "/views/layout" ) . "/default.phtml";
 
-$indexController = new \Controller\IndexController( $viewScriptsPath, $layoutViewScript );
+$request = \Mend\Network\Web\WebRequest::createFromGlobals();
+$response = new WebResponse( $request->getUrl() );
+
+$indexController = new \Controller\IndexController( $request, $response );
+$indexController->setViewScriptPath( $viewScriptsPath );
+$indexController->setLayoutScript( $layoutViewScript );
+
 $indexController->dispatch( 'index' );

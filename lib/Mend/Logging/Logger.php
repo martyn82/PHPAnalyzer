@@ -1,6 +1,8 @@
 <?php
 namespace Mend\Logging;
 
+use Mend\IO\Stream\StreamWriter;
+
 class Logger {
 	const LEVEL_DEBUG = 1;
 	const LEVEL_INFO = 2;
@@ -20,7 +22,7 @@ class Logger {
 	);
 
 	/**
-	 * @var \Logging\Logwriter
+	 * @var StreamWriter
 	 */
 	private static $writer;
 
@@ -32,9 +34,9 @@ class Logger {
 	/**
 	 * Sets the writer.
 	 *
-	 * @param \Logging\LogWriter $writer
+	 * @param StreamWriter $writer
 	 */
-	public static function setWriter( LogWriter $writer ) {
+	public static function setWriter( StreamWriter $writer ) {
 		self::$writer = $writer;
 	}
 
@@ -96,6 +98,10 @@ class Logger {
 			self::$levels[ $level ],
 			$message
 		);
+
+		if ( self::$writer->isClosed() ) {
+			self::$writer->open();
+		}
 
 		self::$writer->write( $log );
 	}
