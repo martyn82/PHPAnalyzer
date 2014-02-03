@@ -20,3 +20,11 @@ function stop( $message, $status = Status::STATUS_OK ) {
 	fwrite( $handle, $message . PHP_EOL );
 	exit( $status );
 }
+
+set_exception_handler( function ( \Exception $e ) {
+	if ( defined( 'VERBOSE' ) && VERBOSE ) {
+		stop( "ERROR: " . $e->__toString(), Status::STATUS_ERROR_GENERAL );
+	}
+
+	stop( "ERROR: " . $e->getMessage(), Status::STATUS_ERROR_GENERAL );
+} );

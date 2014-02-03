@@ -39,16 +39,16 @@ class FileStreamWriter extends StreamWriter {
 	 * @throws StreamNotWritableException
 	 * @throws StreamClosedException
 	 */
-	public function write( $message ) {
+	public function write( $value ) {
 		if ( !$this->isWritable() ) {
 			throw new StreamNotWritableException( "The stream is not writable." );
 		}
 
 		if ( $this->isClosed() ) {
-			throw new StreamClosedException( "The stream must be opened to write." );
+			throw new StreamClosedException( "The stream must be open to write." );
 		}
 
-		fwrite( $this->handle, $message );
+		fwrite( $this->handle, $value );
 	}
 
 	/**

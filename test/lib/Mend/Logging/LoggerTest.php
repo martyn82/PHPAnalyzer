@@ -15,7 +15,7 @@ class LoggerTest extends \TestCase {
 		Logger::emergency( 'Lorem ipsum' );
 	}
 
-	public function testMultiHandlers() {
+	public function testMultiHandlersDifferentLevel() {
 		$debugHandler = $this->getMock( '\Mend\Logging\LogHandler' );
 		$debugHandler->expects( self::once() )->method( 'log' );
 
@@ -27,6 +27,19 @@ class LoggerTest extends \TestCase {
 
 		Logger::debug( 'Lorem debug ipsum' );
 		Logger::error( 'Lorem error ipsum' );
+	}
+
+	public function testMultiHandlersSameLevel() {
+		$handler1 = $this->getMock( '\Mend\Logging\LogHandler' );
+		$handler2 = $this->getMock( '\Mend\Logging\LogHandler' );
+
+		$handler1->expects( self::once() )->method( 'log' );
+		$handler2->expects( self::once() )->method( 'log' );
+
+		Logger::registerHandler( $handler1, array( LogLevel::LEVEL_CRITICAL ) );
+		Logger::registerHandler( $handler2, array( LogLevel::LEVEL_CRITICAL ) );
+
+		Logger::critical( 'This calls both handlers.' );
 	}
 
 	/**

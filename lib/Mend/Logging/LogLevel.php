@@ -10,4 +10,22 @@ class LogLevel {
 	const LEVEL_CRITICAL = 500;
 	const LEVEL_ALERT = 550;
 	const LEVEL_EMERGENCY = 600;
+
+	/**
+	 * Retrieves all levels.
+	 *
+	 * @return array
+	 */
+	public static function getLevels() {
+		return array(
+			self::LEVEL_DEBUG,
+			self::LEVEL_INFO,
+			self::LEVEL_NOTICE,
+			self::LEVEL_WARNING,
+			self::LEVEL_ERROR,
+			self::LEVEL_CRITICAL,
+			self::LEVEL_ALERT,
+			self::LEVEL_EMERGENCY
+		);
+	}
 }

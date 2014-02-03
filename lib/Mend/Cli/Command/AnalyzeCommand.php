@@ -20,6 +20,7 @@ use Mend\Metrics\Report\Formatter\TextReportFormatter;
 use Mend\Metrics\Report\ProjectReportBuilder;
 use Mend\Metrics\Report\ReportType;
 use Mend\Metrics\Report\Writer\ReportWriter;
+use Mend\Logging\Aspect\LogAspect;
 
 class AnalyzeCommand extends Command {
 	const OUTPUT_FORMAT_TEXT = 'text';

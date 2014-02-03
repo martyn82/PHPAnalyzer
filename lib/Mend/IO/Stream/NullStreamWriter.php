@@ -17,7 +17,7 @@ class NullStreamWriter extends StreamWriter {
 	/**
 	 * @see StreamWriter::write()
 	 */
-	public function write( $message ) {
+	public function write( $value ) {
 		// vanish
 	}
 

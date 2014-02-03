@@ -3,11 +3,11 @@ namespace Mend\IO\Stream;
 
 abstract class StreamWriter implements Stream {
 	/**
-	 * Writes a message to stream.
+	 * Writes a string to stream.
 	 *
-	 * @param string $message
+	 * @param string $value
 	 */
-	abstract public function write( $message );
+	abstract public function write( $value );
 
 	/**
 	 * @see Stream::isReadable()

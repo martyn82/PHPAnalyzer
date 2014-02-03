@@ -11,6 +11,7 @@ use Mend\Metrics\Report\Builder\VolumeReportBuilder;
 use Mend\Metrics\Report\Builder\DuplicationReportBuilder;
 use Mend\Metrics\UnitSize\UnitSizeAnalyzer;
 use Mend\Metrics\Volume\VolumeReport;
+use Mend\Logging\Logger;
 
 class ProjectReportBuilder {
 	/**
@@ -99,12 +100,17 @@ class ProjectReportBuilder {
 	 * @return ProjectReportBuilder
 	 */
 	public function extractEntities() {
+		$this->methodStart( __METHOD__ );
+
 		$entityBuilder = new EntityReportBuilder( $this->getProject(), $this->getFileExtensions() );
+
+		$this->methodUpdate( __METHOD__, "Extracting entities..." );
 		$entityBuilder->extractEntities();
 
 		$report = $entityBuilder->getReport();
 		$this->report->addReport( ReportType::REPORT_ENTITY, $report );
 
+		$this->methodFinish( __METHOD__ );
 		return $this;
 	}
 
@@ -114,12 +120,17 @@ class ProjectReportBuilder {
 	 * @return ProjectReportBuilder
 	 */
 	public function extractVolume() {
+		$this->methodStart( __METHOD__ );
+
 		$volumeBuilder = new VolumeReportBuilder( $this->getProject(), $this->getFileExtensions() );
+
+		$this->methodUpdate( __METHOD__, "Extracting volume facts..." );
 		$volumeBuilder->extractVolume();
 
 		$report = $volumeBuilder->getReport();
 		$this->getReport()->addReport( ReportType::REPORT_VOLUME, $report );
 
+		$this->methodFinish( __METHOD__ );
 		return $this;
 	}
 
@@ -129,12 +140,17 @@ class ProjectReportBuilder {
 	 * @return ProjectReportBuilder
 	 */
 	public function analyzeComplexity() {
+		$this->methodStart( __METHOD__ );
+
 		$complexityBuilder = new ComplexityReportBuilder( $this->getProject(), $this->getFileExtensions() );
+
+		$this->methodUpdate( __METHOD__, "Analyzing complexity..." );
 		$complexityBuilder->analyzeComplexity( $this->getEntityReport(), $this->getVolumeReport() );
 
 		$report = $complexityBuilder->getReport();
 		$this->getReport()->addReport( ReportType::REPORT_COMPLEXITY, $report );
 
+		$this->methodFinish( __METHOD__ );
 		return $this;
 	}
 
@@ -144,12 +160,17 @@ class ProjectReportBuilder {
 	 * @return ProjectReportBuilder
 	 */
 	public function analyzeUnitSize() {
+		$this->methodStart( __METHOD__ );
+
 		$unitSizeBuilder = new UnitSizeReportBuilder( $this->getProject(), $this->getFileExtensions() );
+
+		$this->methodUpdate( __METHOD__, "Computing unit size..." );
 		$unitSizeBuilder->analyzeUnitSize( $this->getEntityReport(), $this->getVolumeReport() );
 
 		$report = $unitSizeBuilder->getReport();
 		$this->getReport()->addReport( ReportType::REPORT_UNITSIZE, $report );
 
+		$this->methodFinish( __METHOD__ );
 		return $this;
 	}
 
@@ -159,12 +180,45 @@ class ProjectReportBuilder {
 	 * @return ProjectReportBuilder
 	 */
 	public function computeDuplications() {
+		$this->methodStart( __METHOD__ );
+
 		$duplicationBuilder = new DuplicationReportBuilder( $this->getProject(), $this->getFileExtensions() );
+
+		$this->methodUpdate( __METHOD__, "Computing duplications..." );
 		$duplicationBuilder->computeDuplications( $this->getVolumeReport() );
 
 		$report = $duplicationBuilder->getReport();
 		$this->getReport()->addReport( ReportType::REPORT_DUPLICATION, $report );
 
+		$this->methodFinish( __METHOD__ );
 		return $this;
+	}
+
+	/**
+	 * Method start event.
+	 *
+	 * @param string $name
+	 */
+	private function methodStart( $name ) {
+		Logger::debug( "{$name}(): start." );
+	}
+
+	/**
+	 * Method update event.
+	 *
+	 * @param string $name
+	 * @param string $message
+	 */
+	private function methodUpdate( $name, $message ) {
+		Logger::debug( "{$name}(): {$message}" );
+	}
+
+	/**
+	 * Method finished event.
+	 *
+	 * @param string $name
+	 */
+	private function methodFinish( $name ) {
+		Logger::debug( "{$name}(): finished." );
 	}
 }
