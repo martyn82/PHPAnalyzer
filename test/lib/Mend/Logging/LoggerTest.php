@@ -2,38 +2,52 @@
 namespace Mend\Logging;
 
 class LoggerTest extends \TestCase {
-	public function testWrite() {
-		$stream = $this->createStreamWriter();
-		$stream->expects( self::once() )->method( 'open' );
-		$stream->expects( self::once() )->method( 'write' );
-
-		Logger::setWriter( $stream );
-		Logger::info( 'message' );
+	public function setUp() {
+		Logger::clearHandlers();
 	}
 
-	private function createStreamWriter() {
-		$isOpen = false;
+	public function testLogHandlerLevel() {
+		$handler = $this->getMock( '\Mend\Logging\LogHandler' );
+		$handler->expects( self::exactly( 2 ) )->method( 'log' );
+		Logger::registerHandler( $handler );
 
-		$stream = $this->getMock(
-			'\Mend\IO\Stream\StreamWriter',
-			array( 'open', 'close', 'write', 'isOpen', 'isClosed', 'isWritable' )
-		);
+		Logger::info( 'Lorem ipsum' );
+		Logger::emergency( 'Lorem ipsum' );
+	}
 
-		$stream->expects( self::any() )->method( 'isOpen' )->will(
-			self::returnCallback(
-				function () use ( & $isOpen ) {
-					return $isOpen;
-				}
-			)
-		);
-		$stream->expects( self::any() )->method( 'isClosed' )->will(
-			self::returnCallback(
-				function () use ( & $isOpen ) {
-					return !$isOpen;
-				}
-			)
-		);
+	public function testMultiHandlers() {
+		$debugHandler = $this->getMock( '\Mend\Logging\LogHandler' );
+		$debugHandler->expects( self::once() )->method( 'log' );
 
-		return $stream;
+		$errorHandler = $this->getMock( '\Mend\Logging\LogHandler' );
+		$errorHandler->expects( self::once() )->method( 'log' );
+
+		Logger::registerHandler( $debugHandler, array( LogLevel::LEVEL_DEBUG ) );
+		Logger::registerHandler( $errorHandler, array( LogLevel::LEVEL_ERROR ) );
+
+		Logger::debug( 'Lorem debug ipsum' );
+		Logger::error( 'Lorem error ipsum' );
+	}
+
+	/**
+	 * @expectedException \Mend\Logging\LogException
+	 */
+	public function testNotRegistered() {
+		Logger::alert( 'This is an alert' );
+	}
+
+	/**
+	 * @expectedException \Mend\Logging\LogException
+	 */
+	public function testNotRegisteredSpecific() {
+		$handler = $this->getMock( '\Mend\Logging\LogHandler' );
+		$handler->expects( self::once() )->method( 'log' );
+
+		Logger::registerHandler( $handler, array( LogLevel::LEVEL_ALERT ) );
+
+		Logger::alert( 'This will be called' );
+		Logger::emergency( 'This will throw exception' );
+
+		self::fail( 'The test should not get here.' );
 	}
 }
