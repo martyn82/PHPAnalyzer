@@ -24,7 +24,7 @@ try {
 }
 catch ( \Exception $e ) {
 	if ( !empty( $analyzer ) && $analyzer->getSettings()->getVerbose() ) {
-		throw $e;
+		stop( "ERROR: " . $e->__toString(), Status::STATUS_ERROR_GENERAL );
 	}
 
 	stop( "ERROR: " . $e->getMessage(), Status::STATUS_ERROR_GENERAL );
