@@ -6,22 +6,19 @@ PHPAnalyzer
 Dependencies
 ------------
 
-PHP 5.4+
-http://www.php.net
+[PHP 5.4+](http://www.php.net)
 
-Apache web server
-http://www.apache.org
+[Apache web server](http://www.apache.org)
 
-Composer dependency manager
-http://getcomposer.org
+[Composer dependency manager](http://getcomposer.org)
 
-Nikic PHP-Parser
-https://github.com/nikic/PHP-Parser
+[Nikic PHP-Parser](https://github.com/nikic/PHP-Parser)
 
 Installation
 ------------
 
 Installing the tool is simple:
+
 1. Clone the repository.
 2. Run ```$ composer install``` in the root.
 
@@ -32,6 +29,25 @@ How to use
 
 Command-line interface
 The script ```analyze.php``` is the one you need to analyze a PHP program.
+
+You can specify what and how to analyze in a configuration INI file:
+```
+[project]
+key = test
+name = Project Test
+path = ./library
+
+[report]
+template = mytemplate.txt
+type = text
+
+[analysis]
+memory = 200M
+```
+
+Example usage:
+
+```$ ./analyze.php -c config.ini```
 
 What it does
 ------------
