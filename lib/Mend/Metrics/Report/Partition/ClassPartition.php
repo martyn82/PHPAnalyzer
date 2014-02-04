@@ -1,6 +1,7 @@
 <?php
 namespace Mend\Metrics\Report\Partition;
 
+use Mend\Source\Code\Model\ClassModel;
 use Mend\Source\Code\Model\ClassModelArray;
 
 class ClassPartition extends CodePartition {
@@ -37,5 +38,21 @@ class ClassPartition extends CodePartition {
 	 */
 	public function getClasses() {
 		return $this->classes;
+	}
+
+	/**
+	 * @see CodePartition::toArray()
+	 */
+	public function toArray() {
+		$result = parent::toArray();
+		$classes = array();
+
+		foreach ( $this->classes as $class ) {
+			/* @var $class ClassModel */
+			$classes[] = $class->toArray();
+		}
+
+		$result[ 'classes' ] = $classes;
+		return $result;
 	}
 }

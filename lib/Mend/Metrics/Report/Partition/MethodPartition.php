@@ -1,6 +1,7 @@
 <?php
 namespace Mend\Metrics\Report\Partition;
 
+use Mend\Source\Code\Model\Method;
 use Mend\Source\Code\Model\MethodArray;
 
 class MethodPartition extends CodePartition {
@@ -37,5 +38,21 @@ class MethodPartition extends CodePartition {
 	 */
 	public function getMethods() {
 		return $this->methods;
+	}
+
+	/**
+	 * @see CodePartition::toArray()
+	 */
+	public function toArray() {
+		$result = parent::toArray();
+		$methods = array();
+
+		foreach ( $this->methods as $method ) {
+			/* @var $method Method */
+			$methods[] = $method->toArray();
+		}
+
+		$result[ 'methods' ] = $methods;
+		return $result;
 	}
 }

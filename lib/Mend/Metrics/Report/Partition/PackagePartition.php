@@ -1,6 +1,7 @@
 <?php
 namespace Mend\Metrics\Report\Partition;
 
+use Mend\Source\Code\Model\Package;
 use Mend\Source\Code\Model\PackageHashTable;
 
 class PackagePartition extends CodePartition {
@@ -37,5 +38,21 @@ class PackagePartition extends CodePartition {
 	 */
 	public function getPackages() {
 		return $this->packages;
+	}
+
+	/**
+	 * @see CodePartition::toArray()
+	 */
+	public function toArray() {
+		$result = parent::toArray();
+		$packages = array();
+
+		foreach ( $this->packages as $name => $bucket ) {
+			/* @var $package Package */
+			$packages[] = $name;
+		}
+
+		$result[ 'packages' ] = $packages;
+		return $result;
 	}
 }

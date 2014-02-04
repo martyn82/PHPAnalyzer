@@ -3,6 +3,7 @@ namespace Mend\Source\Code\Model;
 
 use Mend\Parser\Node\Node;
 use Mend\Parser\Node\PHPNode;
+use Mend\Source\Code\Model\ClassModel;
 use Mend\Source\Code\Location\SourceUrl;
 
 class Package extends Model {
@@ -85,5 +86,21 @@ class Package extends Model {
 		}
 
 		return $this->classes;
+	}
+
+	/**
+	 * @see Model::toArray()
+	 */
+	public function toArray() {
+		$result = parent::toArray();
+		$classes = array();
+
+		foreach ( $this->classes as $class ) {
+			/* @var $class ClassModel */
+			$classes[] = $class->toArray();
+		}
+
+		$result[ 'classes' ] = $classes;
+		return $result;
 	}
 }

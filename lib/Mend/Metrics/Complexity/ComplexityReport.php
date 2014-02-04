@@ -78,4 +78,18 @@ class ComplexityReport extends Report {
 
 		return $this->getPartition( ComplexityRisk::RISK_VERY_HIGH );
 	}
+
+	/**
+	 * @see Report::toArray()
+	 */
+	public function toArray() {
+		$result = array();
+
+		foreach ( $this->getPartitions()->toArray() as $name => $partition ) {
+			/* @var $partition MethodPartition */
+			$result[ $name ] = $partition->toArray();
+		}
+
+		return $result;
+	}
 }

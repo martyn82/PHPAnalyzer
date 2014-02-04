@@ -16,12 +16,19 @@ class ProjectReport {
 	private $project;
 
 	/**
+	 * @var \DateTime
+	 */
+	private $dateTime;
+
+	/**
 	 * Constructs a new Project report.
 	 *
 	 * @param Project $project
+	 * @param \DateTime $dateTime
 	 */
-	public function __construct( Project $project ) {
+	public function __construct( Project $project, \DateTime $dateTime = null ) {
 		$this->project = $project;
+		$this->dateTime = is_null( $dateTime ) ? new \DateTime() : $dateTime;
 		$this->reports = new Map();
 	}
 
@@ -32,6 +39,15 @@ class ProjectReport {
 	 */
 	public function getProject() {
 		return $this->project;
+	}
+
+	/**
+	 * Retrieves the date and time of the report.
+	 *
+	 * @return \DateTime
+	 */
+	public function getDateTime() {
+		return $this->dateTime;
 	}
 
 	/**
@@ -73,11 +89,23 @@ class ProjectReport {
 	}
 
 	/**
-	 * Retrieves all reports.
+	 * Converts this object to its array representation.
 	 *
-	 * @return Map
+	 * @return array
 	 */
-	public function getReports() {
-		return $this->reports;
+	public function toArray() {
+		$result = array(
+			'project' => $this->project->toArray(),
+			'dateTime' => $this->dateTime->format( 'r' )
+		);
+
+		$reports = array();
+
+		foreach ( $this->reports->toArray() as $name => $report ) {
+			/* @var $report Report */
+			$reports[ $name ] = $report->toArray();
+		}
+
+		return array_merge( $result, $reports );
 	}
 }

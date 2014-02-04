@@ -38,4 +38,22 @@ class FilePartition extends CodePartition {
 	public function getFiles() {
 		return $this->files;
 	}
+
+	/**
+	 * @see CodePartition::toArray()
+	 */
+	public function toArray() {
+		$result = parent::toArray();
+		$files = array();
+
+		foreach ( $this->files as $file ) {
+			/* @var $file File */
+			$files[] = array(
+				'name' => $file->getName()
+			);
+		}
+
+		$result[ 'files' ] = $files;
+		return $result;
+	}
 }

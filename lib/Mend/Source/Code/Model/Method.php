@@ -44,4 +44,15 @@ class Method extends Model {
 
 		return $this->complexity;
 	}
+
+	/**
+	 * @see Model::toArray()
+	 */
+	public function toArray() {
+		$result = parent::toArray();
+		$result[ 'unitSize' ] = $this->unitSize->toArray();
+		$result[ 'complexity' ] = $this->complexity->toArray();
+
+		return $result;
+	}
 }

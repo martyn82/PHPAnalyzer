@@ -32,4 +32,18 @@ class DuplicationReport extends Report {
 
 		return $this->getPartition( self::PARTITION_KEY );
 	}
+
+	/**
+	 * @see Report::toArray()
+	 */
+	public function toArray() {
+		$result = array();
+
+		foreach ( $this->getPartitions()->toArray() as $name => $partition ) {
+			/* @var $partition CodeBlockPartition */
+			$result[ $name ] = $partition->toArray();
+		}
+
+		return $result;
+	}
 }

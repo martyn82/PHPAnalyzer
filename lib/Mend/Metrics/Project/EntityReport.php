@@ -2,6 +2,7 @@
 namespace Mend\Metrics\Project;
 
 use Mend\Metrics\Report\Partition\ClassPartition;
+use Mend\Metrics\Report\Partition\CodePartition;
 use Mend\Metrics\Report\Partition\FilePartition;
 use Mend\Metrics\Report\Partition\MethodPartition;
 use Mend\Metrics\Report\Partition\PackagePartition;
@@ -78,5 +79,19 @@ class EntityReport extends Report {
 		}
 
 		return $this->getPartition( EntityType::ENTITY_PACKAGES );
+	}
+
+	/**
+	 * @see Report::toArray()
+	 */
+	public function toArray() {
+		$result = array();
+
+		foreach ( $this->getPartitions()->toArray() as $name => $partition ) {
+			/* @var $partition CodePartition */
+			$result[ $name ] = $partition->toArray();
+		}
+
+		return $result;
 	}
 }

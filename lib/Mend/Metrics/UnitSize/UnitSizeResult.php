@@ -40,4 +40,16 @@ class UnitSizeResult {
 	public function getCategory() {
 		return $this->category;
 	}
+
+	/**
+	 * Converts this object to its array representation.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'unitSize' => $this->unitSize,
+			'category' => $this->category
+		);
+	}
 }

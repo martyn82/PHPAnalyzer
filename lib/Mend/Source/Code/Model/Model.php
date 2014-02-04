@@ -70,4 +70,16 @@ abstract class Model {
 	public function getName() {
 		return (string) $this->getNode()->getName();
 	}
+
+	/**
+	 * Converts this object to its array representation.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'name' => $this->getName(),
+			'location' => $this->getSourceUrl()->__toString()
+		);
+	}
 }

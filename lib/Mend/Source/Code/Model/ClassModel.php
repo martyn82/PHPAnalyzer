@@ -2,6 +2,7 @@
 namespace Mend\Source\Code\Model;
 
 use Mend\Parser\Node\Node;
+use Mend\Source\Code\Model\Method;
 
 class ClassModel extends Model {
 	/**
@@ -29,5 +30,21 @@ class ClassModel extends Model {
 		}
 
 		return $this->methods;
+	}
+
+	/**
+	 * @see Model::toArray()
+	 */
+	public function toArray() {
+		$result = parent::toArray();
+		$methods = array();
+
+		foreach ( $this->methods as $method ) {
+			/* @var $method Method */
+			$methods[] = $method->toArray();
+		}
+
+		$result[ 'methods' ] = $methods;
+		return $result;
 	}
 }

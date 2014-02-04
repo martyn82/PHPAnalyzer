@@ -76,4 +76,18 @@ class VolumeReport extends Report {
 
 		return $this->getPartition( VolumeType::VOLUME_LINES_BLANK );
 	}
+
+	/**
+	 * @see Report::toArray()
+	 */
+	public function toArray() {
+		$result = array();
+
+		foreach ( $this->getPartitions()->toArray() as $name => $partition ) {
+			/* @var $partition CodePartition */
+			$result[ $name ] = $partition->toArray();
+		}
+
+		return $result;
+	}
 }

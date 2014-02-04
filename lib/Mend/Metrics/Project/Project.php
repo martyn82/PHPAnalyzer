@@ -58,4 +58,17 @@ class Project {
 	public function getRoot() {
 		return $this->root;
 	}
+
+	/**
+	 * Converts this object to its array representation.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'key' => $this->getKey(),
+			'name' => $this->getName(),
+			'path' => $this->getRoot()->getName()
+		);
+	}
 }

@@ -76,4 +76,18 @@ class UnitSizeReport extends Report {
 
 		return $this->getPartition( UnitSizeCategory::SIZE_VERY_LARGE );
 	}
+
+	/**
+	 * @see Report::toArray()
+	 */
+	public function toArray() {
+		$result = array();
+
+		foreach ( $this->getPartitions()->toArray() as $name => $partition ) {
+			/* @var $partition MethodPartition */
+			$result[ $name ] = $partition->toArray();
+		}
+
+		return $result;
+	}
 }

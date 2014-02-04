@@ -40,4 +40,16 @@ class ComplexityResult {
 	public function getLevel() {
 		return $this->level;
 	}
+
+	/**
+	 * Converts this object to its array representation.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'complexity' => $this->complexity,
+			'level' => $this->level
+		);
+	}
 }

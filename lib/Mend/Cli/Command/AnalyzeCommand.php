@@ -16,14 +16,17 @@ use Mend\IO\Stream\FileStreamReader;
 
 use Mend\Metrics\Project\Project;
 
-use Mend\Metrics\Report\Formatter\TextReportFormatter;
 use Mend\Metrics\Report\ProjectReportBuilder;
 use Mend\Metrics\Report\ReportType;
+
+use Mend\Metrics\Report\Formatter\JsonReportFormatter;
+use Mend\Metrics\Report\Formatter\TextReportFormatter;
+
 use Mend\Metrics\Report\Writer\ReportWriter;
-use Mend\Logging\Aspect\LogAspect;
 
 class AnalyzeCommand extends Command {
 	const OUTPUT_FORMAT_TEXT = 'text';
+	const OUTPUT_FORMAT_JSON = 'json';
 
 	/**
 	 * @var AnalyzeOptions
@@ -42,7 +45,8 @@ class AnalyzeCommand extends Command {
 	 */
 	public static function getOutputFormats() {
 		return array(
-			self::OUTPUT_FORMAT_TEXT
+			self::OUTPUT_FORMAT_TEXT,
+			self::OUTPUT_FORMAT_JSON
 		);
 	}
 
@@ -168,14 +172,25 @@ class AnalyzeCommand extends Command {
 	 * @return string
 	 */
 	private function createFormattedReport( ConfigProvider $config ) {
-		$template = $this->getTemplate( $config );
 		$report = $this->createReport( $config );
+		$format = $config->getString( 'report:type' );
 
-		$mapped = call_user_func( $this->mapper, $report );
+		switch ( $format ) {
+			case self::OUTPUT_FORMAT_TEXT:
+				$template = $this->getTemplate( $config );
+				$mapped = call_user_func( $this->mapper, $report );
+				$formatter = new TextReportFormatter( $template, $mapped );
+				break;
 
-		$formatter = new TextReportFormatter( $template, $mapped );
+			case self::OUTPUT_FORMAT_JSON:
+				$formatter = new JsonReportFormatter();
+				break;
+
+			default:
+				throw new \UnexpectedValueException( "Unrecognized output format: '{$format}'." );
+		}
+
 		$writer = new ReportWriter( $report, $formatter );
-
 		return $writer->getReportAsString();
 	}
 

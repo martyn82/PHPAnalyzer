@@ -2,6 +2,7 @@
 namespace Mend\Metrics\Report\Partition;
 
 use Mend\Metrics\Duplication\CodeBlockTable;
+use Mend\Metrics\Duplication\CodeBlock;
 
 class CodeBlockPartition extends CodePartition {
 	/**
@@ -37,5 +38,28 @@ class CodeBlockPartition extends CodePartition {
 	 */
 	public function getBlocks() {
 		return $this->blocks;
+	}
+
+	/**
+	 * @see CodePartition::toArray()
+	 */
+	public function toArray() {
+		$result = parent::toArray();
+		$blocks = array();
+
+		foreach ( $this->blocks as $hash => $bucket ) {
+			$blocks[] = array_map(
+				function ( CodeBlock $block ) {
+					return array(
+						'block' => $block->getSourceLines(),
+						'location' => $block->getLocation()->__toString()
+					);
+				},
+				$bucket
+			);
+		}
+
+		$result[ 'blocks' ] = $blocks;
+		return $result;
 	}
 }

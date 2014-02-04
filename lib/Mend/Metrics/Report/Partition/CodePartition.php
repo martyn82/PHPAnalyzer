@@ -49,4 +49,16 @@ class CodePartition {
 	public function getRelative() {
 		return $this->relative;
 	}
+
+	/**
+	 * Converts this object to its array representation.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			'absolute' => $this->absolute,
+			'relative' => $this->relative
+		);
+	}
 }

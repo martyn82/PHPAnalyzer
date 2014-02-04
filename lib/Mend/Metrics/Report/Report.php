@@ -52,4 +52,11 @@ abstract class Report {
 	protected function getPartitions() {
 		return $this->partitions;
 	}
+
+	/**
+	 * Converts this object to an array representation.
+	 *
+	 * @return array
+	 */
+	abstract public function toArray();
 }
