@@ -1,11 +1,7 @@
 PHPAnalyzer
 ===========
 
-Continuous integration
-----------------------
-
-You can follow the build processes here:
-https://travis-ci.org/martyn82/PHPAnalyzer
+[![Build Status](https://travis-ci.org/martyn82/PHPAnalyzer.png?branch=master)](https://travis-ci.org/martyn82/PHPAnalyzer)
 
 Dependencies
 ------------
