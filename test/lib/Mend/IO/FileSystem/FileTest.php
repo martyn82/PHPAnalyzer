@@ -10,7 +10,7 @@ class FileTest extends \TestCase {
 	}
 
 	/**
-	 * @expectedException InvalidArgumentException
+	 * @expectedException \InvalidArgumentException
 	 */
 	public function testNewFileInvalid() {
 		$file = new File( '' );
