@@ -63,6 +63,8 @@ INI;
 
 		$iniReader = new IniConfigReader( $stream );
 		$iniReader->getValue( 'non-existent' );
+
+		self::fail( "Unexpected: Test should not reach here." );
 	}
 
 	public function iniStringProvider() {
@@ -72,5 +74,36 @@ INI;
 			array( self::$INI_SECTIONS, 'production:project.key', 'ProjectKeyProd' ),
 			array( self::$INI_SECTIONS, 'development:project.key', 'ProjectKeyDev' )
 		);
+	}
+
+	public function testReload() {
+		$stream = $this->getMock(
+			'\Mend\IO\Stream\FileStreamReader',
+			array( 'read', 'open', 'close', 'isOpen' ),
+			array(),
+			'',
+			false
+		);
+
+		$contents = self::$INI_CONTENTS; // first run
+
+		$stream->expects( self::any() )
+			->method( 'isOpen' )
+			->will( self::returnValue( true ) );
+
+		$stream->expects( self::exactly( 2 ) )
+			->method( 'read' )
+			->will( self::returnCallback( function () use ( & $contents ) { return $contents; } ) );
+
+		$iniReader = new IniConfigReader( $stream );
+		$value = $iniReader->getValue( 'project.key' );
+		self::assertEquals( 'ProjectKey', $value );
+
+		// update for second run
+		$contents = self::$INI_SECTIONS;
+
+		$iniReader->reload();
+		$value = $iniReader->getValue( 'production:project.key' );
+		self::assertEquals( 'ProjectKeyProd', $value );
 	}
 }

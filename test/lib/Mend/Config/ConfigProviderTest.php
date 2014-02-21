@@ -67,4 +67,43 @@ class ConfigProviderTest extends \TestCase {
 			array( self::$SETTINGS_1, 'development:arrayval', array( 'abc', '2', 'efg', 'hij' ), 'array' )
 		);
 	}
+
+	/**
+	 * @dataProvider booleanSettingsProvider
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 * @param boolean $expected
+	 */
+	public function testGetBoolean( $key, $value, $expected ) {
+		$reader = new ArrayConfigReader( array( $key => $value ) );
+		$provider = new ConfigProvider( $reader );
+
+		self::assertEquals( $expected, $provider->getBoolean( $key ) );
+	}
+
+	public function booleanSettingsProvider() {
+		return array(
+			array( 'string1', 'false', false ),
+			array( 'string2', 'true', true ),
+			array( 'string3', 'foo', true ),
+			array( 'integer1', 1, true ),
+			array( 'integer2', 0, false ),
+			array( 'integer3', 312, true ),
+			array( 'integer4', -12, true ),
+			array( 'boolean1', true, true ),
+			array( 'boolean2', false, false ),
+			array( 'float1', 0.113, true ),
+			array( 'float2', 0.0, false ),
+			array( 'float3', -0.00001, true )
+		);
+	}
+
+	public function testGetDefault() {
+		$reader = $this->getMock( '\Mend\Config\ArrayConfigReader', array(), array( array() ) );
+		$provider = new ConfigProvider( $reader );
+		$default = 'defaultString';
+
+		self::assertEquals( $default, $provider->getValue( 'foo', $default ) );
+	}
 }
