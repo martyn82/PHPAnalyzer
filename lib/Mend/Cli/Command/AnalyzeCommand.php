@@ -23,11 +23,9 @@ use Mend\Metrics\Report\Formatter\JsonReportFormatter;
 use Mend\Metrics\Report\Formatter\TextReportFormatter;
 
 use Mend\Metrics\Report\Writer\ReportWriter;
+use Mend\Logging\Logger;
 
 class AnalyzeCommand extends Command {
-	const OUTPUT_FORMAT_TEXT = 'text';
-	const OUTPUT_FORMAT_JSON = 'json';
-
 	/**
 	 * @var AnalyzeOptions
 	 */
@@ -37,18 +35,6 @@ class AnalyzeCommand extends Command {
 	 * @var callable
 	 */
 	private $mapper;
-
-	/**
-	 * Retrieves an array of all supported output formats.
-	 *
-	 * @return array
-	 */
-	public static function getOutputFormats() {
-		return array(
-			self::OUTPUT_FORMAT_TEXT,
-			self::OUTPUT_FORMAT_JSON
-		);
-	}
 
 	/**
 	 * Constructs the analyze command.
@@ -82,21 +68,19 @@ class AnalyzeCommand extends Command {
 	 * @throws \UnexpectedValueException
 	 */
 	private function createConfigProvider() {
-		if ( $this->options->getConfigFile() != null ) {
-			$file = new File( $this->options->getConfigFile() );
-
-			if ( $file->getExtension() != 'ini' ) {
-				throw new \UnexpectedValueException( "Configuration file must be of type INI." );
-			}
-
-			$reader = new FileStreamReader( $file );
-			$configReader = new IniConfigReader( $reader );
-			return new ConfigProvider( $configReader );
+		if ( $this->options->getConfigFile() == null ) {
+			throw new \UnexpectedValueException( "No path to configuration file set." );
 		}
 
-		$options = $this->options->toArray();
+		$file = new File( $this->options->getConfigFile() );
 
-		$configReader = new ArrayConfigReader( $options );
+		if ( $file->getExtension() != 'ini' ) {
+			throw new \UnexpectedValueException( "Configuration file must be of type INI." );
+		}
+
+		$reader = new FileStreamReader( $file );
+		$configReader = new IniConfigReader( $reader );
+
 		return new ConfigProvider( $configReader );
 	}
 
@@ -110,30 +94,10 @@ class AnalyzeCommand extends Command {
 	 * @throws \UnexpectedValueException
 	 */
 	private function validateOptions( ConfigProvider $config ) {
-		$reportType = $config->getString( 'report:type' );
-		$validOutput = $this->validateOutputFormat( $reportType );
-
 		$memoryLimit = $config->getString( 'system:memory' );
 		$validMemLimit = $this->validateMemoryLimit( $memoryLimit );
 
-		return $validOutput && $validMemLimit;
-	}
-
-	/**
-	 * Validates the report type.
-	 *
-	 * @param string $reportType
-	 *
-	 * @return boolean
-	 *
-	 * @throws \UnexpectedValueException
-	 */
-	private function validateOutputFormat( $reportType ) {
-		if ( !in_array( $reportType, self::getOutputFormats() ) ) {
-			throw new \UnexpectedValueException( "Output format '{$reportType}' is invalid." );
-		}
-
-		return true;
+		return $validMemLimit;
 	}
 
 	/**
@@ -161,6 +125,7 @@ class AnalyzeCommand extends Command {
 	private function setMemoryLimit( $memoryLimit ) {
 		if ( $this->validateMemoryLimit( $memoryLimit ) ) {
 			ini_set( 'memory_limit', $memoryLimit );
+			Logger::info( "Set memory limit to {$memoryLimit}." );
 		}
 	}
 
@@ -173,21 +138,14 @@ class AnalyzeCommand extends Command {
 	 */
 	private function createFormattedReport( ConfigProvider $config ) {
 		$report = $this->createReport( $config );
-		$format = $config->getString( 'report:type' );
 
-		switch ( $format ) {
-			case self::OUTPUT_FORMAT_TEXT:
-				$template = $this->getTemplate( $config );
-				$mapped = call_user_func( $this->mapper, $report );
-				$formatter = new TextReportFormatter( $template, $mapped );
-				break;
-
-			case self::OUTPUT_FORMAT_JSON:
-				$formatter = new JsonReportFormatter();
-				break;
-
-			default:
-				throw new \UnexpectedValueException( "Unrecognized output format: '{$format}'." );
+		if ( $this->options->getSummarize() ) {
+			$template = $this->getTemplate( $config );
+			$mapped = call_user_func( $this->mapper, $report );
+			$formatter = new TextReportFormatter( $template, $mapped );
+		}
+		else {
+			$formatter = new JsonReportFormatter();
 		}
 
 		$writer = new ReportWriter( $report, $formatter );
@@ -243,17 +201,15 @@ class AnalyzeCommand extends Command {
 	/**
 	 * Retrieves the template.
 	 *
-	 * @param ConfigProvider $config
-	 *
 	 * @return string
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	private function getTemplate( ConfigProvider $config ) {
-		$templatePath = $config->getString( 'report:template' );
+	private function getTemplate() {
+		$templatePath = $this->options->getTemplatePath();
 
 		if ( $templatePath == null ) {
-			throw new \InvalidArgumentException( "No template configured." );
+			throw new \InvalidArgumentException( "No summary template configured." );
 		}
 
 		$templateReader = new FileStreamReader( new File( $templatePath ) );

@@ -23,23 +23,17 @@ class Analyzer {
 	private $mapper;
 
 	/**
-	 * Retrieves a string that can be used to read CLI script options.
+	 * Retrieves a the supported options.
 	 *
-	 * @return string
+	 * @return array
 	 */
 	public static function getOptions() {
-		$opts = array(
-			Options::OPT_FILE_EXTENSIONS . ':',
+		return array(
 			Options::OPT_CONFIGURATION_FILE . ':',
-			Options::OPT_MEMORY_LIMIT . ':',
-			Options::OPT_OUTPUT_FORMAT . ':',
-			Options::OPT_ANALYSIS_PATH . ':',
-			Options::OPT_TEMPLATE_PATH . ':',
+			Options::OPT_SUMMARIZE,
 			Options::OPT_VERBOSITY_FLAG,
 			Options::OPT_HELP
 		);
-
-		return implode( '', $opts );
 	}
 
 	/**
@@ -58,6 +52,8 @@ class Analyzer {
 		$this->options = $options;
 		$this->mapper = $variableMapper;
 		$this->settings = new AnalyzeOptions();
+
+		$this->setOptions();
 	}
 
 	/**
@@ -70,13 +66,11 @@ class Analyzer {
 	}
 
 	/**
-	 * Runs the CLI analyzer.
-	 *
-	 * @return CommandResult
+	 * Initializes the analyzer by setting options.
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function run() {
+	private function setOptions() {
 		foreach ( $this->options as $opt => $value ) {
 			switch ( $opt ) {
 				case Options::OPT_HELP:
@@ -90,24 +84,8 @@ class Analyzer {
 					$this->settings->setConfigFile( $value );
 					break;
 
-				case Options::OPT_MEMORY_LIMIT:
-					$this->settings->setMemoryLimit( $value );
-					break;
-
-				case Options::OPT_OUTPUT_FORMAT:
-					$this->settings->setOutputFormat( $value );
-					break;
-
-				case Options::OPT_FILE_EXTENSIONS:
-					$this->settings->setFileExtensions( $value );
-					break;
-
-				case Options::OPT_ANALYSIS_PATH:
-					$this->settings->setAnalysisPath( $value );
-					break;
-
-				case Options::OPT_TEMPLATE_PATH:
-					$this->settings->setTemplate( $value );
+				case Options::OPT_SUMMARIZE:
+					$this->settings->setSummarize( true );
 					break;
 
 				case Options::OPT_VERBOSITY_FLAG:
@@ -122,7 +100,15 @@ class Analyzer {
 					throw new \InvalidArgumentException( "Unrecognized option: '{$opt}'." );
 			}
 		}
+	}
 
+	/**
+	 * Runs the CLI analyzer.
+	 *
+	 * @return CommandResult
+	 */
+	public function run() {
+		$this->setOptions();
 		$analyze = new AnalyzeCommand( $this->settings, $this->mapper );
 		return $analyze->run();
 	}

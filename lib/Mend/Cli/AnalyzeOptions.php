@@ -2,23 +2,10 @@
 namespace Mend\Cli;
 
 class AnalyzeOptions {
-	const DEFAULT_CONFIG_FILE = null;
-	const DEFAULT_OUTPUT_FORMAT = 'text';
-	const DEFAULT_VERBOSE = false;
-	const DEFAULT_TEMPLATE = null;
-	const DEFAULT_EXTENSIONS = 'php';
-	const DEFAULT_MEMORY_LIMIT = '1G';
-	const DEFAULT_ANALYSIS_PATH = null;
-
 	/**
 	 * @var string
 	 */
 	private $configFile;
-
-	/**
-	 * @var string
-	 */
-	private $outputFormat;
 
 	/**
 	 * @var boolean
@@ -26,36 +13,20 @@ class AnalyzeOptions {
 	private $verbose;
 
 	/**
-	 * @var string
+	 * @var boolean
 	 */
-	private $template;
+	private $summarize;
 
 	/**
 	 * @var string
 	 */
-	private $extensions;
-
-	/**
-	 * @var string
-	 */
-	private $memoryLimit;
-
-	/**
-	 * @var string
-	 */
-	private $analysisPath;
+	private $templatePath;
 
 	/**
 	 * Constructs a new options object.
 	 */
 	public function __construct() {
-		$this->configFile = self::DEFAULT_CONFIG_FILE;
-		$this->outputFormat = self::DEFAULT_OUTPUT_FORMAT;
-		$this->verbose = self::DEFAULT_VERBOSE;
-		$this->template = self::DEFAULT_TEMPLATE;
-		$this->extensions = self::DEFAULT_EXTENSIONS;
-		$this->memoryLimit = self::DEFAULT_MEMORY_LIMIT;
-		$this->analysisPath = self::DEFAULT_ANALYSIS_PATH;
+		$this->verbose = false;
 	}
 
 	/**
@@ -77,48 +48,21 @@ class AnalyzeOptions {
 	}
 
 	/**
-	 * Sets the output format.
+	 * Sets the summarize flag value.
 	 *
-	 * @param string $value
+	 * @param boolean $value
 	 */
-	public function setOutputFormat( $value ) {
-		$this->outputFormat = (string) $value;
+	public function setSummarize( $value ) {
+		$this->summarize = (bool) $value;
 	}
 
 	/**
-	 * Sets the template.
+	 * Sets the template path.
 	 *
 	 * @param string $value
 	 */
-	public function setTemplate( $value ) {
-		$this->template = (string) $value;
-	}
-
-	/**
-	 * Sets the file extensions.
-	 *
-	 * @param string $value
-	 */
-	public function setFileExtensions( $value ) {
-		$this->extensions = (string) $value;
-	}
-
-	/**
-	 * Sets the memory limit.
-	 *
-	 * @param string $value
-	 */
-	public function setMemoryLimit( $value ) {
-		$this->memoryLimit = (string) $value;
-	}
-
-	/**
-	 * Sets the analysis path.
-	 *
-	 * @param string $value
-	 */
-	public function setAnalysisPath( $value ) {
-		$this->analysisPath = (string) $value;
+	public function setTemplatePath( $value ) {
+		$this->templatePath = $value;
 	}
 
 	/**
@@ -140,12 +84,12 @@ class AnalyzeOptions {
 	}
 
 	/**
-	 * Retrieves the output format.
+	 * Retrieves the summarize flag.
 	 *
-	 * @return string
+	 * @return boolean
 	 */
-	public function getOutputFormat() {
-		return $this->outputFormat;
+	public function getSummarize() {
+		return $this->summarize;
 	}
 
 	/**
@@ -153,57 +97,7 @@ class AnalyzeOptions {
 	 *
 	 * @return string
 	 */
-	public function getTemplate() {
-		return $this->template;
-	}
-
-	/**
-	 * Retrieves the file extensions.
-	 *
-	 * @return string
-	 */
-	public function getFileExtensions() {
-		return $this->extensions;
-	}
-
-	/**
-	 * Gets memory limit.
-	 *
-	 * @return string
-	 */
-	public function getMemoryLimit() {
-		return $this->memoryLimit;
-	}
-
-	/**
-	 * Gets analysis path.
-	 *
-	 * @return string
-	 */
-	public function getAnalysisPath() {
-		return $this->analysisPath;
-	}
-
-	/**
-	 * Converts the options to an array.
-	 *
-	 * @return array
-	 */
-	public function toArray() {
-		return array(
-			'report' => array(
-				'type' => $this->outputFormat,
-				'template' => $this->template
-			),
-			'system' => array(
-				'memory' => $this->memoryLimit
-			),
-			'analysis' => array(
-				'extensions' => $this->extensions
-			),
-			'project' => array(
-				'path' => $this->analysisPath
-			)
-		);
+	public function getTemplatePath() {
+		return $this->templatePath;
 	}
 }

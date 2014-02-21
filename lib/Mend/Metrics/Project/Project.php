@@ -60,6 +60,15 @@ class Project {
 	}
 
 	/**
+	 * Retrieves the Project's base folder.
+	 *
+	 * @return string
+	 */
+	public function getBaseFolder() {
+		return $this->root->getBaseName();
+	}
+
+	/**
 	 * Converts this object to its array representation.
 	 *
 	 * @return array

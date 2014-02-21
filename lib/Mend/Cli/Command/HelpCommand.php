@@ -4,6 +4,7 @@ namespace Mend\Cli\Command;
 use Mend\Cli\Command;
 use Mend\Cli\CommandResult;
 use Mend\Cli\Status;
+use Mend\Cli\Options;
 
 class HelpCommand extends Command {
 	/**
@@ -13,16 +14,21 @@ class HelpCommand extends Command {
 PHP Analyzer Tool
 ----------------------
 
-usage: %s [options]
+usage: %scriptname% [options]
 
 Options:
-	-h			Displays this help message.
-	-m			Specify a memory limit (e.g., 256M or 1G) [default: %s].
-	-o			Specify output format (text|json) [default: text].
-	-e			Specify a comma-separated list of file extensions to analyze.
-	-v			Turns on verbosity mode. Prints verbose message to stdout.
+	-%help%			Displays this help message.
+	-%memorylimit%			Specify a memory limit (e.g., 256M or 1G) [default: %defaultMemoryLimit%].
+	-%extensions%			Specify a comma-separated list of file extensions to analyze.
+	-%summary%			Turns on summary. This will output a summary report to the console.
+	-%verbose%			Turns on verbosity mode. Prints verbose message to the console.
 
 HELP;
+
+	/**
+	 * @var array
+	 */
+	private $options;
 
 	/**
 	 * @var string
@@ -35,6 +41,8 @@ HELP;
 	private $defaultMemoryLimit;
 
 	/**
+	 * Constructs a new Help command.
+	 *
 	 * @param string $currentScriptName
 	 * @param string $defaultMemoryLimit
 	 */
@@ -47,8 +55,22 @@ HELP;
 	 * @see Command::run()
 	 */
 	public function run() {
+		$vars = array(
+			'%scriptname%' => $this->currentScriptName,
+			'%help%' => Options::OPT_HELP,
+			'%memorylimit%' => Options::OPT_MEMORY_LIMIT,
+			'%extensions%' => Options::OPT_FILE_EXTENSIONS,
+			'%verbose%' => Options::OPT_VERBOSITY_FLAG,
+			'%summary%' => Options::OPT_SUMMARY,
+			'%defaultMemoryLimit%' => $this->defaultMemoryLimit
+		);
+
 		return new CommandResult(
-			sprintf( $this->message, $this->currentScriptName, $this->defaultMemoryLimit ),
+			str_replace(
+				array_keys( $vars ),
+				array_values( $vars ),
+				$this->message
+			),
 			Status::STATUS_OK
 		);
 	}
