@@ -1,7 +1,7 @@
 Project Metrics
 ----------------------------------------------
 Name           : %project.name%
-Location       : %project.root.name%
+Location       : %project.root.path%
 
 Entities
 ----------------------------------------------

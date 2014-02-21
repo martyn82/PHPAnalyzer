@@ -27,7 +27,8 @@ $mapVariables = function ( ProjectReport $report ) {
 	return array(
 		// project values
 		"project.name" => $project->getName(),
-		"project.root.name" => $project->getRoot()->getName(),
+		"project.root.name" => $project->getBaseFolder(),
+		"project.root.path" => $project->getRoot()->getName(),
 
 		// entity report
 		"entities.files.count" => count( $entities->files()->getFiles() ),
