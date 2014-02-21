@@ -41,7 +41,7 @@ path = ./library
 template = mytemplate.txt
 type = text
 
-[analysis]
+[system]
 memory = 200M
 ```
 
