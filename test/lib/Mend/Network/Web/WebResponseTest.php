@@ -27,4 +27,24 @@ class WebResponseTest extends \TestCase {
 		self::assertEquals( HttpStatus::STATUS_INTERNAL_SERVER_ERROR, $response->getStatusCode() );
 		self::assertEquals( 'Oops', $response->getStatusDescription() );
 	}
+
+	public function testAccessors() {
+		$urlString = 'http://www.example.org/foo/bar.html';
+		$url = Url::createFromString( $urlString );
+		$response = new WebResponse( $url );
+
+		$body = 'body';
+		$response->setBody( $body );
+
+		$status = 200;
+		$response->setStatusCode( $status );
+
+		$statusText = 'status';
+		$response->setStatusDescription( $statusText );
+
+		self::assertEquals( $url, $response->getUrl() );
+		self::assertEquals( $body, $response->getBody() );
+		self::assertEquals( $status, $response->getStatusCode() );
+		self::assertEquals( $statusText, $response->getStatusDescription() );
+	}
 }

@@ -3,7 +3,20 @@ namespace Mend\Network\Web;
 
 use Mend\Collections\Map;
 
+global $_BACKUP_SERVER;
+$_BACKUP_SERVER = $_SERVER;
+
 class WebRequestTest extends \TestCase {
+	public function setUp() {
+		global $_BACKUP_SERVER;
+		$_SERVER = $_BACKUP_SERVER;
+	}
+
+	public function tearDown() {
+		global $_BACKUP_SERVER;
+		$_SERVER = $_BACKUP_SERVER;
+	}
+
 	public function testCreateFromGlobals() {
 		$_SERVER[ 'HTTPS' ] = true;
 		$_SERVER[ 'HTTP_HOST' ] = 'www.example.org';
@@ -23,6 +36,23 @@ class WebRequestTest extends \TestCase {
 		self::assertEquals( 'bar', $request->getParameters()->get( 'baz' ) );
 
 		self::assertEquals( 'GET', $request->getMethod() );
+	}
+
+	/**
+	 * @expectedException \UnexpectedValueException
+	 */
+	public function testCreateFromGlobalsInsufficient() {
+		WebRequest::createFromGlobals();
+		self::fail( "Test should have thrown an exception." );
+	}
+
+	/**
+	 * @expectedException \UnexpectedValueException
+	 */
+	public function testCreateFromGlobalsWithoutData() {
+		unset( $_SERVER ); // warning: make sure it is restored in tearDown() and setUp()
+		WebRequest::createFromGlobals();
+		self::fail( "Test should have thrown an exception." );
 	}
 
 	public function testConstruct() {
