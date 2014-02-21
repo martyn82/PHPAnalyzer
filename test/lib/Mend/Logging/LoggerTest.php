@@ -63,4 +63,34 @@ class LoggerTest extends \TestCase {
 
 		self::fail( 'The test should not get here.' );
 	}
+
+	/**
+	 * @dataProvider loglevelProvider
+	 *
+	 * @param integer $level
+	 * @param string $functionName
+	 */
+	public function testCallLogOnAllLevels( $level, $functionName ) {
+		$handler = $this->getMock( '\Mend\Logging\LogHandler' );
+		$handler->expects( self::once() )->method( 'log' );
+
+		Logger::registerHandler( $handler, array( $level ) );
+		Logger::$functionName( 'testMessage' );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function loglevelProvider() {
+		return array(
+			array( LogLevel::LEVEL_DEBUG, 'debug' ),
+			array( LogLevel::LEVEL_INFO, 'info' ),
+			array( LogLevel::LEVEL_NOTICE, 'notice' ),
+			array( LogLevel::LEVEL_WARNING, 'warning' ),
+			array( LogLevel::LEVEL_ERROR, 'error' ),
+			array( LogLevel::LEVEL_CRITICAL, 'critical' ),
+			array( LogLevel::LEVEL_ALERT, 'alert' ),
+			array( LogLevel::LEVEL_EMERGENCY, 'emergency' )
+		);
+	}
 }

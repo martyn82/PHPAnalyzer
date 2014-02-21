@@ -124,7 +124,7 @@ class Logger {
 	 * @param string $message
 	 */
 	public static function notice( $message ) {
-		self::log( $mssage, LogLevel::LEVEL_NOTICE );
+		self::log( $message, LogLevel::LEVEL_NOTICE );
 	}
 
 	/**
