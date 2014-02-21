@@ -32,6 +32,15 @@ class Directory implements FileSystem {
 	}
 
 	/**
+	 * Retrieves the basename of the directory.
+	 *
+	 * @return string
+	 */
+	public function getBaseName() {
+		return basename( $this->location );
+	}
+
+	/**
 	 * @see FileSystem::__toString()
 	 */
 	public function __toString() {

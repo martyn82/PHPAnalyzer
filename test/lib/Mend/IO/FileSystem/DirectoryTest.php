@@ -21,6 +21,12 @@ class DirectoryTest extends \TestCase {
 		self::assertEquals( $location, $directory->getName() );
 	}
 
+	public function testBasename() {
+		$location = '/tmp/foo/bar';
+		$directory = new Directory( $location );
+		self::assertEquals( 'bar', $directory->getBaseName() );
+	}
+
 	public function testDirectoryToString() {
 		$location = '/tmp';
 		$directory = new Directory( $location );
