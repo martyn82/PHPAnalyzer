@@ -1,45 +1,11 @@
 <?php
 namespace Mend\IO\Stream;
 
+require_once "FileStreamTest.php";
+
 use Mend\IO\FileSystem\File;
 
-// mock functions {
-	function fread() {}
-	function fopen() {
-		return FileStreamReaderTest::fopen();
-	}
-	function fclose() {}
-	function is_resource() {
-		return FileStreamReaderTest::isResource();
-	}
-	function is_readable() {
-		return FileStreamReaderTest::isReadable();
-	}
-// }
-
-class FileStreamReaderTest extends \TestCase {
-	private static $fopenResult;
-	private static $isResourceResult;
-	private static $isReadableResult;
-
-	public static function fopen() {
-		return self::$fopenResult;
-	}
-
-	public static function isResource() {
-		return self::$isResourceResult;
-	}
-
-	public static function isReadable() {
-		return self::$isReadableResult;
-	}
-
-	public function setUp() {
-		self::$fopenResult = null;
-		self::$isResourceResult = null;
-		self::$isReadableResult = null;
-	}
-
+class FileStreamReaderTest extends FileStreamTest {
 	/**
 	 * Retrieves a mocked reader.
 	 *
