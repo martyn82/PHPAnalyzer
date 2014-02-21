@@ -19,4 +19,17 @@ class ComplexityReportTest extends \TestCase {
 
 		self::assertEquals( $low, $report->low() );
 	}
+
+	public function testArrayConversion() {
+		$report = new ComplexityReport();
+
+		$expected = array(
+			ComplexityRisk::RISK_LOW => $report->low()->toArray(),
+			ComplexityRisk::RISK_MODERATE => $report->moderate()->toArray(),
+			ComplexityRisk::RISK_HIGH => $report->high()->toArray(),
+			ComplexityRisk::RISK_VERY_HIGH => $report->veryHigh()->toArray()
+		);
+
+		self::assertEquals( $expected, $report->toArray() );
+	}
 }

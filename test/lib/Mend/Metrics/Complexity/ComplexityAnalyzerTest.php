@@ -75,6 +75,78 @@ function fooMethod() {
 }
 PHP;
 
+	private static $CODE_FRAGMENT_4 = <<<PHP
+<?php
+
+function fooMethod() {
+	\$a = true || false && true && true && !false;
+	\$b = false || true || true || !false || !true;
+	\$c = true AND true AND TRUE OR false OR FALSE;
+	\$d = \$a || \$b || \$c;
+	while ( \$d ) {
+		while ( \$a ) {
+			foreach ( \$v as \$d ) {
+			}
+		}
+
+		if ( \$b && \$c || \$d || \$a ) {
+		}
+	}
+}
+PHP;
+
+	private static $CODE_FRAGMENT_5 = <<<PHP
+<?php
+
+// let's repeat for simplicity
+function fooMethod() {
+	\$a = true || false && true && true && !false;
+	\$b = false || true || true || !false || !true;
+	\$c = true AND true AND TRUE OR false OR FALSE;
+	\$d = \$a || \$b || \$c;
+
+	while ( \$d ) {
+		while ( \$a ) {
+			foreach ( \$v as \$d ) {
+			}
+		}
+
+		if ( \$b && \$c || \$d || \$a ) {
+		}
+	}
+
+	\$a = true || false && true && true && !false;
+	\$b = false || true || true || !false || !true;
+	\$c = true AND true AND TRUE OR false OR FALSE;
+	\$d = \$a || \$b || \$c;
+
+	while ( \$d ) {
+		while ( \$a ) {
+			foreach ( \$v as \$d ) {
+			}
+		}
+
+		if ( \$b && \$c || \$d || \$a ) {
+		}
+	}
+
+	\$a = true || false && true && true && !false;
+	\$b = false || true || true || !false || !true;
+	\$c = true AND true AND TRUE OR false OR FALSE;
+	\$d = \$a || \$b || \$c;
+
+	while ( \$d ) {
+		while ( \$a ) {
+			foreach ( \$v as \$d ) {
+			}
+		}
+
+		if ( \$b && \$c || \$d || \$a ) {
+		}
+	}
+}
+PHP;
+
 	/**
 	 * @dataProvider methodSourceProvider
 	 *
@@ -112,7 +184,9 @@ PHP;
 		return array(
 			array( self::$CODE_FRAGMENT_1,  1, ComplexityRisk::RISK_LOW ),
 			array( self::$CODE_FRAGMENT_2, 11, ComplexityRisk::RISK_MODERATE ),
-			array( self::$CODE_FRAGMENT_3,  6, ComplexityRisk::RISK_LOW )
+			array( self::$CODE_FRAGMENT_3,  6, ComplexityRisk::RISK_LOW ),
+			array( self::$CODE_FRAGMENT_4, 22, ComplexityRisk::RISK_HIGH ),
+			array( self::$CODE_FRAGMENT_5, 64, ComplexityRisk::RISK_VERY_HIGH )
 		);
 	}
 }
