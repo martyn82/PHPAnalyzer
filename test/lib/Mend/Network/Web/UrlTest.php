@@ -1,7 +1,20 @@
 <?php
 namespace Mend\Network\Web;
 
+global $_BACKUP_SERVER;
+$_BACKUP_SERVER = $_SERVER;
+
 class UrlTest extends \TestCase {
+	public function setUp() {
+		global $_BACKUP_SERVER;
+		$_SERVER = $_BACKUP_SERVER;
+	}
+
+	public function tearDown() {
+		global $_BACKUP_SERVER;
+		$_SERVER = $_BACKUP_SERVER;
+	}
+
 	/**
 	 * @dataProvider urlDataProvider
 	 */
@@ -64,5 +77,30 @@ class UrlTest extends \TestCase {
 				)
 			)
 		);
+	}
+
+	/**
+	 * @expectedException \UnexpectedValueException
+	 */
+	public function testCreateFromGlobalsWithoutGlobals() {
+		unset( $_SERVER ); // warning: make sure it is restored in tearDown() and setUp()
+		Url::createFromGlobals();
+		self::fail( "Test should have failed without \$_SERVER global." );
+	}
+
+	/**
+	 * @expectedException \UnexpectedValueException
+	 */
+	public function testCreateFromGlobalsInsufficient() {
+		Url::createFromGlobals();
+		self::fail( "Test should have failed with thin \$_SERVER global." );
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testCreateFromStringInvalidInput() {
+		Url::createFromString( null );
+		self::fail( "Test should have failed without proper input string." );
 	}
 }
