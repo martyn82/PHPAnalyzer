@@ -30,6 +30,9 @@ $mapVariables = function ( ProjectReport $report ) {
 		"project.root.name" => $project->getBaseFolder(),
 		"project.root.path" => $project->getRoot()->getName(),
 
+		// project report
+		"report.datetime" => $report->getDateTime()->format( 'r' ),
+
 		// entity report
 		"entities.files.count" => count( $entities->files()->getFiles() ),
 		"entities.packages.count" => count( $entities->packages()->getPackages() ),

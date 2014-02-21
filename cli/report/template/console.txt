@@ -2,6 +2,7 @@ Project Metrics
 ----------------------------------------------
 Name           : %project.name%
 Location       : %project.root.path%
+Date/Time      : %report.datetime%
 
 Entities
 ----------------------------------------------
