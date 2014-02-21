@@ -46,4 +46,13 @@ class MapTest extends \TestCase {
 		$map->set( 'key', 12 );
 		self::assertTrue( $map->hasKey( 'key' ) );
 	}
+
+	public function testGetDefault() {
+		$map = new Map();
+		$default = 'defaultString';
+		self::assertEquals( $default, $map->get( 'foo', $default ) );
+
+		$map->set( 'foo', 'bar' );
+		self::assertEquals( 'bar', $map->get( 'foo', $default ) );
+	}
 }

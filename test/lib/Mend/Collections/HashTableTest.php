@@ -10,6 +10,15 @@ class HashTableTest extends \TestCase {
 		self::assertEquals( 2, count( $hashTable[ 0 ] ) );
 		self::assertEquals( 'string1', $hashTable[ 0 ][ 0 ] );
 		self::assertEquals( 'string2', $hashTable[ 0 ][ 1 ] );
+
+		$hashTable[ 1 ] = array( 'string1', 'string2' );
+		self::assertEquals( 2, count( $hashTable[ 1 ] ) );
+		self::assertEquals( 'string1', $hashTable[ 1 ][ 0 ] );
+		self::assertEquals( 'string2', $hashTable[ 1 ][ 1 ] );
+
+		$hashTable[ 2 ] = 'string1';
+		self::assertEquals( 1, count( $hashTable [ 2 ] ) );
+		self::assertEquals( 'string1', $hashTable[ 2 ][ 0 ] );
 	}
 
 	public function testRemoveFromBucket() {
