@@ -12,5 +12,6 @@ class ProjectTest extends \TestCase {
 		self::assertEquals( $name, $project->getName() );
 		self::assertEquals( $key, $project->getKey() );
 		self::assertEquals( $root, $project->getRoot() );
+		self::assertEquals( $root->getBaseName(), $project->getBaseFolder() );
 	}
 }
