@@ -13,7 +13,7 @@ use Mend\Source\Code\ModelTraverser;
 use Mend\Source\Code\ModelVisitor;
 
 class EntityExtractorTest extends \TestCase {
-	private static $CODE_FRAGMENT = <<<PHP
+	private static $CODE_FRAGMENT_1 = <<<PHP
 <?php
 namespace Vendor\Package {
 
@@ -38,6 +38,13 @@ namespace Vendor\Package\Bar {
 }
 PHP;
 
+	private static $CODE_FRAGMENT_2 = <<<PHP
+<?php
+class Foo {
+	public function foo() {}
+}
+PHP;
+
 	public function testEntityExtracting() {
 		$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array( '/tmp/foo' ) );
 
@@ -46,9 +53,10 @@ PHP;
 			array( 'getFileSource' ),
 			array( $file, new PHPParserAdapter(), new PHPNodeMapper() )
 		);
+
 		$extractor->expects( self::any() )
 			->method( 'getFileSource' )
-			->will( self::returnValue( self::$CODE_FRAGMENT ) );
+			->will( self::returnValue( self::$CODE_FRAGMENT_1 ) );
 
 		$classes = $extractor->getClasses();
 		$packages = $extractor->getPackages();
@@ -57,5 +65,62 @@ PHP;
 		self::assertEquals( 2, count( $classes ) );
 		self::assertEquals( 2, count( $packages ) );
 		self::assertEquals( 4, count( $methods ) );
+
+		$package = reset( $packages );
+		$classes = $extractor->getClasses( $package );
+		self::assertEquals( 1, count( $classes ) );
+
+		$class = reset( $classes );
+		$methods = $extractor->getMethods( $class );
+		self::assertEquals( 3, count( $methods ) );
+	}
+
+	public function testEntityExtractingNoPackages() {
+		$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array( '/tmp/foo' ) );
+
+		$extractor = $this->getMock(
+			'\Mend\Source\Extract\EntityExtractor',
+			array( 'getFileSource' ),
+			array( $file, new PHPParserAdapter(), new PHPNodeMapper() )
+		);
+
+		$extractor->expects( self::any() )
+			->method( 'getFileSource' )
+			->will( self::returnValue( self::$CODE_FRAGMENT_2 ) );
+
+		$packages = $extractor->getPackages();
+		self::assertEquals( 1, count( $packages ) );
+
+		$package = reset( $packages );
+		$classes = $extractor->getClasses( $package );
+		self::assertEquals( 1, count( $classes ) );
+
+		$class = reset( $classes );
+		$methods = $extractor->getMethods( $class );
+		self::assertEquals( 1, count( $methods ) );
+	}
+
+	public function testGetFileSource() {
+		$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array(), '', false );
+
+		$extractor = $this->getMock(
+			'\Mend\Source\Extract\EntityExtractor',
+			array( 'getSourceExtractor' ),
+			array( $file, new PHPParserAdapter(), new PHPNodeMapper() )
+		);
+
+		$sourceExtractor = $this->getMock(
+			'\Mend\Source\Extract\SourceFileExtractor',
+			array(),
+			array( $file ),
+			'',
+			false
+		);
+
+		$extractor->expects( self::any() )
+			->method( 'getSourceExtractor' )
+			->will( self::returnValue( $sourceExtractor ) );
+
+		self::assertNotNull( $extractor->getAST() );
 	}
 }

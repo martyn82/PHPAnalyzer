@@ -227,7 +227,7 @@ class EntityExtractor {
 	 * @return ClassModelArray
 	 */
 	public function getClasses( Package $package = null ) {
-		if ( !is_null( $package ) ) {
+		if ( !is_null( $package ) && !$package->isDefault() ) {
 			$ast = array( $package->getNode()->getInnerNode() );
 		}
 		else {
