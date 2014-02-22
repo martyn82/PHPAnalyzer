@@ -7,13 +7,30 @@ class FilePartitionTest extends \TestCase {
 	public function testAccessors() {
 		$absolute = mt_rand( 0, PHP_INT_MAX );
 		$relative = (float) mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
-		$files = $this->getMock( '\Mend\IO\FileSystem\FileArray' );
+
+		$files = new FileArray();
+		$files[] = $this->getMock( '\Mend\IO\FileSystem\File', array(), array( '/tmp/foo' ), '', false );
 
 		$partition = new FilePartition( $absolute, $relative, $files );
 
 		self::assertEquals( $absolute, $partition->getAbsolute() );
 		self::assertEquals( $relative, $partition->getRelative() );
 		self::assertEquals( $files, $partition->getFiles() );
+
+		$aggregatedFiles = array();
+		foreach ( (array) $files as $file ) {
+			$aggregatedFiles[] = array(
+				'name' => $file->getName()
+			);
+		}
+
+		$expectedArray = array(
+			'absolute' => $absolute,
+			'relative' => $relative,
+			'files' => $aggregatedFiles
+		);
+
+		self::assertEquals( $expectedArray, $partition->toArray() );
 	}
 
 	public function testEmpty() {
