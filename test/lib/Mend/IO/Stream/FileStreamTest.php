@@ -26,6 +26,9 @@ namespace Mend\IO\Stream;
 	function is_writeable() {
 		return FileStreamTest::isWritable();
 	}
+	function filesize() {
+		return FileStreamTest::fileSize();
+	}
 // }
 
 abstract class FileStreamTest extends \TestCase {
@@ -36,6 +39,7 @@ abstract class FileStreamTest extends \TestCase {
 	public static $isResourceResult;
 	public static $isReadableResult;
 	public static $isWritableResult;
+	public static $filesizeResult;
 
 	public static function fopen() {
 		return self::$fopenResult;
@@ -63,6 +67,10 @@ abstract class FileStreamTest extends \TestCase {
 
 	public static function isWritable() {
 		return self::$isWritableResult;
+	}
+
+	public static function fileSize() {
+		return self::$filesizeResult;
 	}
 
 	public function setUp() {

@@ -1,13 +1,17 @@
 <?php
 namespace Mend\Metrics\Duplication;
 
+require_once realpath( __DIR__ . "/../../IO/Stream" ) . "/FileStreamTest.php";
+
 use Mend\IO\FileSystem\File;
 use Mend\IO\FileSystem\FileArray;
 use Mend\Network\Web\Url;
 use Mend\Source\Code\Location\Location;
 use Mend\Source\Code\Location\SourceUrl;
+use Mend\IO\Stream\FileStreamTest;
+use Mend\Source\Extract\SourceFileExtractor;
 
-class CodeBlockExtractorTest extends \TestCase {
+class CodeBlockExtractorTest extends FileStreamTest {
 	private static $BLOCK_SIZE = 6;
 
 	private static $CODE_FRAGMENT_1 = <<<PHP
@@ -179,5 +183,38 @@ PHP;
 			->method( 'getCodeBlocksFromFile' );
 
 		$extractor->getCodeBlocks( $files );
+	}
+
+	public function testGetFileSourceLines() {
+		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array( $this->getFileName() ) );
+		$file->expects( self::any() )
+			->method( 'getExtension' )
+			->will( self::returnValue( 'php' ) );
+
+		FileStreamTest::$fopenResult = true;
+		FileStreamTest::$freadResult = self::$CODE_FRAGMENT_1;
+		FileStreamTest::$isReadableResult = true;
+		FileStreamTest::$isResourceResult = true;
+
+		$sourceExtractor = new SourceFileExtractor( $file );
+		$filter = $sourceExtractor->getSourceLineFilter();
+
+		$expectedLines = array_filter(
+			$this->getLines( self::$CODE_FRAGMENT_1 ),
+			function ( $line ) use ( $filter ) {
+				return $filter->isCode( $line );
+			}
+		);
+
+		$extractor = new DummyCodeBlockExtractor();
+		$sourceLines = $extractor->getFileSourceLines( $file );
+
+		self::assertEquals( $expectedLines, $sourceLines );
+	}
+}
+
+class DummyCodeBlockExtractor extends CodeBlockExtractor {
+	public function getFileSourceLines( File $file ) {
+		return parent::getFileSourceLines( $file );
 	}
 }
