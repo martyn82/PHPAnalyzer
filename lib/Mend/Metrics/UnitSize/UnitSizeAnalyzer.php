@@ -80,7 +80,7 @@ class UnitSizeAnalyzer {
 	 */
 	protected function getSourceLines( File $file ) {
 		$extractor = new SourceFileExtractor( $file );
-		$filter = $this->getFilter( $file );
+		$filter = $extractor->getSourceLineFilter();
 
 		return array_filter(
 			$extractor->getSourceLines(),
@@ -88,23 +88,6 @@ class UnitSizeAnalyzer {
 				return $filter->isCode( trim( $line ) );
 			}
 		);
-	}
-
-	/**
-	 * Retrieves the source line filter for given file.
-	 *
-	 * @param File $file
-	 *
-	 * @return SourceLineFilter
-	 */
-	private function getFilter( File $file ) {
-		if ( is_null( $this->filter ) ) {
-			$creator = new FactoryCreator();
-			$factory = $creator->createFactoryByFileExtension( $file->getExtension() );
-			$this->filter = $factory->createSourceLineFilter();
-		}
-
-		return $this->filter;
 	}
 
 	/**

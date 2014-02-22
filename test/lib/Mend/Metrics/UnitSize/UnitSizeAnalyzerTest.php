@@ -1,15 +1,18 @@
 <?php
 namespace Mend\Metrics\UnitSize;
 
+require_once realpath( __DIR__ . "/../../IO/Stream" ) . "/FileStreamTest.php";
+
 use Mend\IO\FileSystem\File;
 use Mend\IO\Stream\FileStreamReader;
+use Mend\IO\Stream\FileStreamTest;
 use Mend\Network\Web\Url;
 use Mend\Parser\Node\PHPNode;
 use Mend\Source\Code\Location\SourceUrl;
 use Mend\Source\Code\Model\Method;
 use Mend\Source\Extract\SourceFileExtractor;
 
-class UnitSizeAnalyzerTest extends \TestCase {
+class UnitSizeAnalyzerTest extends FileStreamTest {
 	private static $CODE_FRAGMENT_1 = <<<PHP
 <?php
 namespace Vendor\Package;
@@ -44,6 +47,118 @@ function fooMethod() {
 }
 PHP;
 
+	private static $CODE_FRAGMENT_3 = <<<PHP
+<?php
+function foo() {
+	if ( true ) {
+	}
+	else if ( false )
+	{
+	}
+	else
+	{
+	}
+
+	while ( true )
+	{
+	}
+
+	foreach ( \$one )
+	{
+	}
+
+	if ( true ) {
+	}
+	else if ( false )
+	{
+	}
+	else
+	{
+	}
+
+	while ( true )
+	{
+	}
+
+	foreach ( \$one )
+	{
+	}
+}
+PHP;
+
+	private static $CODE_FRAGMENT_4 = <<<PHP
+<?php
+function foo() {
+	if ( true ) {
+	}
+	else if ( false )
+	{
+	}
+	else
+	{
+	}
+
+	while ( true )
+	{
+	}
+
+	foreach ( \$one )
+	{
+	}
+
+	if ( true ) {
+	}
+	else if ( false )
+	{
+	}
+	else
+	{
+	}
+
+	while ( true )
+	{
+	}
+
+	foreach ( \$one )
+	{
+	}
+
+	if ( true ) {
+	}
+	else if ( false )
+	{
+	}
+	else
+	{
+	}
+
+	while ( true )
+	{
+	}
+
+	foreach ( \$one )
+	{
+	}
+
+	if ( true ) {
+	}
+	else if ( false )
+	{
+	}
+	else
+	{
+	}
+
+	while ( true )
+	{
+	}
+
+	foreach ( \$one )
+	{
+	}
+}
+PHP;
+
 	/**
 	 * @dataProvider methodBodyProvider
 	 *
@@ -73,8 +188,10 @@ PHP;
 
 	public function methodBodyProvider() {
 		return array(
-			array( $this->toLines( self::$CODE_FRAGMENT_1 ), 10, 12,  3, UnitSizeCategory::SIZE_SMALL ),
-			array( $this->toLines( self::$CODE_FRAGMENT_2 ),  2, 15, 14, UnitSizeCategory::SIZE_MEDIUM )
+			array( $this->toLines( self::$CODE_FRAGMENT_1 ), 10,  12,   3, UnitSizeCategory::SIZE_SMALL ),
+			array( $this->toLines( self::$CODE_FRAGMENT_2 ),  2,  15,  14, UnitSizeCategory::SIZE_MEDIUM ),
+			array( $this->toLines( self::$CODE_FRAGMENT_3 ),  2,  37,  35, UnitSizeCategory::SIZE_LARGE ),
+			array( $this->toLines( self::$CODE_FRAGMENT_4 ),  2,  54,  53, UnitSizeCategory::SIZE_VERY_LARGE )
 		);
 	}
 
@@ -82,5 +199,36 @@ PHP;
 		$lines = explode( "\n", $source );
 		$numbers = range( 1, count( $lines ) );
 		return array_combine( $numbers, $lines );
+	}
+
+	public function testGetSourceLines() {
+		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array(), '', false );
+		$file->expects( self::any() )
+			->method( 'getExtension' )
+			->will( self::returnValue( 'php' ) );
+
+		FileStreamTest::$isReadableResult = true;
+		FileStreamTest::$isResourceResult = true;
+		FileStreamTest::$freadResult = self::$CODE_FRAGMENT_1;
+
+		$analyzer = new DummyUnitSizeAnalyzer();
+		$actualLines = $analyzer->getSourceLines( $file );
+
+		$extractor = new SourceFileExtractor( $file );
+		$filter = $extractor->getSourceLineFilter();
+		$expectedLines = array_filter(
+			$this->toLines( self::$CODE_FRAGMENT_1 ),
+			function ( $line ) use ( $filter ) {
+				return $filter->isCode( $line );
+			}
+		);
+
+		self::assertEquals( $expectedLines, $actualLines );
+	}
+}
+
+class DummyUnitSizeAnalyzer extends UnitSizeAnalyzer {
+	public function getSourceLines( File $file ) {
+		return parent::getSourceLines( $file );
 	}
 }
