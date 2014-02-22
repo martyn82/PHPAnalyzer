@@ -18,5 +18,14 @@ class UnitSizeReportTest extends \TestCase {
 		$report->small( $small );
 
 		self::assertEquals( $small, $report->small() );
+
+		$expectedArray = array(
+			UnitSizeCategory::SIZE_LARGE => $report->large()->toArray(),
+			UnitSizeCategory::SIZE_MEDIUM => $report->medium()->toArray(),
+			UnitSizeCategory::SIZE_SMALL => $report->small()->toArray(),
+			UnitSizeCategory::SIZE_VERY_LARGE => $report->veryLarge()->toArray()
+		);
+
+		self::assertEquals( $expectedArray, $report->toArray() );
 	}
 }
