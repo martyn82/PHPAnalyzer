@@ -13,5 +13,13 @@ class ProjectTest extends \TestCase {
 		self::assertEquals( $key, $project->getKey() );
 		self::assertEquals( $root, $project->getRoot() );
 		self::assertEquals( $root->getBaseName(), $project->getBaseFolder() );
+
+		$expectedArray = array(
+			'key' => $project->getKey(),
+			'name' => $project->getName(),
+			'path' => $project->getRoot()->getName()
+		);
+
+		self::assertEquals( $expectedArray, $project->toArray() );
 	}
 }
