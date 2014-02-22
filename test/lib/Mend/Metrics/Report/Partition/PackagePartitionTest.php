@@ -2,18 +2,34 @@
 namespace Mend\Metrics\Report\Partition;
 
 use Mend\Source\Code\Model\PackageHashTable;
+use Mend\Source\Code\Model\Package;
 
 class PackagePartitionTest extends \TestCase {
 	public function testAccessors() {
 		$absolute = mt_rand( 0, PHP_INT_MAX );
 		$relative = (float) mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
-		$packages = $this->getMock( '\Mend\Source\Code\Model\PackageHashTable' );
+
+		$packages = new PackageHashTable();
+		$packages[] = $this->getMock( '\Mend\Source\Code\Model\Package', array(), array(), '', false );
 
 		$partition = new PackagePartition( $absolute, $relative, $packages );
 
 		self::assertEquals( $absolute, $partition->getAbsolute() );
 		self::assertEquals( $relative, $partition->getRelative() );
 		self::assertEquals( $packages, $partition->getPackages() );
+
+		$expectedArray = array(
+			'absolute' => $absolute,
+			'relative' => $relative,
+			'packages' => array_map(
+				function ( $packageName ) {
+					return $packageName;
+				},
+				array_keys( (array) $packages )
+			)
+		);
+
+		self::assertEquals( $expectedArray, $partition->toArray() );
 	}
 
 	public function testEmpty() {

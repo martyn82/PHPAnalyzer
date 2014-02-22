@@ -22,8 +22,8 @@ class MethodPartitionTest extends \TestCase {
 		self::assertEquals( $methods, $partition->getMethods() );
 
 		$expectedArray = array(
-			'absolute' => $partition->getAbsolute(),
-			'relative' => $partition->getRelative(),
+			'absolute' => $absolute,
+			'relative' => $relative,
 			'methods' => array_map(
 				function ( Method $method ) {
 					return $method->toArray();
