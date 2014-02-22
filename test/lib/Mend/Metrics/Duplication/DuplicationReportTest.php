@@ -19,5 +19,11 @@ class DuplicationReportTest extends \TestCase {
 		$report->duplications( $duplications );
 
 		self::assertEquals( $duplications, $report->duplications() );
+
+		$expectedArray = array(
+			DuplicationReport::PARTITION_KEY => $duplications->toArray()
+		);
+
+		self::assertEquals( $expectedArray, $report->toArray() );
 	}
 }
