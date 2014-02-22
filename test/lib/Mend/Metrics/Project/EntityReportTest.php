@@ -28,5 +28,14 @@ class EntityReportTest extends \TestCase {
 		$report->methods( $methods );
 
 		self::assertEquals( $methods, $report->methods() );
+
+		$expectedArray = array(
+			EntityType::ENTITY_CLASSES => $emptyClasses->toArray(),
+			EntityType::ENTITY_FILES => $emptyFiles->toArray(),
+			EntityType::ENTITY_METHODS => $methods->toArray(),
+			EntityType::ENTITY_PACKAGES => $emptyPackages->toArray()
+		);
+
+		self::assertEquals( $expectedArray, $report->toArray() );
 	}
 }
