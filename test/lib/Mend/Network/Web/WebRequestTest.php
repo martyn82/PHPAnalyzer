@@ -24,6 +24,7 @@ class WebRequestTest extends \TestCase {
 		$_SERVER[ 'REQUEST_URI' ] = '/path';
 		$_SERVER[ 'QUERY_STRING' ] = 'foo=bar&baz=bar';
 		$_SERVER[ 'CONTENT_TYPE' ] = 'text/html;charset=utf-8';
+		$_SERVER[ 'CONTENT_LENGTH' ] = '321';
 		$_SERVER[ 'HTTP_ACCEPT' ] = '*/*';
 
 		$request = WebRequest::createFromGlobals();
@@ -55,7 +56,7 @@ class WebRequestTest extends \TestCase {
 		self::fail( "Test should have thrown an exception." );
 	}
 
-	public function testConstruct() {
+	public function testAccessors() {
 		$url = Url::createFromString( 'http://www.example.org/path?foo=bar&baz=true' );
 
 		$parameters = new Map();
@@ -68,5 +69,6 @@ class WebRequestTest extends \TestCase {
 		self::assertEquals( 'bar', $request->getParameters()->get( 'foo' ) );
 		self::assertEquals( 'false', $request->getParameters()->get( 'baz' ) );
 		self::assertEquals( 'Request body', $request->getBody() );
+		self::assertEquals( $url, $request->getUrl() );
 	}
 }
