@@ -15,10 +15,6 @@ class PHPNode extends Node {
 	 * @see Node::getName()
 	 */
 	public function getName() {
-		if ( $this->isEmpty ) {
-			return null;
-		}
-
 		return $this->getInnerNode()->name;
 	}
 
@@ -26,10 +22,6 @@ class PHPNode extends Node {
 	 * @see Node::getStartLine()
 	 */
 	public function getStartLine() {
-		if ( $this->isEmpty ) {
-			return null;
-		}
-
 		return $this->getInnerNode()->getAttribute( 'startLine' );
 	}
 
@@ -37,10 +29,6 @@ class PHPNode extends Node {
 	 * @see Node::getEndLine()
 	 */
 	public function getEndLine() {
-		if ( $this->isEmpty ) {
-			return null;
-		}
-
 		return $this->getInnerNode()->getAttribute( 'endLine' );
 	}
 
