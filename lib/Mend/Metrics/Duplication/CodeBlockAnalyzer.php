@@ -29,19 +29,19 @@ class CodeBlockAnalyzer {
 	 * @return integer
 	 */
 	public function getDuplicateLines( CodeBlockTable $blocks, $blockSize = self::DEFAULT_CODE_BLOCK_SIZE ) {
-		$indices = $this->getIndices( $blocks );
-		return $this->countDuplicateLines( $indices, (int) $blockSize );
+		$startLines = $this->getStartLines( $blocks );
+		return $this->countDuplicateLines( $startLines, (int) $blockSize );
 	}
 
 	/**
-	 * Retrieves the code block indices from the given hashtable.
+	 * Retrieves the code block start lines from the given hashtable.
 	 *
 	 * @param CodeBlockTable $blocks
 	 *
 	 * @return array
 	 */
-	private function getIndices( CodeBlockTable $blocks ) {
-		$indices = array_reduce(
+	private function getStartLines( CodeBlockTable $blocks ) {
+		$lines = array_reduce(
 			(array) $blocks,
 			function ( array $result, array $bucket ) {
 				$indices = array_map(
@@ -56,31 +56,31 @@ class CodeBlockAnalyzer {
 			array()
 		);
 
-		$indices = array_unique( $indices );
-		sort( $indices );
+		$lines = array_unique( $lines );
+		sort( $lines );
 
-		return $indices;
+		return $lines;
 	}
 
 	/**
 	 * Counts the duplicate lines.
 	 *
-	 * @param array $indices
+	 * @param array $startLines
 	 * @param integer $blockSize
 	 *
 	 * @return integer
 	 */
-	private function countDuplicateLines( array $indices, $blockSize ) {
+	private function countDuplicateLines( array $startLines, $blockSize ) {
 		$blockSize = (int) $blockSize;
 
-		if ( empty( $indices ) ) {
+		if ( empty( $startLines ) ) {
 			return 0;
 		}
 
-		$start = array_shift( $indices );
-		$result = $blockSize * 2;
+		$start = array_shift( $startLines );
+		$result = $blockSize;
 
-		foreach ( $indices as $index ) {
+		foreach ( $startLines as $index ) {
 			if ( $index < ( $start + $blockSize ) ) {
 				$result += ( $index - $start );
 			}
@@ -150,7 +150,7 @@ class CodeBlockAnalyzer {
 	}
 
 	/**
-	 * Creates the hash for the given lines.
+	 * Retrieves the hash for the given lines.
 	 *
 	 * @param array $lines
 	 *

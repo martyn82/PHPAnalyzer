@@ -57,7 +57,7 @@ class CodeBlockExtractor {
 	public function createCodeBlocks( array $lines, $fileName = null, $blockSize = self::DEFAULT_CODE_BLOCK_SIZE ) {
 		$blocks = array();
 		$length = count( $lines );
-		$fileName = (string) $fileName;
+		$fileName = (string) $fileName ? : '/';
 		$blockSize = (int) $blockSize;
 
 		for ( $index = 0; $length >= ( $index + $blockSize ); $index++ ) {
