@@ -93,7 +93,7 @@ class FileStreamReader extends StreamReader {
 	 * @see Stream::isClosed()
 	 */
 	public function isClosed() {
-		return is_null( $this->handle );
+		return !is_resource( $this->handle );
 	}
 
 	/**

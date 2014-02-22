@@ -58,15 +58,6 @@ class SourceFileExtractor {
 	}
 
 	/**
-	 * Retrieves the file extension.
-	 *
-	 * @return string
-	 */
-	private function getFileExtension() {
-		return $this->file->getExtension();
-	}
-
-	/**
 	 * Retrieves the file source.
 	 *
 	 * @return string

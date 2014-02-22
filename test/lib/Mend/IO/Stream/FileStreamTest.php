@@ -29,13 +29,13 @@ namespace Mend\IO\Stream;
 // }
 
 abstract class FileStreamTest extends \TestCase {
-	protected static $fopenResult;
-	protected static $fcloseResult;
-	protected static $freadResult;
-	protected static $fwriteResult;
-	protected static $isResourceResult;
-	protected static $isReadableResult;
-	protected static $isWritableResult;
+	public static $fopenResult;
+	public static $fcloseResult;
+	public static $freadResult;
+	public static $fwriteResult;
+	public static $isResourceResult;
+	public static $isReadableResult;
+	public static $isWritableResult;
 
 	public static function fopen() {
 		return self::$fopenResult;

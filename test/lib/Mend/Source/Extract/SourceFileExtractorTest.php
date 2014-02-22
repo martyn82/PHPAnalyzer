@@ -1,10 +1,13 @@
 <?php
 namespace Mend\Source\Extract;
 
+require_once realpath( __DIR__ . "/../../IO/Stream" ) . "/FileStreamTest.php";
+
 use Mend\IO\FileSystem\File;
 use Mend\IO\Stream\FileStreamReader;
+use Mend\IO\Stream\FileStreamTest;
 
-class SourceFileExtractorTest extends \TestCase {
+class SourceFileExtractorTest extends FileStreamTest {
 	private static $CODE_FRAGMENT_1 = <<<PHP
 <?php
 namespace Vendor\Foo\Bar;
@@ -75,5 +78,27 @@ PHP;
 		$lines = explode( "\n", $source );
 		$numbers = range( 1, count( $lines ) );
 		return array_combine( $numbers, $lines );
+	}
+
+	public function testGetFileSource() {
+		$file = $this->getMock(
+			'\Mend\IO\FileSystem\File',
+			array( 'getExtension' ),
+			array( '/tmp/foo' ),
+			'',
+			false
+		);
+
+		$file->expects( self::any() )
+			->method( 'getExtension' )
+			->will( self::returnValue( 'php' ) );
+
+		FileStreamTest::$freadResult = 'blabla';
+		FileStreamTest::$fopenResult = true;
+		FileStreamTest::$isReadableResult = true;
+		FileStreamTest::$isResourceResult = true;
+
+		$extractor = new SourceFileExtractor( $file );
+		$source = $extractor->getFileSource();
 	}
 }
