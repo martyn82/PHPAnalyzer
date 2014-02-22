@@ -40,6 +40,7 @@ class Package extends Model {
 	public function __construct( Node $node = null, SourceUrl $url = null ) {
 		if ( is_null( $node ) ) {
 			$this->isDefault = true;
+			$this->init();
 			return;
 		}
 

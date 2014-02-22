@@ -77,9 +77,13 @@ abstract class Model {
 	 * @return array
 	 */
 	public function toArray() {
+		$sourceUrl = $this->getSourceUrl()
+			? $this->getSourceUrl()->__toString()
+			: '';
+
 		return array(
 			'name' => $this->getName(),
-			'location' => $this->getSourceUrl()->__toString()
+			'location' => $sourceUrl
 		);
 	}
 }
