@@ -12,6 +12,7 @@ class PackageTest extends \TestCase {
 		$package = new Package( $node, $sourceUrl );
 
 		$classes = new ClassModelArray();
+		$classes[] = $this->getMock( '\Mend\Source\Code\Model\ClassModel', array(), array(), '', false );
 		$package->classes( $classes );
 
 		self::assertEquals( $node->getName(), $package->getName() );
