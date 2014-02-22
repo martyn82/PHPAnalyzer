@@ -10,6 +10,13 @@ class CodePartitionTest extends \TestCase {
 
 		self::assertEquals( $absolute, $partition->getAbsolute() );
 		self::assertEquals( $relative, $partition->getRelative() );
+
+		$expectedArray = array(
+			'absolute' => $partition->getAbsolute(),
+			'relative' => $partition->getRelative()
+		);
+
+		self::assertEquals( $expectedArray, $partition->toArray() );
 	}
 
 	public function testEmpty() {
