@@ -47,7 +47,7 @@ class CodeBlockPartition extends CodePartition {
 		$result = parent::toArray();
 		$blocks = array();
 
-		foreach ( $this->blocks as $hash => $bucket ) {
+		foreach ( (array) $this->blocks as $hash => $bucket ) {
 			$blocks[] = array_map(
 				function ( CodeBlock $block ) {
 					return array(
