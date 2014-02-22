@@ -107,17 +107,4 @@ class CodeBlockExtractor {
 			}
 		);
 	}
-
-	/**
-	 * Converts given source string to array of numbered source lines.
-	 *
-	 * @param string $source
-	 *
-	 * @return array
-	 */
-	private function sourceToLines( $source ) {
-		$lines = explode( "\n", $source );
-		$numbers = range( 1, count( $lines ) );
-		return array_combine( $numbers, $lines );
-	}
 }
