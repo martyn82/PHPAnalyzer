@@ -23,14 +23,14 @@ class SourceUrl extends Url {
 		$instance = parent::createFromString( $url->__toString() );
 
 		parent::__construct(
-				$instance->getScheme(),
-				$instance->getHost(),
-				$instance->getPort(),
-				$instance->getUsername(),
-				$instance->getPassword(),
-				$instance->getPath(),
-				$instance->getQueryString(),
-				$instance->getFragment()
+			$instance->getScheme(),
+			$instance->getHost(),
+			$instance->getPort(),
+			$instance->getUsername(),
+			$instance->getPassword(),
+			$instance->getPath(),
+			$instance->getQueryString(),
+			$instance->getFragment()
 		);
 
 		$this->setUrl( $url->__toString() );
@@ -43,38 +43,23 @@ class SourceUrl extends Url {
 		$parts = array();
 		preg_match( '/(\(\d+,\d+\)),(\(\d+,\d+\))/', $this->getFragment(), $parts );
 
-		if ( empty( $parts ) || count( $parts ) < 2 ) {
+		if ( empty( $parts ) || count( $parts ) != 3 ) {
 			$this->start = Location::createEmpty();
 			$this->end = Location::createEmpty();
 			return;
 		}
+
+		$startParts = $parts[ 1 ];
+		$endParts = $parts[ 2 ];
 
 		$locationPattern = '/\((\d+),(\d+)\)/';
 
 		$start = array();
-		preg_match( $locationPattern, $parts[ 1 ], $start );
-
-		if ( empty( $start ) ) {
-			$this->start = Location::createEmpty();
-			$this->end = Location::createEmpty();
-			return;
-		}
-
+		preg_match( $locationPattern, $startParts, $start );
 		$this->start = new Location( (int) $start[ 1 ], (int) $start[ 2 ] );
 
-		if ( empty( $parts[ 2 ] ) ) {
-			$this->end = Location::createEmpty();
-			return;
-		}
-
 		$end = array();
-		preg_match( $locationPattern, $parts[ 2 ], $end );
-
-		if ( empty( $end ) ) {
-			$this->end = Location::createEmpty();
-			return;
-		}
-
+		preg_match( $locationPattern, $endParts, $end );
 		$this->end = new Location( (int) $end[ 1 ], (int) $end[ 2 ] );
 	}
 
