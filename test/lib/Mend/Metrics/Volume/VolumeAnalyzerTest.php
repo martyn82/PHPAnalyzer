@@ -111,4 +111,24 @@ PHP;
 			array( self::$CODE_FRAGMENT_2, 37, 19, 13,  5 )
 		);
 	}
+
+	public function testGetSourceExtractors() {
+		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array(), '', false );
+		$file->expects( self::any() )
+			->method( 'getExtension' )
+			->will( self::returnValue( 'php' ) );
+
+		$files = new FileArray( array( $file ) );
+
+		$analyzer = new DummyVolumeAnalyzer( $files );
+		$extractors = $analyzer->getSourceExtractors();
+
+		self::assertEquals( count( $files ), count( $extractors ) );
+	}
+}
+
+class DummyVolumeAnalyzer extends VolumeAnalyzer {
+	public function getSourceExtractors() {
+		return parent::getSourceExtractors();
+	}
 }

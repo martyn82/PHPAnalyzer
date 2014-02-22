@@ -13,5 +13,14 @@ class VolumeReportTest extends \TestCase {
 
 		$report->totalLines( $partition );
 		self::assertEquals( $partition, $report->totalLines() );
+
+		$expectedArray = array(
+			VolumeType::VOLUME_LINES => $report->totalLines()->toArray(),
+			VolumeType::VOLUME_LINES_BLANK => $report->totalBlankLines()->toArray(),
+			VolumeType::VOLUME_LINES_OF_CODE => $report->totalLinesOfCode()->toArray(),
+			VolumeType::VOLUME_LINES_OF_COMMENTS => $report->totalLinesOfComments()->toArray()
+		);
+
+		self::assertEquals( $expectedArray, $report->toArray() );
 	}
 }
