@@ -49,6 +49,11 @@ PHP;
 		$url = new SourceUrl( Url::createFromString( 'file://' ) );
 		$classModel = new ClassModel( $node, $url );
 
+		$method = $this->getMock( '\Mend\Source\Code\Model\Method', array(), array(), '', false );
+		$methods = new MethodArray();
+		$methods[] = $method;
+		$classModel->methods( $methods );
+
 		$expected = array(
 			'name' => $node->getName(),
 			'location' => $url->__toString(),
