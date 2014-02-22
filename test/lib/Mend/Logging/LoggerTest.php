@@ -93,4 +93,14 @@ class LoggerTest extends \TestCase {
 			array( LogLevel::LEVEL_EMERGENCY, 'emergency' )
 		);
 	}
+
+	/**
+	 * @expectedException \Mend\Logging\LogException
+	 */
+	public function testRegisterUnknownLogLevel() {
+		$level = -100; // non-existent log level
+		$handler = $this->getMock( '\Mend\Logging\LogHandler' );
+		Logger::registerHandler( $handler, array( $level ) );
+		self::fail( "Test should have triggered an exception." );
+	}
 }
