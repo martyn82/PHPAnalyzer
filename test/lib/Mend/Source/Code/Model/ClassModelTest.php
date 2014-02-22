@@ -22,9 +22,12 @@ PHP;
 		$ast = $this->getAST( self::$CODE_FRAGMENT );
 		$classNode = new PHPNode( $ast[ 0 ]->stmts[ 0 ] );
 		$classModel = new ClassModel( $classNode, new SourceUrl( Url::createFromString( 'file://' ) ) );
+		$methods = new MethodArray();
+		$classModel->methods( $methods );
 
 		self::assertEquals( $classNode, $classModel->getNode() );
 		self::assertEquals( 'Foo', $classModel->getName() );
+		self::assertEquals( $methods, $classModel->methods() );
 	}
 
 	/**
@@ -38,5 +41,25 @@ PHP;
 		$adapter = new PHPParserAdapter();
 		$parser = new Parser( $adapter );
 		return $parser->parse( $source );
+	}
+
+	public function testArrayConversion() {
+		$ast = $this->getAST( self::$CODE_FRAGMENT );
+		$node = new PHPNode( $ast[ 0 ]->stmts[ 0 ] );
+		$url = new SourceUrl( Url::createFromString( 'file://' ) );
+		$classModel = new ClassModel( $node, $url );
+
+		$expected = array(
+			'name' => $node->getName(),
+			'location' => $url->__toString(),
+			'methods' => array_map(
+				function ( Method $method ) {
+					return $method->toArray();
+				},
+				(array) $classModel->methods()
+			)
+		);
+
+		self::assertEquals( $expected, $classModel->toArray() );
 	}
 }
