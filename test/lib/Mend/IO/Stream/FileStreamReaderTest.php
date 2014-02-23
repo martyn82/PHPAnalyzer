@@ -14,9 +14,19 @@ class FileStreamReaderTest extends FileStreamTest {
 	 *
 	 * @return FileStreamReader
 	 */
-	private function getReader( array $methods = array(), File $file = null ) {
+	protected function getInstance( array $methods = array(), File $file = null ) {
 		if ( is_null( $file ) ) {
-			$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array(), '', false );
+			$name = $this->getProtocol() . '/tmp/foo';
+
+			$file = $this->getMock(
+				'\Mend\IO\FileSystem\File',
+				array( 'getName' ),
+				array( $name )
+			);
+
+			$file->expects( self::any() )
+				->method( 'getName' )
+				->will( self::returnValue( $name ) );
 		}
 
 		return $this->getMock(
@@ -27,35 +37,39 @@ class FileStreamReaderTest extends FileStreamTest {
 	}
 
 	public function testConstructor() {
-		$file = new File( '/tmp/file' );
+		$file = $this->getFile();
 		$reader = new FileStreamReader( $file );
 
 		self::assertNotNull( $reader );
 	}
 
 	public function testReaderNeverWritable() {
-		$reader = $this->getReader();
+		$reader = $this->getInstance();
 		self::assertFalse( $reader->isWritable() );
 	}
 
-	public function testRead() {
-		$reader = $this->getReader( array( 'isClosed' ) );
+	public function testFile() {
+		$reader = $this->getInstance( array( 'isClosed', 'isReadable' ) );
 
 		$reader->expects( self::any() )
 			->method( 'isClosed' )
 			->will( self::returnValue( false ) );
 
-		self::$isReadableResult = true;
-		self::$isResourceResult = true;
+		$reader->expects( self::any() )
+			->method( 'isReadable' )
+			->will( self::returnValue( true ) );
 
+		$reader->open();
 		$reader->read();
+		$reader->close();
 	}
 
 	/**
 	 * @expectedException \Mend\IO\Stream\StreamNotReadableException
 	 */
-	public function testReadFileNonExistent() {
-		$reader = $this->getReader( array( 'isReadable' ) );
+	public function testFileNonExistent() {
+		$reader = $this->getInstance( array( 'isReadable' ) );
+
 		$reader->expects( self::any() )
 			->method( 'isReadable' )
 			->will( self::returnValue( false ) );
@@ -68,8 +82,8 @@ class FileStreamReaderTest extends FileStreamTest {
 	/**
 	 * @expectedException \Mend\IO\Stream\StreamClosedException
 	 */
-	public function testReadClosedStream() {
-		$reader = $this->getReader( array( 'isClosed', 'isReadable' ) );
+	public function testClosedStream() {
+		$reader = $this->getInstance( array( 'isClosed', 'isReadable' ) );
 
 		$reader->expects( self::any() )
 			->method( 'isReadable' )
@@ -83,22 +97,31 @@ class FileStreamReaderTest extends FileStreamTest {
 	}
 
 	public function testOpen() {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array(), '', false );
-		$reader = new FileStreamReader( $file );
+		$name = $this->getProtocol() . '/tmp/foo';
 
-		self::$isResourceResult = false;
-		self::$fopenResult = true;
+		$file = $this->getMock(
+			'\Mend\IO\FileSystem\File',
+			array( 'getName' ),
+			array( $name ),
+			'',
+			false
+		);
+
+		$file->expects( self::any() )
+			->method( 'getName' )
+			->will( self::returnValue( $name ) );
+
+		$reader = new FileStreamReader( $file );
 
 		self::assertFalse( $reader->isOpen() );
 
 		$reader->open();
-		self::$isResourceResult = true;
 
 		self::assertTrue( $reader->isOpen() );
 	}
 
 	public function testOpenAlreadyOpen() {
-		$reader = $this->getReader( array( 'isOpen' ) );
+		$reader = $this->getInstance( array( 'isOpen' ) );
 
 		$reader->expects( self::any() )
 			->method( 'isOpen' )
@@ -111,29 +134,31 @@ class FileStreamReaderTest extends FileStreamTest {
 	 * @expectedException \Mend\IO\IOException
 	 */
 	public function testOpenFailed() {
-		$reader = $this->getReader( array( 'isOpen' ) );
+		$reader = $this->getInstance( array( 'isOpen' ) );
+
 		$reader->expects( self::any() )
 			->method( 'isOpen' )
 			->will( self::returnValue( false ) );
 
-		self::$fopenResult = false;
-
-		$reader->open();
+		\FileSystem::setFOpenResult( false );
+		@$reader->open(); // suppress warning of failed call to stream_open()
 
 		self::fail( "Unexpected: Stream should not be able to open." );
 	}
 
 	public function testClose() {
-		$reader = $this->getReader( array( 'isClosed' ) );
+		$reader = $this->getInstance( array( 'isClosed' ) );
+
 		$reader->expects( self::any() )
 			->method( 'isClosed' )
 			->will( self::returnValue( false ) );
 
+		$reader->open();
 		$reader->close();
 	}
 
 	public function testCloseAlreadyClosed() {
-		$reader = $this->getReader( array( 'isClosed' ) );
+		$reader = $this->getInstance( array( 'isClosed' ) );
 		$reader->expects( self::any() )
 			->method( 'isClosed' )
 			->will( self::returnValue( true ) );

@@ -1,13 +1,11 @@
 <?php
 namespace Mend\Source\Extract;
 
-require_once realpath( __DIR__ . "/../../IO/Stream" ) . "/FileStreamTest.php";
-
 use Mend\IO\FileSystem\File;
 use Mend\IO\Stream\FileStreamReader;
-use Mend\IO\Stream\FileStreamTest;
+use Mend\IO\Stream\IsReadable;
 
-class SourceFileExtractorTest extends FileStreamTest {
+class SourceFileExtractorTest extends \TestCase {
 	private static $CODE_FRAGMENT_1 = <<<PHP
 <?php
 namespace Vendor\Foo\Bar;
@@ -22,13 +20,21 @@ class FooBar {
 PHP;
 
 	private static $CODE_FRAGMENT_2 = <<<PHP
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 exit( 0 );
 PHP;
 
+	public function setUp() {
+		\FileSystem::resetResults();
+	}
+
+	private function getFileName() {
+		return \FileSystem::PROTOCOL . ':///tmp/foo';
+	}
+
 	public function testFilterCreation() {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array( '/tmp/foo' ) );
+		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array( $this->getFileName() ) );
 		$file->expects( self::any() )->method( 'getExtension' )->will( self::returnValue( 'php' ) );
 
 		$extractor = new SourceFileExtractor( $file );
@@ -42,7 +48,13 @@ PHP;
 	 * @param array $lines
 	 */
 	public function testSourceLines( $source, array $lines ) {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array( '/tmp/foo' ), '', false );
+		$file = $this->getMock(
+			'\Mend\IO\FileSystem\File',
+			array( 'getExtension' ),
+			array( $this->getFileName() ),
+			'',
+			false
+		);
 		$file->expects( self::any() )->method( 'getExtension' )->will( self::returnValue( 'php' ) );
 
 		$extractor = $this->getMock(
@@ -80,23 +92,32 @@ PHP;
 		return array_combine( $numbers, $lines );
 	}
 
-	public function testGetFileSource() {
+	/**
+	 * @dataProvider sourceProvider
+	 *
+	 * @param string $source
+	 */
+	public function testGetFileSource( $source ) {
+		$name = $this->getFileName();
+
 		$file = $this->getMock(
 			'\Mend\IO\FileSystem\File',
-			array( 'getExtension' ),
-			array( '/tmp/foo' ),
+			array( 'getExtension', 'getName' ),
+			array( $name ),
 			'',
 			false
 		);
 
 		$file->expects( self::any() )
+			->method( 'getName' )
+			->will( self::returnValue( $name ) );
+
+		$file->expects( self::any() )
 			->method( 'getExtension' )
 			->will( self::returnValue( 'php' ) );
 
-		FileStreamTest::$freadResult = 'blabla';
-		FileStreamTest::$fopenResult = true;
-		FileStreamTest::$isReadableResult = true;
-		FileStreamTest::$isResourceResult = true;
+		\FileSystem::setFReadResult( $source );
+		IsReadable::$result = true;
 
 		$extractor = new SourceFileExtractor( $file );
 		$source = $extractor->getFileSource();

@@ -1,18 +1,16 @@
 <?php
 namespace Mend\Metrics\UnitSize;
 
-require_once realpath( __DIR__ . "/../../IO/Stream" ) . "/FileStreamTest.php";
-
 use Mend\IO\FileSystem\File;
 use Mend\IO\Stream\FileStreamReader;
-use Mend\IO\Stream\FileStreamTest;
 use Mend\Network\Web\Url;
 use Mend\Parser\Node\PHPNode;
 use Mend\Source\Code\Location\SourceUrl;
 use Mend\Source\Code\Model\Method;
 use Mend\Source\Extract\SourceFileExtractor;
+use Mend\IO\Stream\IsReadable;
 
-class UnitSizeAnalyzerTest extends FileStreamTest {
+class UnitSizeAnalyzerTest extends \TestCase {
 	private static $CODE_FRAGMENT_1 = <<<PHP
 <?php
 namespace Vendor\Package;
@@ -202,14 +200,26 @@ PHP;
 	}
 
 	public function testGetSourceLines() {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array(), '', false );
+		$name = \FileSystem::PROTOCOL . '://tmp/foo';
+
+		$file = $this->getMock(
+			'\Mend\IO\FileSystem\File',
+			array( 'getExtension', 'getName' ),
+			array( $name ),
+			'',
+			false
+		);
+
 		$file->expects( self::any() )
 			->method( 'getExtension' )
 			->will( self::returnValue( 'php' ) );
 
-		FileStreamTest::$isReadableResult = true;
-		FileStreamTest::$isResourceResult = true;
-		FileStreamTest::$freadResult = self::$CODE_FRAGMENT_1;
+		$file->expects( self::any() )
+			->method( 'getName' )
+			->will( self::returnValue( $name ) );
+
+		IsReadable::$result = true;
+		\FileSystem::setFReadResult( self::$CODE_FRAGMENT_1 );
 
 		$analyzer = new DummyUnitSizeAnalyzer();
 		$actualLines = $analyzer->getSourceLines( $file );

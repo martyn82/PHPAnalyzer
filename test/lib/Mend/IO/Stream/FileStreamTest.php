@@ -1,85 +1,70 @@
 <?php
 namespace Mend\IO\Stream;
 
-// mock filesystem functions {
-	function fclose() {
-		return FileStreamTest::fclose();
-	}
-	function fopen() {
-		return FileStreamTest::fopen();
-	}
-	function fread() {
-		return FileStreamTest::fread();
-	}
-	function fwrite() {
-		return FileStreamTest::fwrite();
-	}
-	function is_resource() {
-		return FileStreamTest::isResource();
-	}
-	function is_readable() {
-		return FileStreamTest::isReadable();
-	}
-	function is_writable() {
-		return FileStreamTest::isWritable();
-	}
-	function is_writeable() {
-		return FileStreamTest::isWritable();
-	}
-	function filesize() {
-		return FileStreamTest::fileSize();
-	}
-// }
+use Mend\IO\FileSystem\File;
 
 abstract class FileStreamTest extends \TestCase {
-	public static $fopenResult;
-	public static $fcloseResult;
-	public static $freadResult;
-	public static $fwriteResult;
-	public static $isResourceResult;
-	public static $isReadableResult;
-	public static $isWritableResult;
-	public static $filesizeResult;
-
-	public static function fopen() {
-		return self::$fopenResult;
-	}
-
-	public static function fclose() {
-		return self::$fcloseResult;
-	}
-
-	public static function fread() {
-		return self::$freadResult;
-	}
-
-	public static function fwrite() {
-		return self::$fwriteResult;
-	}
-
-	public static function isResource() {
-		return self::$isResourceResult;
-	}
-
-	public static function isReadable() {
-		return self::$isReadableResult;
-	}
-
-	public static function isWritable() {
-		return self::$isWritableResult;
-	}
-
-	public static function fileSize() {
-		return self::$filesizeResult;
-	}
+	const FS_PROTOCOL = \FileSystem::PROTOCOL;
 
 	public function setUp() {
-		self::$fopenResult = null;
-		self::$fcloseResult = null;
-		self::$freadResult = null;
-		self::$fwriteResult = null;
-		self::$isResourceResult = null;
-		self::$isReadableResult = null;
-		self::$isWritableResult = null;
+		\FileSystem::resetResults();
 	}
+
+	protected function getProtocol() {
+		return self::FS_PROTOCOL . '://';
+	}
+
+	/**
+	 * Retrieves a mocked instance.
+	 *
+	 * @param array $methods
+	 * @param File $file
+	 *
+	 * @return Stream
+	 */
+	abstract protected function getInstance( array $methods = array(), File $file = null );
+
+	protected function getFile() {
+		$name = $this->getProtocol() . '/tmp/foo';
+		$file = $this->getMock(
+			'\Mend\IO\FileSystem\File',
+			array( 'getName' ),
+			array( $name ),
+			'',
+			false
+		);
+
+		$file->expects( self::any() )
+			->method( 'getName' )
+			->will( self::returnValue( $name ) );
+
+		return $file;
+	}
+
+	abstract public function testConstructor();
+
+	abstract public function testFile();
+
+	/**
+	 * @expectedException \Mend\IO\Stream\StreamNotReadableException
+	 */
+	abstract public function testFileNonExistent();
+
+	/**
+	 * @expectedException \Mend\IO\Stream\StreamClosedException
+	 */
+	abstract public function testClosedStream();
+
+	abstract public function testOpen();
+
+	abstract public function testOpenAlreadyOpen();
+
+	/**
+	 * @expectedException \Mend\IO\IOException
+	 */
+	abstract public function testOpenFailed();
+
+	abstract public function testClose();
+
+	abstract public function testCloseAlreadyClosed();
 }

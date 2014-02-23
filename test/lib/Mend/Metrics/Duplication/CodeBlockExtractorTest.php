@@ -1,17 +1,15 @@
 <?php
 namespace Mend\Metrics\Duplication;
 
-require_once realpath( __DIR__ . "/../../IO/Stream" ) . "/FileStreamTest.php";
-
 use Mend\IO\FileSystem\File;
 use Mend\IO\FileSystem\FileArray;
 use Mend\Network\Web\Url;
 use Mend\Source\Code\Location\Location;
 use Mend\Source\Code\Location\SourceUrl;
-use Mend\IO\Stream\FileStreamTest;
 use Mend\Source\Extract\SourceFileExtractor;
+use Mend\IO\Stream\IsReadable;
 
-class CodeBlockExtractorTest extends FileStreamTest {
+class CodeBlockExtractorTest extends \TestCase {
 	private static $BLOCK_SIZE = 6;
 
 	private static $CODE_FRAGMENT_1 = <<<PHP
@@ -57,7 +55,11 @@ function foo() {
 PHP;
 
 	private function getFileName() {
-		return '/tmp/foo';
+		return \FileSystem::PROTOCOL . ':///tmp/foo';
+	}
+
+	public function setUp() {
+		\FileSystem::resetResults();
 	}
 
 	/**
@@ -185,22 +187,34 @@ PHP;
 		$extractor->getCodeBlocks( $files );
 	}
 
-	public function testGetFileSourceLines() {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array( $this->getFileName() ) );
+	/**
+	 * @dataProvider sourceProvider
+	 *
+	 * @param string $source
+	 */
+	public function testGetFileSourceLines( $source ) {
+		$file = $this->getMock(
+			'\Mend\IO\FileSystem\File',
+			array( 'getExtension', 'getName' ),
+			array( $this->getFileName() )
+		);
+
 		$file->expects( self::any() )
 			->method( 'getExtension' )
 			->will( self::returnValue( 'php' ) );
 
-		FileStreamTest::$fopenResult = true;
-		FileStreamTest::$freadResult = self::$CODE_FRAGMENT_1;
-		FileStreamTest::$isReadableResult = true;
-		FileStreamTest::$isResourceResult = true;
+		$file->expects( self::any() )
+			->method( 'getName' )
+			->will( self::returnValue( $this->getFileName() ) );
+
+		IsReadable::$result = true;
+		\FileSystem::setFReadResult( $source );
 
 		$sourceExtractor = new SourceFileExtractor( $file );
 		$filter = $sourceExtractor->getSourceLineFilter();
 
 		$expectedLines = array_filter(
-			$this->getLines( self::$CODE_FRAGMENT_1 ),
+			$this->getLines( $source ),
 			function ( $line ) use ( $filter ) {
 				return $filter->isCode( $line );
 			}
@@ -210,6 +224,14 @@ PHP;
 		$sourceLines = $extractor->getFileSourceLines( $file );
 
 		self::assertEquals( $expectedLines, $sourceLines );
+	}
+
+	public function sourceProvider() {
+		return array(
+			array( self::$CODE_FRAGMENT_1 ),
+			array( self::$CODE_FRAGMENT_2 ),
+			array( self::$CODE_FRAGMENT_3 )
+		);
 	}
 }
 

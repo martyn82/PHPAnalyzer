@@ -32,15 +32,9 @@ class FileStreamWriterTest extends FileStreamTest {
 		$streamWriter->close();
 	}
 
-	/**
-	 * @param array $methods
-	 * @param File $file
-	 *
-	 * @return FileStreamWriter
-	 */
-	private function getWriter( array $methods = array(), File $file = null ) {
+	protected function getInstance( array $methods = array(), File $file = null ) {
 		if ( is_null( $file ) ) {
-			$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array(), '', false );
+			$file = $this->getFile();
 		}
 
 		return $this->getMock(
@@ -50,36 +44,38 @@ class FileStreamWriterTest extends FileStreamTest {
 		);
 	}
 
-	public function testConstruct() {
-		$file = new File( '/tmp/foo' );
+	public function testConstructor() {
+		$file = $this->getFile();
 		$writer = new FileStreamWriter( $file );
 
 		self::assertNotNull( $writer );
 	}
 
 	public function testWriterNeverReadable() {
-		$writer = $this->getWriter();
+		$writer = $this->getInstance();
 		self::assertFalse( $writer->isReadable() );
 	}
 
-	public function testWrite() {
-		$writer = $this->getWriter( array( 'isClosed' ) );
+	public function testFile() {
+		$writer = $this->getInstance( array( 'isClosed', 'isWritable' ) );
 
 		$writer->expects( self::any() )
 			->method( 'isClosed' )
 			->will( self::returnValue( false ) );
 
-		self::$isWritableResult = true;
-		self::$isResourceResult = true;
+		$writer->expects( self::any() )
+			->method( 'isWritable' )
+			->will( self::returnValue( true ) );
 
+		$writer->open();
 		$writer->write( 'foo' );
 	}
 
 	/**
 	 * @expectedException \Mend\IO\Stream\StreamNotWritableException
 	 */
-	public function testReadFileNonExistent() {
-		$writer = $this->getWriter( array( 'isWritable' ) );
+	public function testFileNonExistent() {
+		$writer = $this->getInstance( array( 'isWritable' ) );
 
 		$writer->expects( self::any() )
 			->method( 'isWritable' )
@@ -93,8 +89,8 @@ class FileStreamWriterTest extends FileStreamTest {
 	/**
 	 * @expectedException \Mend\IO\Stream\StreamClosedException
 	 */
-	public function testReadClosedStream() {
-		$writer = $this->getWriter( array( 'isClosed', 'isWritable' ) );
+	public function testClosedStream() {
+		$writer = $this->getInstance( array( 'isClosed', 'isWritable' ) );
 
 		$writer->expects( self::any() )
 			->method( 'isWritable' )
@@ -108,22 +104,20 @@ class FileStreamWriterTest extends FileStreamTest {
 	}
 
 	public function testOpen() {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array(), '', false );
+		$file = $this->getFile();
 		$writer = new FileStreamWriter( $file );
 
-		self::$isResourceResult = false;
-		self::$fopenResult = true;
+		\FileSystem::setFOpenResult( true );
 
 		self::assertFalse( $writer->isOpen() );
 
 		$writer->open();
-		self::$isResourceResult = true;
 
 		self::assertTrue( $writer->isOpen() );
 	}
 
 	public function testOpenAlreadyOpen() {
-		$writer = $this->getWriter( array( 'isOpen' ) );
+		$writer = $this->getInstance( array( 'isOpen' ) );
 
 		$writer->expects( self::any() )
 			->method( 'isOpen' )
@@ -136,29 +130,32 @@ class FileStreamWriterTest extends FileStreamTest {
 	 * @expectedException \Mend\IO\IOException
 	 */
 	public function testOpenFailed() {
-		$writer = $this->getWriter( array( 'isOpen' ) );
+		$writer = $this->getInstance( array( 'isOpen' ) );
+
 		$writer->expects( self::any() )
 			->method( 'isOpen' )
 			->will( self::returnValue( false ) );
 
-		self::$fopenResult = false;
+		\FileSystem::setFOpenResult( false );
 
-		$writer->open();
+		@$writer->open(); // suppress 'call to stream_open() failed' warning
 
 		self::fail( "Unexpected: Stream should not be able to open." );
 	}
 
 	public function testClose() {
-		$writer = $this->getWriter( array( 'isClosed' ) );
+		$writer = $this->getInstance( array( 'isClosed' ) );
+
 		$writer->expects( self::any() )
 			->method( 'isClosed' )
 			->will( self::returnValue( false ) );
 
+		$writer->open();
 		$writer->close();
 	}
 
 	public function testCloseAlreadyClosed() {
-		$writer = $this->getWriter( array( 'isClosed' ) );
+		$writer = $this->getInstance( array( 'isClosed' ) );
 		$writer->expects( self::any() )
 			->method( 'isClosed' )
 			->will( self::returnValue( true ) );
