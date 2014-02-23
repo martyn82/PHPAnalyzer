@@ -75,7 +75,8 @@ class ProjectReader {
 	 */
 	private function getFilesFromDirectory( Directory $directory, array $extensions = null ) {
 		$stream = new DirectoryStream( $directory );
-		return new FileArray( $this->getFilesFromStream( $stream->getIterator(), $extensions ) );
+		$files = $this->getFilesFromStream( $stream->getIterator(), $extensions );
+		return new FileArray( $files );
 	}
 
 	/**
