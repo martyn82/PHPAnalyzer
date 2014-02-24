@@ -33,6 +33,7 @@ class FileSystem {
 		self::$filesize = 1;
 		self::$opendirResult = true;
 		self::$readdirResult = array( '.' => self::DIR_MODE, '..' => self::FILE_MODE );
+
 		self::$dirCursor = 0;
 	}
 
@@ -65,16 +66,6 @@ class FileSystem {
 		self::$readdirResult = $result;
 	}
 
-	/**
-	 * Open
-	 *
-	 * @param string $path
-	 * @param string $mode
-	 * @param mixed $options
-	 * @param string $openedPath
-	 *
-	 * @return boolean
-	 */
 	public function stream_open( $path, $mode, $options, & $openedPath ) {
 		return self::$fopenResult;
 	}
