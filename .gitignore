@@ -1,5 +1,6 @@
 .settings/
 logs/
+test/coverage
 vendor/
 .project
 .classpath
