@@ -8,4 +8,7 @@ install: composer install
 branches:
   only:
     - master
-    - stable
+
+script:
+  - phpunit
+  - check-coverage coverage.xml 75

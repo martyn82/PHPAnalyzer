@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -e
+
+./check-coverage.php coverage.xml 75
