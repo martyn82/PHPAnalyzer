@@ -10,5 +10,4 @@ branches:
     - master
 
 script:
-  - phpunit
-  - check-coverage coverage.xml 75
+  - ./build
