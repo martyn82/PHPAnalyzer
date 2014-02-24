@@ -8,4 +8,6 @@ install: composer install
 branches:
   only:
     - master
-    - stable
+
+script:
+  - ./build

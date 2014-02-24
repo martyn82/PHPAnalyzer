@@ -1,8 +1,8 @@
-vendor/
 .settings/
+logs/
+test/coverage
+vendor/
 .project
 .classpath
 .buildpath
-.analysis/
-logs/
-app/public/data/data.js
+coverage.xml
