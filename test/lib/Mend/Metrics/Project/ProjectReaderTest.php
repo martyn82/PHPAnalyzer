@@ -8,6 +8,10 @@ class ProjectReaderTest extends \TestCase {
 		\FileSystem::resetResults();
 	}
 
+	public function tearDown() {
+		\FileSystem::resetResults();
+	}
+
 	private function getDirName() {
 		return \FileSystem::PROTOCOL . ':///foo';
 	}

@@ -27,7 +27,7 @@ class VolumeReportBuilder extends ReportBuilder {
 		$blankLineCount = $volumeAnalyzer->getBlankLinesCount();
 		$commentsCount = $volumeAnalyzer->getLinesOfCommentsCount();
 		$codeCount = $volumeAnalyzer->getLinesOfCodeCount();
-		$totalLineCount = $volumeAnalyzer->getLinesCount();
+		$totalLineCount = max( 1, $volumeAnalyzer->getLinesCount() );
 
 		$report = $this->getReport();
 

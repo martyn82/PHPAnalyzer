@@ -62,6 +62,10 @@ PHP;
 		\FileSystem::resetResults();
 	}
 
+	public function tearDown() {
+		\FileSystem::resetResults();
+	}
+
 	/**
 	 * @dataProvider codeBlockProvider
 	 *

@@ -227,11 +227,11 @@ class EntityExtractor {
 	 * @return ClassModelArray
 	 */
 	public function getClasses( Package $package = null ) {
-		if ( !is_null( $package ) && !$package->isDefault() ) {
-			$ast = array( $package->getNode()->getInnerNode() );
+		if ( is_null( $package ) || $package->isDefault() ) {
+			$ast = $this->getAST();
 		}
 		else {
-			$ast = $this->getAST();
+			$ast = array( $package->getNode()->getInnerNode() );
 		}
 
 		$mapper = $this->getNodeMapper();

@@ -162,4 +162,20 @@ class FileStreamWriterTest extends FileStreamTest {
 
 		$writer->close();
 	}
+
+	public function testIsReadable() {
+		$file = $this->getFile();
+		$writer = new FileStreamWriter( $file );
+
+		self::assertFalse( $writer->isReadable() );
+	}
+
+	public function testIsWritable() {
+		$file = $this->getFile();
+		$writer = new FileStreamWriter( $file );
+
+		IsWritable::$result = true;
+
+		self::assertTrue( $writer->isWritable() );
+	}
 }

@@ -4,7 +4,15 @@ namespace Mend\IO\Stream {
 		return IsReadable::$result;
 	}
 
+	function is_writable( $filename ) {
+		return IsWritable::$result;
+	}
+
 	class IsReadable {
+		public static $result = false;
+	}
+
+	class IsWritable {
 		public static $result = false;
 	}
 }

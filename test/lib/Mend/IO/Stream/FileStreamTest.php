@@ -10,6 +10,10 @@ abstract class FileStreamTest extends \TestCase {
 		\FileSystem::resetResults();
 	}
 
+	public function tearDown() {
+		\FileSystem::resetResults();
+	}
+
 	protected function getProtocol() {
 		return self::FS_PROTOCOL . '://';
 	}
@@ -67,4 +71,8 @@ abstract class FileStreamTest extends \TestCase {
 	abstract public function testClose();
 
 	abstract public function testCloseAlreadyClosed();
+
+	abstract public function testIsWritable();
+
+	abstract public function testIsReadable();
 }

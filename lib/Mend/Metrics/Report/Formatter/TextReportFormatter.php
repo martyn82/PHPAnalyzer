@@ -29,6 +29,8 @@ class TextReportFormatter extends ReportFormatter {
 	 * @see ReportFormatter::format()
 	 */
 	public function format( ProjectReport $report ) {
+		// @todo fix the design flaw: argument $report is unused.
+
 		$mapping = $this->getVariableMapping();
 		$template = $this->getTemplate();
 

@@ -89,7 +89,7 @@ class UnitSizeReportBuilder extends ReportBuilder {
 			}
 		}
 
-		$totalCount = $volumeReport->totalLinesOfCode()->getAbsolute();
+		$totalCount = max( 1, $volumeReport->totalLinesOfCode()->getAbsolute() );
 
 		$report->small( new MethodPartition( $smallCount, $smallCount / $totalCount * 100, $smalls ) );
 		$report->medium( new MethodPartition( $mediumCount, $mediumCount / $totalCount * 100, $mediums ) );

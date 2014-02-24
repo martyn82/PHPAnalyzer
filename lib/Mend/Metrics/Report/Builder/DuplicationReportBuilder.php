@@ -33,7 +33,7 @@ class DuplicationReportBuilder extends ReportBuilder {
 		$codeBlockTable = $codeBlockAnalyzer->findDuplicates( $codeBlocks );
 
 		$duplicatedLines = $codeBlockAnalyzer->getDuplicateLines( $codeBlockTable );
-		$totalLines = $volume->totalLines()->getAbsolute();
+		$totalLines = max( 1, $volume->totalLines()->getAbsolute() );
 
 		$partition = new CodeBlockPartition( $duplicatedLines, $duplicatedLines / $totalLines * 100, $codeBlockTable );
 

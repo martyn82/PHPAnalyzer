@@ -159,10 +159,27 @@ class FileStreamReaderTest extends FileStreamTest {
 
 	public function testCloseAlreadyClosed() {
 		$reader = $this->getInstance( array( 'isClosed' ) );
+
 		$reader->expects( self::any() )
 			->method( 'isClosed' )
 			->will( self::returnValue( true ) );
 
 		$reader->close();
+	}
+
+	public function testIsReadable() {
+		$file = $this->getFile();
+		$reader = new FileStreamReader( $file );
+
+		IsReadable::$result = true;
+
+		self::assertTrue( $reader->isReadable() );
+	}
+
+	public function testIsWritable() {
+		$file = $this->getFile();
+		$reader = new FileStreamReader( $file );
+
+		self::assertFalse( $reader->isWritable() );
 	}
 }

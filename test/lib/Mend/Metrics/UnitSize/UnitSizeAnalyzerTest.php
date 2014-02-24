@@ -157,6 +157,14 @@ function foo() {
 }
 PHP;
 
+	public function setUp() {
+		\FileSystem::resetResults();
+	}
+
+	public function tearDown() {
+		\FileSystem::resetResults();
+	}
+
 	/**
 	 * @dataProvider methodBodyProvider
 	 *

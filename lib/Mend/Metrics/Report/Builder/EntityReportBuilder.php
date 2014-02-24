@@ -56,12 +56,10 @@ class EntityReportBuilder extends ReportBuilder {
 
 			foreach ( $packages as $package ) {
 				/* @var $package Package */
-				$forPackage = $package->isDefault() ? null : $package;
-
 				$this->methodUpdate( __METHOD__, "Handling package {$package->getName()}" );
 
 				$this->methodUpdate( __METHOD__, "Getting classes..." );
-				$classes = $extractor->getClasses( $forPackage );
+				$classes = $extractor->getClasses( $package );
 				$classesArray = array_merge( $classesArray, (array) $classes );
 
 				foreach ( $classes as $class ) {

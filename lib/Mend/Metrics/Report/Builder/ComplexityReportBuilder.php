@@ -3,13 +3,13 @@ namespace Mend\Metrics\Report\Builder;
 
 use Mend\Metrics\Complexity\ComplexityAnalyzer;
 use Mend\Metrics\Complexity\ComplexityReport;
+use Mend\Metrics\Complexity\ComplexityRisk;
 use Mend\Metrics\Project\EntityReport;
+use Mend\Metrics\Report\Partition\MethodPartition;
 use Mend\Metrics\Report\ReportBuilder;
+use Mend\Metrics\Volume\VolumeReport;
 use Mend\Source\Code\Model\Method;
 use Mend\Source\Code\Model\MethodArray;
-use Mend\Metrics\Complexity\ComplexityRisk;
-use Mend\Metrics\Report\Partition\MethodPartition;
-use Mend\Metrics\Volume\VolumeReport;
 
 class ComplexityReportBuilder extends ReportBuilder {
 	/**
@@ -23,6 +23,7 @@ class ComplexityReportBuilder extends ReportBuilder {
 	 * Analyzes the complexity.
 	 *
 	 * @param EntityReport $entityReport
+	 * @param VolumeReport $volumeReport
 	 *
 	 * @return ComplexityReportBuilder
 	 */
@@ -90,7 +91,7 @@ class ComplexityReportBuilder extends ReportBuilder {
 			}
 		}
 
-		$totalLines = $volumeReport->totalLinesOfCode()->getAbsolute();
+		$totalLines = max( 1, $volumeReport->totalLinesOfCode()->getAbsolute() );
 
 		$report->low( new MethodPartition( $lowCount, $lowCount / $totalLines * 100, $lows ) );
 		$report->moderate( new MethodPartition( $moderateCount, $moderateCount / $totalLines * 100, $moderates ) );

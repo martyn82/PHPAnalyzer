@@ -12,6 +12,7 @@ use Mend\Metrics\Report\Builder\DuplicationReportBuilder;
 use Mend\Metrics\UnitSize\UnitSizeAnalyzer;
 use Mend\Metrics\Volume\VolumeReport;
 use Mend\Logging\Logger;
+use Mend\Metrics\Project\EntityReport;
 
 class ProjectReportBuilder {
 	/**

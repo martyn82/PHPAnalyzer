@@ -3,7 +3,7 @@ namespace Mend\Parser\Node;
 
 class NodeFilter {
 	/**
-	 * Drops duplicate dependencies from the given array.
+	 * Drops duplicated node names from the given array.
 	 *
 	 * @param array $nodes
 	 *
@@ -38,7 +38,7 @@ class NodeFilter {
 	 * @throws \Exception
 	 */
 	public function getClassName( Node $node ) {
-		$fqName = self::getFullyQualifiedName( $node );
+		$fqName = $this->getFullyQualifiedName( $node );
 
 		if ( is_null( $fqName ) ) {
 			throw new \Exception( "Unable to determine the fully qualified class name of node '{$node->getName()}'." );

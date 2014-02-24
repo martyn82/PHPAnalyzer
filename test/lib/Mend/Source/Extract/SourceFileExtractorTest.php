@@ -29,6 +29,10 @@ PHP;
 		\FileSystem::resetResults();
 	}
 
+	public function tearDown() {
+		\FileSystem::resetResults();
+	}
+
 	private function getFileName() {
 		return \FileSystem::PROTOCOL . ':///tmp/foo';
 	}
