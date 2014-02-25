@@ -5,6 +5,12 @@ use Mend\Cli\AnalyzeOptions;
 use Mend\Cli\Options;
 use Mend\IO\Stream\IsReadable;
 
+// mock functions {
+function realpath( $path ) {
+	return $path; // idempotent
+}
+// }
+
 class AnalyzeCommandTest extends \TestCase {
 	private static $INI_CONFIG = <<<INI
 [project]

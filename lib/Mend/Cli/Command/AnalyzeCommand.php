@@ -196,7 +196,7 @@ class AnalyzeCommand extends Command {
 		$projectName = $config->getString( 'project:name', $projectKey );
 		$projectRoot = $config->getString( 'project:path', getcwd() );
 
-		return new Project( $projectName, $projectKey, new Directory( $projectRoot ) );
+		return new Project( $projectName, $projectKey, new Directory( realpath( $projectRoot ) ) );
 	}
 
 	/**
