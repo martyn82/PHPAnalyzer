@@ -28,7 +28,7 @@ How to use
 ----------
 
 Command-line interface
-The script ```analyze.php``` is the one you need to analyze a PHP program.
+The executable ```analyze``` is the one you need to analyze a PHP program.
 
 You can specify what and how to analyze in a configuration INI file:
 ```
@@ -37,17 +37,15 @@ key = test
 name = Project Test
 path = ./library
 
-[report]
-template = mytemplate.txt
-type = text
-
 [system]
 memory = 200M
 ```
 
 Example usage:
 
-```$ ./analyze.php -c config.ini```
+```$ ./analyze -c config.ini```
+
+You can use the '-h' option for help.
 
 What it does
 ------------
