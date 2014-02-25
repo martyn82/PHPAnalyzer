@@ -18,8 +18,6 @@ usage: %scriptname% [options]
 
 Options:
 	-%help%			Displays this help message.
-	-%memorylimit%			Specify a memory limit (e.g., 256M or 1G) [default: %defaultMemoryLimit%].
-	-%extensions%			Specify a comma-separated list of file extensions to analyze.
 	-%summary%			Turns on summary. This will output a summary report to the console.
 	-%verbose%			Turns on verbosity mode. Prints verbose message to the console.
 
@@ -58,10 +56,8 @@ HELP;
 		$vars = array(
 			'%scriptname%' => $this->currentScriptName,
 			'%help%' => Options::OPT_HELP,
-			'%memorylimit%' => Options::OPT_MEMORY_LIMIT,
-			'%extensions%' => Options::OPT_FILE_EXTENSIONS,
 			'%verbose%' => Options::OPT_VERBOSITY_FLAG,
-			'%summary%' => Options::OPT_SUMMARY,
+			'%summary%' => Options::OPT_SUMMARIZE,
 			'%defaultMemoryLimit%' => $this->defaultMemoryLimit
 		);
 

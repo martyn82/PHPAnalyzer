@@ -6,6 +6,7 @@ use Mend\Cli\Command\HelpCommand;
 
 class Analyzer {
 	const CURRENT_SCRIPT = '__CURRENT_SCRIPT__';
+	const DEFAULT_MEMORY_LIMIT = '128M';
 
 	/**
 	 * @var array
@@ -73,13 +74,6 @@ class Analyzer {
 	private function setOptions() {
 		foreach ( $this->options as $opt => $value ) {
 			switch ( $opt ) {
-				case Options::OPT_HELP:
-					$help = new HelpCommand(
-						$this->options[ self::CURRENT_SCRIPT ],
-						AnalyzeOptions::DEFAULT_MEMORY_LIMIT
-					);
-					return $help->run();
-
 				case Options::OPT_CONFIGURATION_FILE:
 					$this->settings->setConfigFile( $value );
 					break;
@@ -92,6 +86,7 @@ class Analyzer {
 					$this->settings->setVerbose( true );
 					break;
 
+				case Options::OPT_HELP:
 				case self::CURRENT_SCRIPT:
 					// no-op
 					break;
@@ -109,6 +104,34 @@ class Analyzer {
 	 */
 	public function run() {
 		$this->setOptions();
+
+		if ( isset( $this->options[ Options::OPT_HELP ] ) ) {
+			return $this->runHelp();
+		}
+
+		return $this->runAnalyze();
+	}
+
+	/**
+	 * Runs the help command.
+	 *
+	 * @return CommandResult
+	 */
+	protected function runHelp() {
+		$help = new HelpCommand(
+			$this->options[ self::CURRENT_SCRIPT ],
+			self::DEFAULT_MEMORY_LIMIT
+		);
+
+		return $help->run();
+	}
+
+	/**
+	 * Runs the analyze command.
+	 *
+	 * @return CommandResult
+	 */
+	protected function runAnalyze() {
 		$analyze = new AnalyzeCommand( $this->settings, $this->mapper );
 		return $analyze->run();
 	}

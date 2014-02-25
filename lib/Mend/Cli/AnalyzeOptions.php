@@ -27,6 +27,7 @@ class AnalyzeOptions {
 	 */
 	public function __construct() {
 		$this->verbose = false;
+		$this->summarize = false;
 	}
 
 	/**

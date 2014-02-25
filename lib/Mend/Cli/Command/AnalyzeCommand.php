@@ -74,7 +74,8 @@ class AnalyzeCommand extends Command {
 
 		$file = new File( $this->options->getConfigFile() );
 
-		if ( $file->getExtension() != 'ini' ) {
+		// @todo abstract the choice of config reader instance into a factory
+		if ( strtolower( $file->getExtension() ) != 'ini' ) {
 			throw new \UnexpectedValueException( "Configuration file must be of type INI." );
 		}
 
@@ -193,7 +194,7 @@ class AnalyzeCommand extends Command {
 	private function createProject( ConfigProvider $config ) {
 		$projectKey = $config->getString( 'project:key', uniqid( 'proj' ) );
 		$projectName = $config->getString( 'project:name', $projectKey );
-		$projectRoot = realpath( $config->getString( 'project:path', getcwd() ) );
+		$projectRoot = $config->getString( 'project:path', getcwd() );
 
 		return new Project( $projectName, $projectKey, new Directory( $projectRoot ) );
 	}
