@@ -19,20 +19,31 @@ class AutoloaderTest extends \TestCase {
 
 	public function testExistingFile() {
 		$actual = $this->loader->loadClass( 'Foo\Bar\ClassName' );
-		self::assertEquals( true, $actual, '/vendor/foo.bar/src/ClassName.php' );
+		self::assertTrue( $actual, '/vendor/foo.bar/src/ClassName.php' );
 
 		$actual = $this->loader->loadClass( 'Foo\Bar\ClassNameTest' );
-		self::assertEquals( true, $actual, '/vendor/foo.bar/tests/ClassNameTest.php' );
+		self::assertTrue( $actual, '/vendor/foo.bar/tests/ClassNameTest.php' );
 	}
 
 	public function testMissingFile() {
 		$actual = $this->loader->loadClass( 'NoVendor\Package\NoClass' );
-		self::assertEquals( false, $actual );
+		self::assertFalse( $actual );
 	}
 
 	public function testDeepFile() {
 		$actual = $this->loader->loadClass( 'Foo\Bar\Baz\Fooz\ClassName' );
-		self::assertEquals( true, $actual, '/vendor/foo.bar.baz.fooz/src/ClassName.php' );
+		self::assertTrue( $actual, '/vendor/foo.bar.baz.fooz/src/ClassName.php' );
+	}
+
+	public function testPrependNamespace() {
+		$ns = 'Foo\Bar\Baz\Fooz';
+		$file = '/lib/foo.bar.baz/fooz/src/ClassName.php';
+
+		$this->loader->addNamespace( $ns, dirname( $file ), true );
+		array_unshift( $this->files, dirname( $file ) );
+
+		$actual = $this->loader->loadClass( 'Foo\Bar\Baz\Fooz\ClassName' );
+		self::assertTrue( $actual, '/lib/foo.bar.baz/fooz/src/ClassName.php' );
 	}
 
 	public function includeFileStub( $fileName ) {
