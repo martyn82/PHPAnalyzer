@@ -2,4 +2,4 @@
 
 set -e
 
-./check-coverage.php coverage.xml 75
+./check-coverage.php coverage.xml 80
