@@ -1,5 +1,7 @@
 #!/usr/bin/env php
 <?php
+$startTime = time();
+
 require_once realpath( __DIR__ . "/cli" ) . "/bootstrap.php";
 
 use Mend\Cli\Analyzer;
@@ -49,4 +51,16 @@ if ( $settings->getSummarize() ) {
 
 $result = $analyzer->run();
 
-stop( $result->getMessage(), $result->getStatus() );
+if ( $result->isError() ) {
+	error( $result->getMessage() );
+}
+else {
+	out( $result->getMessage() );
+}
+
+if ( VERBOSE ) {
+	logTimeStats( $startTime );
+	logMemoryStats();
+}
+
+exit( $result->getStatus() );
