@@ -33,19 +33,27 @@ The executable ```analyze``` is the one you need to analyze a PHP program.
 You can specify what and how to analyze in a configuration INI file:
 ```
 [project]
-key = test
-name = Project Test
-path = ./library
+key = demo
+name = Demo Project
+path = /var/www/demo/library
+
+[analysis]
+extensions = php
 
 [system]
 memory = 200M
 ```
 
+The ```project``` section defines meta information about the project to analyze. Define a key, a display name and a root path.
+Under ```analysis``` you must specify the file extensions of the files to analyze. Currently, only 'php' is supported.
+```system``` defines some system-related settings. Memory is the one that is in use at the moment. If you run into out-of-memory issues while analyzing a project, you should increase this.
+Supported formats: \d+(M|G) ; e.g., 512M or 2G.
+
 Example usage:
 
 ```$ ./analyze -c config.ini```
 
-You can use the '-h' option for help.
+You can use the '-h' option for a list of available arguments.
 
 What it does
 ------------
