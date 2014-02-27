@@ -62,7 +62,7 @@ class View {
 	 */
 	public function render( $scriptFile ) {
 		if ( !is_file( $scriptFile ) ) {
-			throw new ViewException( "No such view script: <{$scriptFile}>" );
+			throw new ViewException( "No such view script: '{$scriptFile}'." );
 		}
 
 		ob_start();

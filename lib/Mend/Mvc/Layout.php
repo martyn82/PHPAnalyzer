@@ -1,6 +1,11 @@
 <?php
 namespace Mend\Mvc;
 
+use Mend\I18n\CharacterSet;
+use Mend\I18n\Culture;
+use Mend\I18n\Locale;
+use Mend\I18n\ReadingDirection;
+
 class Layout extends View {
 	/**
 	 * @var string
@@ -8,7 +13,7 @@ class Layout extends View {
 	private $content;
 
 	/**
-	 * @var \stdClass
+	 * @var Culture
 	 */
 	private $culture;
 
@@ -38,15 +43,10 @@ class Layout extends View {
 	/**
 	 * Sets the cultural properties to layout.
 	 *
-	 * @param string $locale
-	 * @param string $readingDirection
-	 * @param string $charset
+	 * @param Culture $culture
 	 */
-	public function setCulture( $locale, $readingDirection, $charset = 'utf-8' ) {
-		$this->culture = new \stdClass();
-		$this->culture->locale = $locale;
-		$this->culture->readingDirection = $readingDirection;
-		$this->culture->charset = $charset;
+	public function setCulture( Culture $culture ) {
+		$this->culture = $culture;
 	}
 
 	/**
@@ -70,7 +70,14 @@ class Layout extends View {
 		}
 
 		if ( is_null( $this->culture ) ) {
-			$this->setCulture( 'en-GB', 'ltr' );
+			$this->setCulture(
+				new Culture(
+					Locale::ENGLISH_UNITEDKINGDOM,
+					null,
+					ReadingDirection::LEFT_TO_RIGHT,
+					CharacterSet::UNICODE_UTF8
+				)
+			);
 		}
 
 		if ( is_null( $this->title ) ) {

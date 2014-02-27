@@ -2,7 +2,6 @@
 namespace Mend\Mvc;
 
 use Mend\Network\Web\WebResponse;
-use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 
 abstract class Controller {
@@ -29,25 +28,25 @@ abstract class Controller {
 	/**
 	 * @var string
 	 */
+	private $controllerName;
+
+	/**
+	 * @var string
+	 */
+	private $actionName;
+
+	/**
+	 * @var string
+	 */
 	private $viewScriptPath;
 
 	/**
 	 * @var string
 	 */
-	private $layoutScript;
+	private $layoutScriptPath;
 
 	/**
-	 * @var string
-	 */
-	private $currentAction;
-
-	/**
-	 * @var string
-	 */
-	private $currentController;
-
-	/**
-	 * Constructs a new Controller.
+	 * Constructs a new controller.
 	 *
 	 * @param WebRequest $request
 	 * @param WebResponse $response
@@ -56,8 +55,100 @@ abstract class Controller {
 		$this->request = $request;
 		$this->response = $response;
 
-		$this->layout = new Layout();
-		$this->view = new View();
+		$this->layout = $this->createLayout();
+		$this->view = $this->createView();
+
+		$this->init();
+	}
+
+	/**
+	 * Initializes the controller.
+	 */
+	protected function init() { /* no-op */ }
+
+	/**
+	 * Called before dispatch.
+	 */
+	protected function preDispatch() { /* no-op */ }
+
+	/**
+	 * Called after dispatch.
+	 */
+	protected function postDispatch() {
+		$rendered = $this->render( $this->actionName, $this->getControllerName() );
+
+		$this->response->setBody( $rendered );
+
+		$this->sendResponse( $response );
+	}
+
+	/**
+	 * Dispatches the given action.
+	 *
+	 * @param string $actionName
+	 *
+	 * @throws ControllerException
+	 */
+	public function dispatch( $actionName ) {
+		$action = ucfirst( $actionName );
+		$actionMethod = "action{$action}";
+		$controllerName = $this->getControllerName();
+
+		if ( !method_exists( $this, $actionMethod ) ) {
+			throw new ControllerException( "The action '{$action}' does not exist in controller '{$controllerName}'." );
+		}
+
+		$this->actionName = $actionName;
+
+		$this->preDispatch();
+		$this->{$actionMethod}();
+		$this->postDispatch();
+	}
+
+	/**
+	 * Sends the given response.
+	 *
+	 * @param WebResponse $response
+	 */
+	public function sendResponse( WebResponse $response ) {
+		$headers = $response->getHeaders()->toArray();
+
+		foreach ( $headers as $key => $value ) {
+			header( $key . ': ' . $value );
+		}
+
+		header( 'HTTP/1.1 ' . (string) $response->getStatusCode() . ' ' . $response->getStatusDescription() );
+		print $response->getBody();
+	}
+
+	/**
+	 * Renders the given view script.
+	 *
+	 * @param string $viewScript
+	 * @param string $basePath
+	 * @param string $viewScriptSuffix
+	 *
+	 * @return string
+	 */
+	protected function render( $viewScript, $basePath = null, $viewScriptSuffix = '.phtml' ) {
+		$basePath = $basePath
+			? DIRECTORY_SEPARATOR . $basePath
+			: '';
+
+		$viewScriptPath = $this->viewScriptPath
+			. $basePath
+			. DIRECTORY_SEPARATOR
+			. $viewScript
+			. $viewScriptSuffix;
+
+		$content = $this->view->render( $viewScriptPath );
+
+		if ( is_null( $this->layout ) ) {
+			return $content;
+		}
+
+		$this->layout->setContent( $content );
+		return $this->layout->render( $this->layoutScript );
 	}
 
 	/**
@@ -79,140 +170,34 @@ abstract class Controller {
 	}
 
 	/**
-	 * Retrieves the request.
+	 * Creates a new Layout.
 	 *
-	 * @return WebRequest
+	 * @return Layout
 	 */
-	public function getRequest() {
-		return $this->request;
+	protected function createLayout() {
+		return new Layout();
 	}
 
 	/**
-	 * Retrieves the response.
+	 * Creates a new View.
 	 *
-	 * @return WebResponse
+	 * @return View
 	 */
-	public function getResponse() {
-		return $this->response;
+	protected function createView() {
+		return new View();
 	}
 
 	/**
-	 * Dispatch given action to current controller.
+	 * Retrieves the current layout.
 	 *
-	 * @param string $action
-	 *
-	 * @throws ControllerException
+	 * @return Layout
 	 */
-	public function dispatch( $action ) {
-		$methodName = 'action' . ucfirst( $action );
-
-		if ( !method_exists( $this, $methodName ) ) {
-			$controller = $this->getController();
-			throw new ControllerException( "The action <{$action}> does not exist in controller <{$controller}>." );
-		}
-
-		$this->currentAction = $action;
-
-		$this->preDispatch();
-		$this->{$methodName}();
-		$this->postDispatch();
+	protected function getLayout() {
+		return $this->layout;
 	}
 
 	/**
-	 * Called before action dispatch.
-	 */
-	protected function preDispatch() {
-		/* noop */
-	}
-
-	/**
-	 * Called after action dispatch.
-	 */
-	protected function postDispatch() {
-		$renderedView = $this->render( $this->currentAction, $this->getController() );
-
-		$url = Url::createFromGlobals();
-		$response = new WebResponse( $url, null, $renderedView );
-
-		$this->sendResponse( $response );
-	}
-
-	/**
-	 * Renders the view onto given view script file.
-	 *
-	 * @param string $viewScriptFile
-	 * @param string $basePath
-	 *
-	 * @return string
-	 */
-	protected function render( $viewScriptFile, $basePath = null, $scriptSuffix = ".phtml" ) {
-		$basePath = $basePath
-			? DIRECTORY_SEPARATOR . $basePath
-			: '';
-
-		$viewScriptPath = $this->viewScriptPath
-			. $basePath
-			. DIRECTORY_SEPARATOR
-			. $viewScriptFile
-			. $scriptSuffix;
-
-		$content = $this->view->render( $viewScriptPath );
-
-		if ( is_null( $this->layout ) ) {
-			return $content;
-		}
-
-		$this->layout->setContent( $content );
-		return $this->layout->render( $this->layoutScript );
-	}
-
-	/**
-	 * Sends the given response.
-	 *
-	 * @param WebResponse $response
-	 */
-	public function sendResponse( WebResponse $response ) {
-		$headers = $response->getHeaders()->toArray();
-
-		foreach ( $headers as $key => $value ) {
-			header( $key . ': ' . $value );
-		}
-
-		header( 'HTTP/1.1 ' . (string) $response->getStatusCode() . ' ' . $response->getStatusDescription() );
-
-		print $response->getBody();
-	}
-
-	/**
-	 * Retrieves the current controller name.
-	 *
-	 * @return string
-	 */
-	private function getController() {
-		if ( is_null( $this->currentController ) ) {
-			$fullClassName = get_class( $this );
-
-			$classParts = explode( "\\", $fullClassName );
-			$className = end( $classParts );
-
-			$controllerName = substr( $className, 0, strrpos( $className, 'Controller' ) );
-			$this->currentController = strtolower( $controllerName );
-		}
-
-		return $this->currentController;
-	}
-
-	/**
-	 * Retrieves the current action.
-	 *
-	 * @return string
-	 */
-	private function getAction() {
-		return $this->currentAction;
-	}
-
-	/**
-	 * Retrieves the view.
+	 * Retrieves the current view.
 	 *
 	 * @return View
 	 */
@@ -221,11 +206,30 @@ abstract class Controller {
 	}
 
 	/**
-	 * Retrieves the layout.
+	 * Retrieves the current controller name.
 	 *
-	 * @return Layout
+	 * @return string
 	 */
-	protected function getLayout() {
-		return $this->layout;
+	protected function getControllerName() {
+		if ( is_null( $this->controllerName ) ) {
+			$fullClassName = get_class( $this );
+
+			$classParts = explode( '\\', $fullClassName );
+			$className = end( $classParts );
+
+			$controllerName = substr( $className, 0, strrpos( $className, 'Controller' ) );
+			$this->controllerName = strtolower( $controllerName );
+		}
+
+		return $this->controllerName;
+	}
+
+	/**
+	 * Retrieves the current action name.
+	 *
+	 * @return string
+	 */
+	protected function getActionName() {
+		return $this->actionName;
 	}
 }
