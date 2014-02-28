@@ -16,6 +16,7 @@ class ControllerTest extends \TestCase {
 
 		self::assertEquals( $request, $controller->getRequest() );
 		self::assertEquals( $response, $controller->getResponse() );
+		self::assertEquals( $renderer, $controller->getRenderer() );
 		self::assertEquals( 'dummy', $controller->getControllerName() );
 	}
 
@@ -48,7 +49,7 @@ class ControllerTest extends \TestCase {
 		$actionName = 'foo';
 
 		$controller = new DummyController( $request, $response, $renderer );
-		$controller->dispatch( $actionName );
+		$controller->dispatchAction( $actionName );
 
 		self::assertEquals( $actionName, $controller->getActionName() );
 	}
@@ -69,7 +70,7 @@ class ControllerTest extends \TestCase {
 		$layout = $this->createLayout();
 
 		$controller = new DummyController( $request, $response, $renderer, null, $layout );
-		$controller->dispatch( $actionName );
+		$controller->dispatchAction( $actionName );
 
 		self::assertEquals( $actionName, $controller->getActionName() );
 	}
@@ -86,7 +87,7 @@ class ControllerTest extends \TestCase {
 		$actionName = 'non';
 
 		$controller = new DummyController( $request, $response, $renderer );
-		$controller->dispatch( $actionName );
+		$controller->dispatchAction( $actionName );
 
 		self::fail( "Test should have triggered an exception." );
 	}
@@ -133,5 +134,9 @@ class DummyController extends Controller {
 
 	public function getLayout() {
 		return parent::getLayout();
+	}
+
+	public function getRenderer() {
+		return parent::getRenderer();
 	}
 }

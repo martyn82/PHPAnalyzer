@@ -91,7 +91,7 @@ abstract class Controller {
 	 *
 	 * @throws ControllerException
 	 */
-	public function dispatch( $actionName ) {
+	public function dispatchAction( $actionName ) {
 		$action = ucfirst( $actionName );
 		$actionMethod = "action{$action}";
 		$controllerName = $this->getControllerName();
@@ -169,6 +169,15 @@ abstract class Controller {
 	 */
 	protected function getView() {
 		return $this->view;
+	}
+
+	/**
+	 * Retrieves the view renderer.
+	 *
+	 * @return ViewRenderer
+	 */
+	protected function getRenderer() {
+		return $this->renderer;
 	}
 
 	/**
