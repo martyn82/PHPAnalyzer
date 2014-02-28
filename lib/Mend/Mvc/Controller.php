@@ -26,6 +26,11 @@ abstract class Controller {
 	private $view;
 
 	/**
+	 * @var ViewRenderer
+	 */
+	private $renderer;
+
+	/**
 	 * @var string
 	 */
 	private $controllerName;
@@ -36,27 +41,27 @@ abstract class Controller {
 	private $actionName;
 
 	/**
-	 * @var string
-	 */
-	private $viewScriptPath;
-
-	/**
-	 * @var string
-	 */
-	private $layoutScriptPath;
-
-	/**
 	 * Constructs a new controller.
 	 *
 	 * @param WebRequest $request
 	 * @param WebResponse $response
+	 * @param ViewRenderer $renderer
+	 * @param View $view
+	 * @param Layout $layout
 	 */
-	public function __construct( WebRequest $request, WebResponse $response ) {
+	public function __construct(
+		WebRequest $request,
+		WebResponse $response,
+		ViewRenderer $renderer,
+		View $view = null,
+		Layout $layout = null
+	) {
 		$this->request = $request;
 		$this->response = $response;
+		$this->renderer = $renderer;
 
-		$this->layout = $this->createLayout();
-		$this->view = $this->createView();
+		$this->view = $view ? : $this->createView();
+		$this->layout = $layout;
 
 		$this->init();
 	}
@@ -76,10 +81,7 @@ abstract class Controller {
 	 */
 	protected function postDispatch() {
 		$rendered = $this->render( $this->actionName, $this->getControllerName() );
-
 		$this->response->setBody( $rendered );
-
-		$this->sendResponse( $response );
 	}
 
 	/**
@@ -106,76 +108,40 @@ abstract class Controller {
 	}
 
 	/**
-	 * Sends the given response.
+	 * Retrieves the request.
 	 *
-	 * @param WebResponse $response
+	 * @return WebRequest
 	 */
-	public function sendResponse( WebResponse $response ) {
-		$headers = $response->getHeaders()->toArray();
-
-		foreach ( $headers as $key => $value ) {
-			header( $key . ': ' . $value );
-		}
-
-		header( 'HTTP/1.1 ' . (string) $response->getStatusCode() . ' ' . $response->getStatusDescription() );
-		print $response->getBody();
+	public function getRequest() {
+		return $this->request;
 	}
 
 	/**
-	 * Renders the given view script.
+	 * Retrieves the response.
 	 *
-	 * @param string $viewScript
-	 * @param string $basePath
-	 * @param string $viewScriptSuffix
+	 * @return WebResponse
+	 */
+	public function getResponse() {
+		return $this->response;
+	}
+
+	/**
+	 * Renders the current view.
+	 *
+	 * @param string $actionName
+	 * @param string $controllerName
 	 *
 	 * @return string
 	 */
-	protected function render( $viewScript, $basePath = null, $viewScriptSuffix = '.phtml' ) {
-		$basePath = $basePath
-			? DIRECTORY_SEPARATOR . $basePath
-			: '';
-
-		$viewScriptPath = $this->viewScriptPath
-			. $basePath
-			. DIRECTORY_SEPARATOR
-			. $viewScript
-			. $viewScriptSuffix;
-
-		$content = $this->view->render( $viewScriptPath );
+	protected function render( $actionName, $controllerName ) {
+		$content = $this->renderer->renderView( $this->view, $actionName, $controllerName );
 
 		if ( is_null( $this->layout ) ) {
 			return $content;
 		}
 
 		$this->layout->setContent( $content );
-		return $this->layout->render( $this->layoutScript );
-	}
-
-	/**
-	 * Sets the view script path.
-	 *
-	 * @param string $viewScriptPath
-	 */
-	public function setViewScriptPath( $viewScriptPath ) {
-		$this->viewScriptPath = $viewScriptPath;
-	}
-
-	/**
-	 * Sets the layout script file.
-	 *
-	 * @param string $layoutScript
-	 */
-	public function setLayoutScript( $layoutScript ) {
-		$this->layoutScript = $layoutScript;
-	}
-
-	/**
-	 * Creates a new Layout.
-	 *
-	 * @return Layout
-	 */
-	protected function createLayout() {
-		return new Layout();
+		return $this->renderer->renderLayout( $this->layout, $actionName );
 	}
 
 	/**

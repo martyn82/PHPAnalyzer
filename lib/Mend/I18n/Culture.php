@@ -10,11 +10,6 @@ class Culture {
 	/**
 	 * @var string
 	 */
-	private $currency;
-
-	/**
-	 * @var string
-	 */
 	private $readingDirection;
 
 	/**
@@ -26,13 +21,11 @@ class Culture {
 	 * Constructs a new culture instance.
 	 *
 	 * @param string $locale
-	 * @param string $currency
 	 * @param string $readingDirection
 	 * @param string $charset
 	 */
-	public function __construct( $locale, $currency, $readingDirection, $charset ) {
+	public function __construct( $locale, $readingDirection, $charset ) {
 		$this->locale = $locale;
-		$this->currency = $currency;
 		$this->readingDirection = $readingDirection;
 		$this->charset = $charset;
 	}
@@ -44,15 +37,6 @@ class Culture {
 	 */
 	public function getLocale() {
 		return $this->locale;
-	}
-
-	/**
-	 * Retrieves the currency.
-	 *
-	 * @return string
-	 */
-	public function getCurrency() {
-		return $this->currency;
 	}
 
 	/**

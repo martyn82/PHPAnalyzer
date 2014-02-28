@@ -1,6 +1,10 @@
 <?php
 namespace Mend\Mvc;
 
+if ( !defined( 'ENT_HTML5' ) ) {
+	define( 'ENT_HTML5', 0 );
+}
+
 class View {
 	/**
 	 * @var array
@@ -44,29 +48,25 @@ class View {
 			return $value;
 		}
 
-		if ( !defined( 'ENT_HTML5' ) ) {
-			define( 'ENT_HTML5', 0 );
-		}
-
 		return htmlentities( $value, ENT_QUOTES | ENT_HTML5, 'utf-8' );
 	}
 
 	/**
-	 * Renders the given script file name.
+	 * Renders this view using the given renderer.
 	 *
-	 * @param string $scriptFile
+	 * @param string $templateFile
 	 *
 	 * @return string
 	 *
 	 * @throws ViewException
 	 */
-	public function render( $scriptFile ) {
-		if ( !is_file( $scriptFile ) ) {
-			throw new ViewException( "No such view script: '{$scriptFile}'." );
+	public function render( $templateFile ) {
+		if ( !file_exists( $templateFile ) ) {
+			throw new ViewException( "No such view template file: '{$templateFile}'." );
 		}
 
 		ob_start();
-		require $scriptFile;
+		require $templateFile;
 		$output = ob_get_contents();
 		ob_end_clean();
 
@@ -90,8 +90,6 @@ class View {
 	 * @param string $name
 	 *
 	 * @return mixed
-	 *
-	 * @throws \Exception
 	 */
 	public function __get( $name ) {
 		return $this->get( $name );
@@ -109,7 +107,7 @@ class View {
 	 */
 	private function get( $name, $useAutoEscape = true ) {
 		if ( !isset( $this->vars[ $name ] ) ) {
-			throw new ViewException( "Undefined view var: <{$name}>." );
+			throw new ViewException( "Undefined view var: '{$name}'." );
 		}
 
 		if ( $this->autoEscape && $useAutoEscape ) {

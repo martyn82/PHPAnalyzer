@@ -73,7 +73,6 @@ class Layout extends View {
 			$this->setCulture(
 				new Culture(
 					Locale::ENGLISH_UNITEDKINGDOM,
-					null,
 					ReadingDirection::LEFT_TO_RIGHT,
 					CharacterSet::UNICODE_UTF8
 				)

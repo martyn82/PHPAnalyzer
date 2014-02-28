@@ -6,57 +6,113 @@ use Mend\Network\Web\WebResponse;
 use Mend\Network\Web\Url;
 
 class ControllerTest extends \TestCase {
+	public function testConstruct() {
+		$url = $this->createUrl();
+		$request = $this->createRequest( $url );
+		$response = $this->createResponse( $url );
+		$renderer = $this->createViewRenderer();
+
+		$controller = new DummyController( $request, $response, $renderer );
+
+		self::assertEquals( $request, $controller->getRequest() );
+		self::assertEquals( $response, $controller->getResponse() );
+		self::assertEquals( 'dummy', $controller->getControllerName() );
+	}
+
+	public function testConstructWithViews() {
+		$url = $this->createUrl();
+		$request = $this->createRequest( $url );
+		$response = $this->createResponse( $url );
+		$renderer = $this->createViewRenderer();
+		$view = $this->createView();
+		$layout = $this->createLayout();
+
+		$controller = new DummyController( $request, $response, $renderer, $view, $layout );
+
+		self::assertEquals( $view, $controller->getView() );
+		self::assertEquals( $layout, $controller->getLayout() );
+	}
+
 	public function testDispatch() {
-		$url = Url::createFromString( 'http://www.example.org/controller/action' );
+		$url = $this->createUrl();
+		$request = $this->createRequest( $url );
+		$response = $this->createResponse( $url );
+		$renderer = $this->createViewRenderer();
 
-		$request = $this->getMock( '\Mend\Network\Web\WebRequest', array(), array( $url ) );
-		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array(), array( $url ) );
+		$renderer->expects( self::once() )
+			->method( 'renderView' );
 
-		$action = 'foo';
+		$renderer->expects( self::never() )
+			->method( 'renderLayout' );
 
-		$controller = $this->getMock(
-			'\Mend\Mvc\DummyController',
-			array( 'init', 'preDispatch', 'postDispatch', 'action' . ucfirst( $action ) ),
-			array( $request, $response )
-		);
-		/* @var $controller DummyController */
+		$actionName = 'foo';
 
-		$controller->expects( self::once() )
-			->method( 'init' );
+		$controller = new DummyController( $request, $response, $renderer );
+		$controller->dispatch( $actionName );
 
-		$controller->expects( self::once() )
-			->method( 'preDispatch' );
+		self::assertEquals( $actionName, $controller->getActionName() );
+	}
 
-		$controller->expects( self::once() )
-			->method( 'postDispatch' );
+	public function testDispatchWithLayout() {
+		$url = $this->createUrl();
+		$request = $this->createRequest( $url );
+		$response = $this->createResponse( $url );
+		$renderer = $this->createViewRenderer();
 
-		$controller->expects( self::once() )
-			->method( 'action' . ucfirst( $action ) );
+		$renderer->expects( self::once() )
+			->method( 'renderView' );
 
-		$controller->__construct( $request, $response );
-		$controller->dispatch( $action );
+		$renderer->expects( self::once() )
+			->method( 'renderLayout' );
 
-		self::assertEquals( $action, $controller->getActionName() );
-		self::assertEquals( 'mock_dummy', $controller->getControllerName() );
+		$actionName = 'foo';
+		$layout = $this->createLayout();
 
-		self::assertInstanceOf( '\Mend\Mvc\Layout', $controller->getLayout() );
-		self::assertInstanceOf( '\Mend\Mvc\View', $controller->getView() );
+		$controller = new DummyController( $request, $response, $renderer, null, $layout );
+		$controller->dispatch( $actionName );
+
+		self::assertEquals( $actionName, $controller->getActionName() );
 	}
 
 	/**
 	 * @expectedException \Mend\Mvc\ControllerException
 	 */
 	public function testDispatchNonExistentAction() {
-		$url = Url::createFromString( 'http://www.example.org/controller/action' );
+		$url = $this->createUrl();
+		$request = $this->createRequest( $url );
+		$response = $this->createResponse( $url );
+		$renderer = $this->createViewRenderer();
 
-		$request = $this->getMock( '\Mend\Network\Web\WebRequest', array(), array( $url ) );
-		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array(), array( $url ) );
+		$actionName = 'non';
 
-		$controller = new DummyController( $request, $response );
-
-		$controller->dispatch( 'non' );
+		$controller = new DummyController( $request, $response, $renderer );
+		$controller->dispatch( $actionName );
 
 		self::fail( "Test should have triggered an exception." );
+	}
+
+	private function createUrl() {
+		return Url::createFromString( 'http://www.example.org/controller/action' );
+	}
+
+	private function createViewRenderer() {
+		return $this->getMock( '\Mend\Mvc\ViewRenderer', array(), array(), '', false );
+	}
+
+	private function createRequest( Url $url ) {
+		return $this->getMock( '\Mend\Network\Web\WebRequest', array(), array( $url ) );
+	}
+
+	private function createResponse( Url $url ) {
+		return $this->getMock( '\Mend\Network\Web\WebResponse', array(), array( $url ) );
+	}
+
+	private function createView() {
+		return $this->getMock( '\Mend\Mvc\View' );
+	}
+
+	private function createLayout() {
+		return $this->getMock( '\Mend\Mvc\Layout' );
 	}
 }
 
