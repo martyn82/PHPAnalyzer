@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="<?php echo $this->culture->locale ?>" dir="<?php echo $this->culture->readingDirection ?>">
+<html lang="<?php echo $this->culture->getLocale() ?>" dir="<?php echo $this->culture->getReadingDirection() ?>">
 	<head>
-		<meta charset="<?php echo $this->culture->charset ?>" />
+		<meta charset="<?php echo $this->culture->getCharset() ?>" />
 		<link rel="stylesheet" type="text/css" media="all" href="/assets/css/default.css" />
 		<title><?php echo $this->title ?></title>
 	</head>

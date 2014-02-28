@@ -141,7 +141,7 @@ abstract class Controller {
 		}
 
 		$this->layout->setContent( $content );
-		return $this->renderer->renderLayout( $this->layout, $actionName );
+		return $this->renderer->renderLayout( $this->layout );
 	}
 
 	/**
@@ -151,6 +151,15 @@ abstract class Controller {
 	 */
 	protected function createView() {
 		return new View();
+	}
+
+	/**
+	 * Sets a layout.
+	 *
+	 * @param Layout $layout
+	 */
+	protected function setLayout( Layout $layout ) {
+		$this->layout = $layout;
 	}
 
 	/**

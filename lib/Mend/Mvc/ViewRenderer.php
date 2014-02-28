@@ -46,7 +46,8 @@ class ViewRenderer {
 	 *
 	 * @return string
 	 */
-	public function renderLayout( Layout $layout, $templateFile, $templatePath = null, $templateSuffix = null ) {
+	public function renderLayout( Layout $layout, $templateFile = null, $templatePath = null, $templateSuffix = null ) {
+		$templateFile = $templateFile ? : $this->options->getLayoutDefaultTemplate();
 		$templateSuffix = $templateSuffix ? : $this->options->getLayoutTemplateSuffix();
 		$basePath = $this->options->getLayoutTemplatePath();
 

@@ -43,7 +43,10 @@ class FrontControllerTest extends \TestCase {
 		$renderer = $this->createRenderer();
 		$loader = $this->createLoader( 'foo' );
 
+		$layout = $this->getMock( '\Mend\Mvc\Layout' );
+
 		$controller = new FrontController( $request, $response, $renderer, $loader );
+		$controller->setLayout( $layout );
 		$controller->dispatch( 'foo', 'bar' );
 	}
 
@@ -68,6 +71,10 @@ class FrontControllerTest extends \TestCase {
 			array( 'http://www.example.org/foo/bar' ),
 			array( 'http://www.example.org' )
 		);
+	}
+
+	public function testSendResponse() {
+		self::markTestIncomplete( "Should test sendResponse, but cannot because of print statement." );
 	}
 
 	private function createUrl( $urlString ) {

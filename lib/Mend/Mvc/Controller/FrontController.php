@@ -2,6 +2,7 @@
 namespace Mend\Mvc\Controller;
 
 use Mend\Mvc\Controller;
+use Mend\Mvc\Layout;
 use Mend\Mvc\View;
 use Mend\Mvc\ViewRenderer;
 use Mend\Network\Web\WebRequest;
@@ -29,6 +30,13 @@ class FrontController extends Controller {
 	) {
 		parent::__construct( $request, $response, $renderer );
 		$this->loader = $loader;
+	}
+
+	/**
+	 * @see Controller::setLayout()
+	 */
+	public function setLayout( Layout $layout ) {
+		parent::setLayout( $layout );
 	}
 
 	/**
@@ -60,6 +68,26 @@ class FrontController extends Controller {
 	}
 
 	/**
+	 * Sends the response.
+	 *
+	 * @param WebResponse $response
+	 */
+	public function sendResponse( WebResponse $response = null ) {
+		$response = $response ? : $this->getResponse();
+
+		// @todo we should implement some kind of Transport class to facilitate the header setting and print statement.
+
+		$headers = $response->getHeaders();
+
+		foreach ( (array) $headers as $name => $value ) {
+			header( $name . ': ' . $value );
+		}
+
+		header( 'HTTP/1.1 ' . (string) $response->getStatusCode() . '  ' . $response->getStatusDescription() );
+		print $response->getBody();
+	}
+
+	/**
 	 * Creates a controller instance by name.
 	 *
 	 * @param string $controllerName
@@ -68,6 +96,13 @@ class FrontController extends Controller {
 	 */
 	private function createController( $controllerName ) {
 		$controllerClassName = $this->loader->getControllerClassName( $controllerName );
-		return new $controllerClassName( $this->getRequest(), $this->getResponse(), $this->getRenderer() );
+
+		return new $controllerClassName(
+			$this->getRequest(),
+			$this->getResponse(),
+			$this->getRenderer(),
+			$this->getView(),
+			$this->getLayout()
+		);
 	}
 }

@@ -15,6 +15,11 @@ class ViewRendererOptions {
 	/**
 	 * @var string
 	 */
+	private $layoutDefaultTemplate;
+
+	/**
+	 * @var string
+	 */
 	private $viewTemplateSuffix;
 
 	/**
@@ -28,6 +33,7 @@ class ViewRendererOptions {
 	public function __construct() {
 		$this->layoutTemplatePath = null;
 		$this->layoutTemplateSuffix = null;
+		$this->layoutDefaultTemplate = null;
 		$this->viewTemplatePath = null;
 		$this->viewTemplateSuffix = null;
 	}
@@ -102,5 +108,23 @@ class ViewRendererOptions {
 	 */
 	public function setLayoutTemplateSuffix( $value ) {
 		$this->layoutTemplateSuffix = (string) $value;
+	}
+
+	/**
+	 * Retrieves the layout default template.
+	 *
+	 * @return string
+	 */
+	public function getLayoutDefaultTemplate() {
+		return $this->layoutDefaultTemplate;
+	}
+
+	/**
+	 * Sets the layout default template.
+	 *
+	 * @param string $value
+	 */
+	public function setLayoutDefaultTemplate( $value ) {
+		$this->layoutDefaultTemplate = (string) $value;
 	}
 }

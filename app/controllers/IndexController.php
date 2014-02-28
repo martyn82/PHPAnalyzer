@@ -11,7 +11,10 @@ class IndexController extends Controller {
 		parent::preDispatch();
 
 		$layout = $this->getLayout();
-		$layout->setTitle( 'PHP Analyzer');
+
+		if ( !is_null( $layout ) ) {
+			$layout->setTitle( 'PHP Analyzer');
+		}
 	}
 
 	/**
