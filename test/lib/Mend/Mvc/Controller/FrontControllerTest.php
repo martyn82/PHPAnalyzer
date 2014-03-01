@@ -37,11 +37,33 @@ class FrontControllerTest extends \TestCase {
 	}
 
 	/**
+	 * @expectedException \Mend\Mvc\ControllerException
+	 */
+	public function testDispatchNonExistentController() {
+		ControllerClassExists::$classExistsResult = false;
+
+		$url = $this->createUrl( 'http://www.example.org/controller/action' );
+		$request = $this->createRequest( $url );
+		$response = $this->createResponse( $url );
+		$renderer = $this->createRenderer();
+		$loader = $this->createLoader( 'foo' );
+
+		$layout = $this->getMock( '\Mend\Mvc\Layout' );
+
+		$controller = new FrontController( $request, $response, $renderer, $loader );
+		$controller->setLayout( $layout );
+		$controller->dispatch( 'foo', 'bar' );
+
+		self::fail( "Test should have triggered an exception." );
+	}
+
+	/**
 	 * @dataProvider urlProvider
 	 *
 	 * @param string $urlString
+	 * @param array $parameters
 	 */
-	public function testDispatchRequest( $urlString ) {
+	public function testDispatchRequest( $urlString, array $parameters ) {
 		$url = $this->createUrl( $urlString );
 		$request = $this->createRequest( $url );
 		$response = $this->createResponse( $url );
@@ -50,12 +72,20 @@ class FrontControllerTest extends \TestCase {
 
 		$controller = new FrontController( $request, $response, $renderer, $loader );
 		$controller->dispatchRequest();
+
+		$request = $controller->getRequest();
+		$params = $request->getParameters();
+
+		self::assertEquals( $parameters, $params->toArray() );
 	}
 
 	public function urlProvider() {
 		return array(
-			array( 'http://www.example.org/foo/bar' ),
-			array( 'http://www.example.org' )
+			array( 'http://www.example.org/foo/bar', array() ),
+			array( 'http://www.example.org', array() ),
+			array( 'http://www.example.co.org/foo/bar/baz/boo/faz', array( 'baz' => 'boo', 'faz' => null ) ),
+			array( 'http://www.example.co.org/foo/bar?baz=boo&faz=1', array( 'baz' => 'boo', 'faz' => 1 ) ),
+			array( 'http://www.example.co.org/foo/bar/baz/boz?baz=boo&faz=1', array( 'baz' => 'boz', 'faz' => 1 ) )
 		);
 	}
 

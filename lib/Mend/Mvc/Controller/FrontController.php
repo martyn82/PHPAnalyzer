@@ -7,6 +7,9 @@ use Mend\Mvc\View;
 use Mend\Mvc\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
+use Mend\Mvc\ControllerException;
+use Mend\Mvc\Route;
+use Mend\Collections\Map;
 
 class FrontController extends Controller {
 	/**
@@ -52,8 +55,16 @@ class FrontController extends Controller {
 		$controllerName = array_shift( $parts ) ? : 'index';
 		$actionName = array_shift( $parts ) ? : 'index';
 
-		$controller = $this->createController( $controllerName );
-		$controller->dispatchAction( $actionName );
+		$parameters = $request->getParameters();
+
+		for ( $i = 0; $i < count( $parts ); $i += 2 ) {
+			$key = $parts[ $i ];
+			$value = isset( $parts[ $i + 1 ] ) ? $parts[ $i + 1 ] : null;
+
+			$parameters->set( $key, $value );
+		}
+
+		$this->dispatch( $controllerName, $actionName );
 	}
 
 	/**
@@ -73,9 +84,15 @@ class FrontController extends Controller {
 	 * @param string $controllerName
 	 *
 	 * @return Controller
+	 *
+	 * @throws ControllerException
 	 */
-	private function createController( $controllerName ) {
+	protected function createController( $controllerName ) {
 		$controllerClassName = $this->loader->getControllerClassName( $controllerName );
+
+		if ( !class_exists( $controllerClassName, true ) ) {
+			throw new ControllerException( "Controller class not found: '{$controllerClassName}'." );
+		}
 
 		return new $controllerClassName(
 			$this->getRequest(),
