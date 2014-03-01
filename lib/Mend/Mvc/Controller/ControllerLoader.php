@@ -11,7 +11,7 @@ class ControllerLoader {
 	/**
 	 * @var array
 	 */
-	private $mapping;
+	private $prefixes;
 
 	/**
 	 * @var string
@@ -21,10 +21,10 @@ class ControllerLoader {
 	/**
 	 * Constructs a new controller loader.
 	 *
-	 * @param array $mapping
+	 * @param array $prefixes
 	 */
-	public function __construct( array $mapping, $controllerClassSuffix = self::DEFAULT_SUFFIX ) {
-		$this->mapping = $mapping;
+	public function __construct( array $prefixes, $controllerClassSuffix = self::DEFAULT_SUFFIX ) {
+		$this->prefixes = $prefixes;
 		$this->classSuffix = $controllerClassSuffix;
 	}
 
@@ -40,7 +40,7 @@ class ControllerLoader {
 	public function getControllerClassName( $controllerName ) {
 		$controllerClassName = ucfirst( $controllerName ) . $this->classSuffix;
 
-		foreach ( $this->mapping as $prefix ) {
+		foreach ( $this->prefixes as $prefix ) {
 			$fullyQualifiedName = $prefix . '\\' . $controllerClassName;
 
 			if ( !class_exists( $fullyQualifiedName, true ) ) {

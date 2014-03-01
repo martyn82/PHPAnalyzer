@@ -1,44 +1,23 @@
 <?php
-use Mend\Mvc\ViewRenderer;
-use Mend\Mvc\ViewRendererOptions;
-use Mend\Network\Web\WebRequest;
-use Mend\Network\Web\WebResponse;
-use Mend\Mvc\Controller\FrontController;
-use Mend\Mvc\Controller\ControllerLoader;
-use Mend\Mvc\Layout;
+
+use Application\Application;
+use Mend\Config\ConfigProvider;
+use Mend\Config\IniConfigReader;
+use Mend\IO\FileSystem\File;
+use Mend\IO\Stream\FileStreamReader;
 
 require_once realpath( __DIR__ . "/.." ) . "/bootstrap.php";
 
-if ( !defined( 'APP_DIR' ) ) {
-	define( 'APP_DIR', realpath( __DIR__ . "/../../app" ) );
-}
+$file = new File( 'config/application.ini' );
+$fsReader = new FileStreamReader( $file );
+$reader = new IniConfigReader( $fsReader );
+$config = new ConfigProvider( $reader );
 
-$autoLoader = new Autoloader();
-$autoLoader->addNamespace( "Controller", APP_DIR . "/controllers" );
-$autoLoader->addNamespace( "MVC", APP_DIR . "/mvc" );
-$autoLoader->register();
+$application = new Application( $config );
+$application->run();
 
-$viewScriptsPath = realpath( APP_DIR . "/views" );
-$layoutViewScript = realpath( APP_DIR . "/views/layout" );
-
-$request = WebRequest::createFromGlobals();
-$response = new WebResponse( $request->getUrl() );
-
-$options = new ViewRendererOptions();
-$options->setViewTemplatePath( $viewScriptsPath );
-$options->setViewTemplateSuffix( '.phtml' );
-$options->setLayoutTemplatePath( $layoutViewScript );
-$options->setLayoutDefaultTemplate( 'default' );
-$options->setLayoutTemplateSuffix( '.phtml' );
-
-$renderer = new ViewRenderer( $options );
-$loader = new ControllerLoader( array( 'Controller' ) );
-
-$frontController = new FrontController( $request, $response, $renderer, $loader );
-$frontController->setLayout( new Layout() );
-$frontController->dispatchRequest();
-
-$response = $frontController->getResponse();
+$controller = $application->getController();
+$response = $controller->getResponse();
 $headers = $response->getHeaders();
 
 foreach ( $headers as $name => $value ) {
