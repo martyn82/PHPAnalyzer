@@ -6,18 +6,26 @@ use Mend\Mvc\Controller;
 use Mend\Mvc\ControllerException;
 
 class ControllerLoader {
+	const DEFAULT_SUFFIX = 'Controller';
+
 	/**
 	 * @var array
 	 */
 	private $mapping;
 
 	/**
+	 * @var string
+	 */
+	private $classSuffix;
+
+	/**
 	 * Constructs a new controller loader.
 	 *
 	 * @param array $mapping
 	 */
-	public function __construct( array $mapping ) {
+	public function __construct( array $mapping, $controllerClassSuffix = self::DEFAULT_SUFFIX ) {
 		$this->mapping = $mapping;
+		$this->classSuffix = $controllerClassSuffix;
 	}
 
 	/**
@@ -30,7 +38,7 @@ class ControllerLoader {
 	 * @throws ControllerException
 	 */
 	public function getControllerClassName( $controllerName ) {
-		$controllerClassName = ucfirst( $controllerName ) . 'Controller';
+		$controllerClassName = ucfirst( $controllerName ) . $this->classSuffix;
 
 		foreach ( $this->mapping as $prefix ) {
 			$fullyQualifiedName = $prefix . '\\' . $controllerClassName;

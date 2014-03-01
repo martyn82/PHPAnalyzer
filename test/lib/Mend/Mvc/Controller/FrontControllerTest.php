@@ -9,33 +9,19 @@ use Mend\Network\Web\WebResponse;
 use Mend\Mvc\ViewRendererOptions;
 use Mend\Collections\Map;
 
-// mocked functions {
-function class_exists( $class_name, $auto_load ) {
-	return FrontControllerTest::class_exists( $class_name, $auto_load );
-}
-// }
+require_once 'ControllerClassExists.php';
 
 class FrontControllerTest extends \TestCase {
-	private static $classExistsResult;
-
-	public static function class_exists( $className, $autoLoad ) {
-		if ( is_null( self::$classExistsResult ) ) {
-			return \class_exists( $className, $autoLoad );
-		}
-
-		return self::$classExistsResult;
-	}
-
 	public function setUp() {
-		self::$classExistsResult = null;
+		ControllerClassExists::$classExistsResult = null;
 	}
 
 	public function tearDown() {
-		self::$classExistsResult = null;
+		ControllerClassExists::$classExistsResult = null;
 	}
 
 	public function testDispatch() {
-		self::$classExistsResult = true;
+		ControllerClassExists::$classExistsResult = true;
 
 		$url = $this->createUrl( 'http://www.example.org/controller/action' );
 		$request = $this->createRequest( $url );
@@ -71,10 +57,6 @@ class FrontControllerTest extends \TestCase {
 			array( 'http://www.example.org/foo/bar' ),
 			array( 'http://www.example.org' )
 		);
-	}
-
-	public function testSendResponse() {
-		self::markTestIncomplete( "Should test sendResponse, but cannot because of print statement." );
 	}
 
 	private function createUrl( $urlString ) {

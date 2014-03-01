@@ -37,4 +37,13 @@ $loader = new ControllerLoader( array( 'Controller' ) );
 $frontController = new FrontController( $request, $response, $renderer, $loader );
 $frontController->setLayout( new Layout() );
 $frontController->dispatchRequest();
-$frontController->sendResponse();
+
+$response = $frontController->getResponse();
+$headers = $response->getHeaders();
+
+foreach ( $headers as $name => $value ) {
+	header( "{$name}: {$value}" );
+}
+
+header( 'HTTP/1.1 ' . (string) $response->getStatusCode() . ' ' . $response->getStatusDescription() );
+print $response->getBody();

@@ -68,26 +68,6 @@ class FrontController extends Controller {
 	}
 
 	/**
-	 * Sends the response.
-	 *
-	 * @param WebResponse $response
-	 */
-	public function sendResponse( WebResponse $response = null ) {
-		$response = $response ? : $this->getResponse();
-
-		// @todo we should implement some kind of Transport class to facilitate the header setting and print statement.
-
-		$headers = $response->getHeaders();
-
-		foreach ( (array) $headers as $name => $value ) {
-			header( $name . ': ' . $value );
-		}
-
-		header( 'HTTP/1.1 ' . (string) $response->getStatusCode() . '  ' . $response->getStatusDescription() );
-		print $response->getBody();
-	}
-
-	/**
 	 * Creates a controller instance by name.
 	 *
 	 * @param string $controllerName
