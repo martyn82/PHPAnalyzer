@@ -18,6 +18,16 @@ class FrontController extends Controller {
 	private $loader;
 
 	/**
+	 * @var string
+	 */
+	private $controllerName;
+
+	/**
+	 * @var string
+	 */
+	private $actionName;
+
+	/**
 	 * Constructs a new Front Controller.
 	 *
 	 * @param WebRequest $request
@@ -46,14 +56,27 @@ class FrontController extends Controller {
 	 * Dispatches a request.
 	 */
 	public function dispatchRequest() {
+		$controllerName = $this->getControllerName();
+		$actionName = $this->getActionName();
+
+		$this->dispatch( $controllerName, $actionName );
+	}
+
+	/**
+	 * Parses the current request.
+	 *
+	 * @param string $defaultController
+	 * @param string $defaultAction
+	 */
+	protected function parseRequest( $defaultController = 'index', $defaultAction = 'index' ) {
 		$request = $this->getRequest();
 		$requestUrl = $request->getUrl();
 		$path = $requestUrl->getPath();
 
 		$parts = explode( '/', trim( $path, '/' ) );
 
-		$controllerName = array_shift( $parts ) ? : 'index';
-		$actionName = array_shift( $parts ) ? : 'index';
+		$this->controllerName = array_shift( $parts ) ? : $defaultController;
+		$this->actionName = array_shift( $parts ) ? : $defaultAction;
 
 		$parameters = $request->getParameters();
 
@@ -63,8 +86,24 @@ class FrontController extends Controller {
 
 			$parameters->set( $key, $value );
 		}
+	}
 
-		$this->dispatch( $controllerName, $actionName );
+	/**
+	 * @see Controller::getControllerName()
+	 */
+	protected function getControllerName() {
+		if ( is_null( $this->controllerName ) ) {
+			$this->parseRequest();
+		}
+
+		return $this->controllerName;
+	}
+
+	/**
+	 * @see Controller::getActionName()
+	 */
+	protected function getActionName() {
+		return $this->actionName;
 	}
 
 	/**

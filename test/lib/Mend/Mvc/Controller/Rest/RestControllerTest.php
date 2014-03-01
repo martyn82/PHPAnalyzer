@@ -1,9 +1,8 @@
 <?php
-namespace Mend\Mvc\Controller;
+namespace Mend\Mvc\Controller\Rest;
 
 use Mend\Collections\Map;
 use Mend\Mvc\Controller;
-use Mend\Mvc\Route;
 use Mend\Mvc\ViewRenderer;
 use Mend\Mvc\ViewRendererOptions;
 use Mend\Network\Web\Url;
@@ -87,68 +86,6 @@ class RestControllerTest extends \TestCase {
 	}
 }
 
-class RestController extends FrontController {
-	/**
-	 * @see FrontController::dispatchRequest()
-	 */
-	public function dispatchRequest() {
-		$controllerName = $this->getControllerName();
-		$request = $this->getRequest();
-
-		switch ( $request->getMethod() ) {
-			case HttpMethod::METHOD_DELETE:
-				$actionName = RestAction::ACTION_DELETE;
-				break;
-
-			case HttpMethod::METHOD_GET:
-				if ( $request->getParameters()->get( 'id' ) != null ) {
-					$actionName = RestAction::ACTION_READ;
-				}
-				else {
-					$actionName = RestAction::ACTION_INDEX;
-				}
-				break;
-
-			case HttpMethod::METHOD_POST:
-				$actionName = RestAction::ACTION_CREATE;
-				break;
-
-			case HttpMethod::METHOD_PUT:
-			case HttpMethod::METHOD_PATCH:
-				$actionName = RestAction::ACTION_UPDATE;
-				break;
-		}
-
-		$this->dispatch( $controllerName, $actionName );
-	}
-
-	/**
-	 * @see Controller::getControllerName()
-	 */
-	protected function getControllerName() {
-		$request = $this->getRequest();
-		$requestUrl = $request->getUrl();
-		$parameters = $request->getParameters();
-
-		$path = $requestUrl->getPath();
-		$parts = explode( '/', trim( $path, '/' ) );
-
-		$controllerName = array_shift( $parts ) ? : 'index';
-		$identifier = array_shift( $parts ) ? : null;
-
-		$parameters->set( 'id', $identifier );
-
-		for ( $i = 0; $i < count( $parts ); $i += 2 ) {
-			$key = $parts[ $i ];
-			$value = isset( $parts[ $i + 1 ] ) ? $parts[ $i + 1 ] : null;
-
-			$parameters->set( $key, $value );
-		}
-
-		return $controllerName;
-	}
-}
-
 class DummyRestController extends RestController {
 	/**
 	 * @var Controller
@@ -172,23 +109,7 @@ class DummyRestController extends RestController {
 	}
 }
 
-class RestAction {
-	const ACTION_INDEX = 'index';
-	const ACTION_READ = 'read';
-	const ACTION_CREATE = 'create';
-	const ACTION_UPDATE = 'update';
-	const ACTION_DELETE = 'delete';
-}
-
 abstract class ResourceController extends Controller {
-	public function actionIndex() { /* no-op */ }
-	public function actionCreate() { /* no-op */ }
-	public function actionUpdate() { /* no-op */ }
-	public function actionDelete() { /* no-op */ }
-	public function actionRead() { /* no-op */ }
-}
-
-class DummyController extends ResourceController {
 	public function actionIndex() { /* no-op */ }
 	public function actionCreate() { /* no-op */ }
 	public function actionUpdate() { /* no-op */ }
