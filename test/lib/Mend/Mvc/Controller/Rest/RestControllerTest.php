@@ -28,7 +28,7 @@ class RestControllerTest extends \TestCase {
 	 * @param string $method
 	 * @param string $expectedActionMethod
 	 */
-	public function test( $urlString, $method, $expectedActionMethod ) {
+	public function testDispatch( $urlString, $method, $expectedActionMethod ) {
 		ControllerClassExists::$classExistsResult = true;
 
 		$request = $this->createRequest( $urlString, $method );
@@ -60,6 +60,34 @@ class RestControllerTest extends \TestCase {
 			array( 'http://www.example.org/resource/1', HttpMethod::METHOD_DELETE, 'actionDelete' ),
 			array( 'http://www.example.org/resource/1/sub', HttpMethod::METHOD_GET, 'actionRead' )
 		);
+	}
+
+	/**
+	 * @expectedException \Mend\Mvc\ControllerException
+	 */
+	public function testDispatchInvalidRequestMethod() {
+		$urlString = 'http://www.example.org';
+		$method = 'non';
+
+		ControllerClassExists::$classExistsResult = true;
+
+		$request = $this->createRequest( $urlString, $method );
+		$response = $this->createResponse();
+		$renderer = $this->createViewRenderer();
+		$loader = $this->createLoader();
+
+		$resourceController = $this->getMock(
+			'\Mend\Mvc\Controller',
+			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete' ),
+			array( $request, $response, $renderer )
+		);
+
+		$controller = new DummyRestController( $request, $response, $renderer, $loader );
+		$controller->setController( $resourceController );
+
+		$controller->dispatchRequest();
+
+		self::fail( 'Test should have triggered an exception.' );
 	}
 
 	private function createRequest( $urlString, $method ) {
