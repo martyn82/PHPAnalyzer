@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc;
+namespace Mend\Mvc\View;
 
 // mocked functions {
 function is_dir( $filename ) {
@@ -65,7 +65,7 @@ class ViewRendererTest extends \TestCase {
 	}
 
 	/**
-	 * @expectedException \Mend\Mvc\ViewException
+	 * @expectedException \Mend\Mvc\View\ViewException
 	 */
 	public function testRenderInvalidTemplatePath() {
 		self::$isDirResult = false;
@@ -84,14 +84,14 @@ class ViewRendererTest extends \TestCase {
 	}
 
 	private function createOptions() {
-		return $this->getMock( '\Mend\Mvc\ViewRendererOptions' );
+		return $this->getMock( '\Mend\Mvc\View\ViewRendererOptions' );
 	}
 
 	private function createView() {
-		return $this->getMock( '\Mend\Mvc\View', array( 'render' ) );
+		return $this->getMock( '\Mend\Mvc\View\View', array( 'render' ) );
 	}
 
 	private function createLayout() {
-		return $this->getMock( '\Mend\Mvc\Layout', array( 'render' ) );
+		return $this->getMock( '\Mend\Mvc\View\Layout', array( 'render' ) );
 	}
 }

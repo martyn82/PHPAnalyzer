@@ -1,9 +1,9 @@
 <?php
-namespace Mend\Mvc\Controller\Rest;
+namespace Mend\Mvc\Rest;
 
+use Mend\Mvc\Controller\ControllerException;
 use Mend\Mvc\Controller\FrontController;
 use Mend\Network\Web\HttpMethod;
-use Mend\Mvc\ControllerException;
 
 class RestController extends FrontController {
 	/**

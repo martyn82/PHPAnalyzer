@@ -1,6 +1,9 @@
 <?php
-namespace Mend\Mvc;
+namespace Mend\Mvc\Controller;
 
+use Mend\Mvc\View\Layout;
+use Mend\Mvc\View\View;
+use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebResponse;
 use Mend\Network\Web\WebRequest;
 

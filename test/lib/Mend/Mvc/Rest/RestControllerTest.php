@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc\Controller\Rest;
+namespace Mend\Mvc\Rest;
 
 use Mend\Collections\Map;
 use Mend\Mvc\Controller;
@@ -37,7 +37,7 @@ class RestControllerTest extends \TestCase {
 		$loader = $this->createLoader();
 
 		$resourceController = $this->getMock(
-			'\Mend\Mvc\Controller',
+			'\Mend\Mvc\Rest\ResourceController',
 			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete' ),
 			array( $request, $response, $renderer )
 		);
@@ -63,7 +63,7 @@ class RestControllerTest extends \TestCase {
 	}
 
 	/**
-	 * @expectedException \Mend\Mvc\ControllerException
+	 * @expectedException \Mend\Mvc\Controller\ControllerException
 	 */
 	public function testDispatchInvalidRequestMethod() {
 		$urlString = 'http://www.example.org';
@@ -77,7 +77,7 @@ class RestControllerTest extends \TestCase {
 		$loader = $this->createLoader();
 
 		$resourceController = $this->getMock(
-			'\Mend\Mvc\Controller',
+			'\Mend\Mvc\Rest\ResourceController',
 			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete' ),
 			array( $request, $response, $renderer )
 		);
@@ -106,7 +106,7 @@ class RestControllerTest extends \TestCase {
 	}
 
 	private function createViewRenderer() {
-		return $this->getMock( '\Mend\Mvc\ViewRenderer', array(), array(), '', false );
+		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
 	}
 
 	private function createLoader() {
@@ -116,16 +116,16 @@ class RestControllerTest extends \TestCase {
 
 class DummyRestController extends RestController {
 	/**
-	 * @var Controller
+	 * @var ResourceController
 	 */
 	private $controller;
 
 	/**
 	 * Sets the controller to use.
 	 *
-	 * @param Controller $controller
+	 * @param ResourceController $controller
 	 */
-	public function setController( Controller $controller ) {
+	public function setController( ResourceController $controller ) {
 		$this->controller = $controller;
 	}
 
@@ -135,12 +135,4 @@ class DummyRestController extends RestController {
 	protected function createController( $controllerName ) {
 		return $this->controller;
 	}
-}
-
-abstract class ResourceController extends Controller {
-	public function actionIndex() { /* no-op */ }
-	public function actionCreate() { /* no-op */ }
-	public function actionUpdate() { /* no-op */ }
-	public function actionDelete() { /* no-op */ }
-	public function actionRead() { /* no-op */ }
 }

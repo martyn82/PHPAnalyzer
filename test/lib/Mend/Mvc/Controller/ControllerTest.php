@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc;
+namespace Mend\Mvc\Controller;
 
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
@@ -76,7 +76,7 @@ class ControllerTest extends \TestCase {
 	}
 
 	/**
-	 * @expectedException \Mend\Mvc\ControllerException
+	 * @expectedException \Mend\Mvc\Controller\ControllerException
 	 */
 	public function testDispatchNonExistentAction() {
 		$url = $this->createUrl();
@@ -97,7 +97,7 @@ class ControllerTest extends \TestCase {
 	}
 
 	private function createViewRenderer() {
-		return $this->getMock( '\Mend\Mvc\ViewRenderer', array(), array(), '', false );
+		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
 	}
 
 	private function createRequest( Url $url ) {
@@ -109,11 +109,11 @@ class ControllerTest extends \TestCase {
 	}
 
 	private function createView() {
-		return $this->getMock( '\Mend\Mvc\View' );
+		return $this->getMock( '\Mend\Mvc\View\View' );
 	}
 
 	private function createLayout() {
-		return $this->getMock( '\Mend\Mvc\Layout' );
+		return $this->getMock( '\Mend\Mvc\View\Layout' );
 	}
 }
 

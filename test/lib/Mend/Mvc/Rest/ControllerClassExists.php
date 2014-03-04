@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc\Controller\Rest;
+namespace Mend\Mvc\Rest;
 
 function class_exists( $class_name, $autoload = null ) {
 	return ControllerClassExists::class_exists( $class_name, $autoload );

@@ -1,13 +1,11 @@
 <?php
 namespace Mend\Mvc\Controller;
 
-use Mend\Mvc\Controller;
-use Mend\Mvc\ControllerException;
+use Mend\Collections\Map;
+use Mend\Mvc\View\ViewRendererOptions;
 use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
-use Mend\Mvc\ViewRendererOptions;
-use Mend\Collections\Map;
 
 require_once 'ControllerClassExists.php';
 
@@ -29,7 +27,7 @@ class FrontControllerTest extends \TestCase {
 		$renderer = $this->createRenderer();
 		$loader = $this->createLoader( 'foo' );
 
-		$layout = $this->getMock( '\Mend\Mvc\Layout' );
+		$layout = $this->getMock( '\Mend\Mvc\View\Layout' );
 
 		$controller = new FrontController( $request, $response, $renderer, $loader );
 		$controller->setLayout( $layout );
@@ -37,7 +35,7 @@ class FrontControllerTest extends \TestCase {
 	}
 
 	/**
-	 * @expectedException \Mend\Mvc\ControllerException
+	 * @expectedException \Mend\Mvc\Controller\ControllerException
 	 */
 	public function testDispatchNonExistentController() {
 		ControllerClassExists::$classExistsResult = false;
@@ -48,7 +46,7 @@ class FrontControllerTest extends \TestCase {
 		$renderer = $this->createRenderer();
 		$loader = $this->createLoader( 'foo' );
 
-		$layout = $this->getMock( '\Mend\Mvc\Layout' );
+		$layout = $this->getMock( '\Mend\Mvc\View\Layout' );
 
 		$controller = new FrontController( $request, $response, $renderer, $loader );
 		$controller->setLayout( $layout );
@@ -108,7 +106,7 @@ class FrontControllerTest extends \TestCase {
 	}
 
 	private function createRenderer() {
-		return $this->getMock( '\Mend\Mvc\ViewRenderer', array(), array( new ViewRendererOptions() ) );
+		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array( new ViewRendererOptions() ) );
 	}
 
 	private function createLoader( $controllerName ) {

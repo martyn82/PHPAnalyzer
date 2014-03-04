@@ -24,7 +24,7 @@ class ControllerLoaderTest extends \TestCase {
 		ControllerClassExists::$classExistsResult = $classInMap;
 
 		if ( !$classInMap ) {
-			self::setExpectedException( '\Mend\Mvc\ControllerException' );
+			self::setExpectedException( '\Mend\Mvc\Controller\ControllerException' );
 		}
 
 		$loader = new ControllerLoader( $mapping );

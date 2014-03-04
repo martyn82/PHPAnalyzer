@@ -2,8 +2,6 @@
 namespace Mend\Mvc\Controller;
 
 use Mend\Collections\Map;
-use Mend\Mvc\Controller;
-use Mend\Mvc\ControllerException;
 
 class ControllerLoader {
 	const DEFAULT_SUFFIX = 'Controller';

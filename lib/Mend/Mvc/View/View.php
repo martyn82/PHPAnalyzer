@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc;
+namespace Mend\Mvc\View;
 
 if ( !defined( 'ENT_HTML5' ) ) {
 	define( 'ENT_HTML5', 0 );

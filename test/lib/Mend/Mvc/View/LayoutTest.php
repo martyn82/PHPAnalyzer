@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc;
+namespace Mend\Mvc\View;
 
 class LayoutTest extends \TestCase {
 	public function testRender() {

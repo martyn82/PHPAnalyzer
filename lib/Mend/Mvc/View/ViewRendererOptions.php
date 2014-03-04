@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc;
+namespace Mend\Mvc\View;
 
 class ViewRendererOptions {
 	/**

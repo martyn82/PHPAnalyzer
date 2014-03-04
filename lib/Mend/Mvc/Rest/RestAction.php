@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc\Controller\Rest;
+namespace Mend\Mvc\Rest;
 
 class RestAction {
 	const ACTION_INDEX = 'index';

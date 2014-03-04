@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc;
+namespace Mend\Mvc\View;
 
 // mock function {
 function file_exists( $filename ) {
@@ -50,7 +50,7 @@ class ViewTest extends \TestCase {
 	}
 
 	/**
-	 * @expectedException \Mend\Mvc\ViewException
+	 * @expectedException \Mend\Mvc\View\ViewException
 	 */
 	public function testGetNonExistent() {
 		$non = 'non';
@@ -80,7 +80,7 @@ class ViewTest extends \TestCase {
 	}
 
 	/**
-	 * @expectedException \Mend\Mvc\ViewException
+	 * @expectedException \Mend\Mvc\View\ViewException
 	 */
 	public function testRenderNonExistentFile() {
 		self::$fileExistsResult = false;

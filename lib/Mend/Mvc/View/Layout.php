@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc;
+namespace Mend\Mvc\View;
 
 use Mend\I18n\CharacterSet;
 use Mend\I18n\Culture;

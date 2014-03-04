@@ -1,15 +1,12 @@
 <?php
 namespace Mend\Mvc\Controller;
 
-use Mend\Mvc\Controller;
-use Mend\Mvc\Layout;
-use Mend\Mvc\View;
-use Mend\Mvc\ViewRenderer;
+use Mend\Collections\Map;
+use Mend\Mvc\View\Layout;
+use Mend\Mvc\View\View;
+use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
-use Mend\Mvc\ControllerException;
-use Mend\Mvc\Route;
-use Mend\Collections\Map;
 
 class FrontController extends Controller {
 	/**
