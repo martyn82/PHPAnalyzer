@@ -1,38 +1,27 @@
 <?php
-use Mend\Network\Web\HttpRequest;
-use Mend\Network\Web\RESTServer;
+use Mend\Application;
+use Mend\Config\ConfigProvider;
+use Mend\Config\IniConfigReader;
+use Mend\IO\FileSystem\File;
+use Mend\IO\Stream\FileStreamReader;
 
 require_once realpath( __DIR__ . "/.." ) . "/bootstrap.php";
 
-if ( !defined( 'APP_DIR' ) ) {
-	define( 'APP_DIR', realpath( __DIR__ . "/../../service" ) );
+$file = new File( 'config/application.ini' );
+$fsReader = new FileStreamReader( $file );
+$reader = new IniConfigReader( $fsReader );
+$config = new ConfigProvider( $reader );
+
+$application = new Application( $config );
+$application->run();
+
+$controller = $application->getController();
+$response = $controller->getResponse();
+$headers = $response->getHeaders();
+
+foreach ( $headers as $name => $value ) {
+	header( "{$name}: {$value}" );
 }
 
-$request = parse_url( $_SERVER[ 'REQUEST_URI' ] );
-$path = $request[ 'path' ];
-$parameters = array_filter( explode( '/', $path ) );
-
-$resource = array_shift( $parameters );
-$identifier = array_shift( $parameters );
-
-$properties = array();
-while ( count( $parameters ) > 0 ) {
-	$properties[] = array_shift( $parameters );
-}
-
-$_GET[ 'id' ] = $identifier;
-$_GET[ 'resource' ] = $resource;
-$_GET[ 'properties' ] = $properties;
-
-require_once LIB_DIR . "/Autoloader.php";
-
-$autoLoader = new Autoloader();
-$autoLoader->addNamespace( "Mend", LIB_DIR . "/Mend" );
-$autoLoader->addNamespace( "rest", APP_DIR . "/rest" );
-$autoLoader->addNamespace( "resource", APP_DIR . "/resources" );
-$autoLoader->register();
-
-$request = HttpRequest::create();
-$server = new RESTServer( $request );
-
-$server->dispatch( $resource );
+header( 'HTTP/1.1 ' . (string) $response->getStatusCode() . ' ' . $response->getStatusDescription() );
+print $response->getBody();

@@ -1,5 +1,5 @@
 <?php
-namespace Application;
+namespace Mend;
 
 class ApplicationConfigKey {
 	const LAYOUT_PATH = 'application:layout.path';

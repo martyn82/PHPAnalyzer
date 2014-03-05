@@ -44,6 +44,11 @@ abstract class Controller {
 	private $actionName;
 
 	/**
+	 * @var boolean
+	 */
+	private $viewRendererEnabled;
+
+	/**
 	 * Constructs a new controller.
 	 *
 	 * @param WebRequest $request
@@ -65,6 +70,8 @@ abstract class Controller {
 
 		$this->view = $view ? : $this->createView();
 		$this->layout = $layout;
+
+		$this->viewRendererEnabled = true;
 
 		$this->init();
 	}
@@ -129,6 +136,15 @@ abstract class Controller {
 	}
 
 	/**
+	 * Enables or disables the view renderer.
+	 *
+	 * @param boolean $enabled
+	 */
+	public function enableRenderer( $enabled = true ) {
+		$this->viewRendererEnabled = (bool) $enabled;
+	}
+
+	/**
 	 * Renders the current view.
 	 *
 	 * @param string $actionName
@@ -137,6 +153,10 @@ abstract class Controller {
 	 * @return string
 	 */
 	protected function render( $actionName, $controllerName ) {
+		if ( !$this->viewRendererEnabled ) {
+			return null;
+		}
+
 		$content = $this->renderer->renderView( $this->view, $actionName, $controllerName );
 
 		if ( is_null( $this->layout ) ) {

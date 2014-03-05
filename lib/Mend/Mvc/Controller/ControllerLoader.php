@@ -48,6 +48,6 @@ class ControllerLoader {
 			return $fullyQualifiedName;
 		}
 
-		throw new ControllerException( "Controller does not exist: '{$controllerName}'." );
+		throw new ControllerException( "Controller class does not exist: '{$controllerClassName}'." );
 	}
 }

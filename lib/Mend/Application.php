@@ -1,12 +1,12 @@
 <?php
-namespace Application;
+namespace Mend;
 
 use Mend\Config\ConfigProvider;
-use Mend\Mvc\Controller;
 use Mend\Mvc\Controller\ControllerLoader;
-use Mend\Mvc\Layout;
-use Mend\Mvc\ViewRenderer;
-use Mend\Mvc\ViewRendererOptions;
+use Mend\Mvc\Controller\FrontController;
+use Mend\Mvc\View\Layout;
+use Mend\Mvc\View\ViewRenderer;
+use Mend\Mvc\View\ViewRendererOptions;
 use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
@@ -18,7 +18,7 @@ class Application {
 	private $config;
 
 	/**
-	 * @var Controller
+	 * @var FrontController
 	 */
 	private $controller;
 
@@ -36,10 +36,14 @@ class Application {
 	 * Initializes the application.
 	 */
 	protected function init() {
-		$request = $this->initRequest();
-		$response = $this->initResponse( $request->getUrl() );
-		$renderer = $this->initViewRenderer();
-		$this->controller = $this->initController( $request, $response, $renderer );
+		$request = $this->createRequest();
+		$response = $this->createResponse( $request->getUrl() );
+
+		$options = $this->createViewRendererOptions();
+		$renderer = $this->createViewRenderer( $options );
+		$loader = $this->createControllerLoader();
+
+		$this->controller = $this->createController( $request, $response, $renderer, $loader );
 	}
 
 	/**
@@ -47,7 +51,7 @@ class Application {
 	 *
 	 * @return WebRequest
 	 */
-	private function initRequest() {
+	protected function createRequest() {
 		return WebRequest::createFromGlobals();
 	}
 
@@ -58,16 +62,27 @@ class Application {
 	 *
 	 * @return WebResponse
 	 */
-	private function initResponse( Url $url ) {
+	protected function createResponse( Url $url ) {
 		return new WebResponse( $url );
+	}
+
+	/**
+	 * Initializes a ViewRendererOptions instance.
+	 *
+	 * @return ViewRendererOptions
+	 */
+	protected function createViewRendererOptions() {
+		return new ViewRendererOptions();
 	}
 
 	/**
 	 * Initializes the view renderer.
 	 *
+	 * @param ViewRendererOptions $options
+	 *
 	 * @return ViewRenderer
 	 */
-	private function initViewRenderer() {
+	protected function createViewRenderer( ViewRendererOptions $options ) {
 		$viewPath = realpath( $this->config->getString( ApplicationConfigKey::VIEW_PATH ) );
 		$viewSuffix = $this->config->getString( ApplicationConfigKey::VIEW_TEMPLATE_SUFFIX );
 
@@ -75,7 +90,6 @@ class Application {
 		$layoutTemplate = $this->config->getString( ApplicationConfigKey::LAYOUT_DEFAULT_TEMPLATE );
 		$layoutSuffix = $this->config->getString( ApplicationConfigKey::LAYOUT_TEMPLATE_SUFFIX );
 
-		$options = new ViewRendererOptions();
 		$options->setViewTemplatePath( $viewPath );
 		$options->setViewTemplateSuffix( $viewSuffix );
 
@@ -87,21 +101,37 @@ class Application {
 	}
 
 	/**
+	 * Initializes the controller loader.
+	 *
+	 * @return ControllerLoader
+	 */
+	protected function createControllerLoader() {
+		$controllerClassSuffix = $this->config->getString( ApplicationConfigKey::CONTROLLER_CLASS_SUFFIX );
+		$controllerNamespaces = $this->config->getArray( ApplicationConfigKey::CONTROLLER_CLASS_NAMESPACES );
+
+		return new ControllerLoader( $controllerNamespaces, $controllerClassSuffix );
+	}
+
+	/**
 	 * Initializes the main controller.
 	 *
 	 * @param WebRequest $request
 	 * @param WebResponse $response
 	 * @param ViewRenderer $renderer
+	 * @param ControllerLoader $loader
 	 *
-	 * @return Controller
+	 * @return FrontController
 	 */
-	private function initController( WebRequest $request, WebResponse $response, ViewRenderer $renderer ) {
-		$controllerClassSuffix = $this->config->getString( ApplicationConfigKey::CONTROLLER_CLASS_SUFFIX );
-		$controllerNamespaces = $this->config->getArray( ApplicationConfigKey::CONTROLLER_CLASS_NAMESPACES );
+	protected function createController(
+		WebRequest $request,
+		WebResponse $response,
+		ViewRenderer $renderer,
+		ControllerLoader $loader
+	) {
 		$controllerClassName = $this->config->getString( ApplicationConfigKey::CONTROLLER_CLASS_MAIN );
+		$controller = new $controllerClassName( $request, $response, $renderer, $loader );
 
-		$controllerLoader = new ControllerLoader( $controllerNamespaces, $controllerClassSuffix );
-		$controller = new $controllerClassName( $request, $response, $renderer, $controllerLoader );
+		assert( $controller instanceof FrontController );
 
 		if ( $this->config->getBoolean( ApplicationConfigKey::LAYOUT_ENABLED ) ) {
 			$controller->setLayout( new Layout() );
@@ -113,7 +143,7 @@ class Application {
 	/**
 	 * Retrieves the main controller.
 	 *
-	 * @return Controller
+	 * @return FrontController
 	 */
 	public function getController() {
 		return $this->controller;

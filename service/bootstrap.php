@@ -1,24 +1,11 @@
 <?php
-date_default_timezone_set( 'Europe/Amsterdam' );
+require_once realpath( __DIR__ . "/.." ) . "/bootstrap.php";
 
-define( 'APPLICATION_ENV', getenv( 'APPLICATION_ENV' ) ? : 'production' );
+define( 'APP_DIR', realpath( __DIR__ . "/../service" ) );
 
-if ( APPLICATION_ENV == 'development' ) {
-	ini_set( 'display_startup_errors', 1 );
-	ini_set( 'display_errors', '1' );
-}
+chdir( APP_DIR );
 
-error_reporting( -1 );
-set_error_handler(
-	function ( $code, $message, $file = null, $line = null ) {
-		throw new \ErrorException( $message, $code, $code, $file, $line );
-	}
-);
-
-if ( !defined( 'ROOT_DIR' ) ) {
-	define( 'ROOT_DIR', realpath( __DIR__ ) );
-}
-
-if ( !defined( 'LIB_DIR' ) ) {
-	define( 'LIB_DIR', realpath( __DIR__ . "/../lib" ) );
-}
+$autoLoader = new Autoloader();
+$autoLoader->addNamespace( "Mend", LIB_DIR . "/Mend" );
+$autoLoader->addNamespace( "Controller", APP_DIR . "/controllers" );
+$autoLoader->register();

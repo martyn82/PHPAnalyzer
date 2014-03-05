@@ -1,7 +1,7 @@
 <?php
 namespace Controller;
 
-use Mend\Mvc\Controller;
+use Mend\Mvc\Controller\Controller;
 
 class IndexController extends Controller {
 	/**

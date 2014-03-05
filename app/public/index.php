@@ -1,6 +1,5 @@
 <?php
-
-use Application\Application;
+use Mend\Application;
 use Mend\Config\ConfigProvider;
 use Mend\Config\IniConfigReader;
 use Mend\IO\FileSystem\File;
