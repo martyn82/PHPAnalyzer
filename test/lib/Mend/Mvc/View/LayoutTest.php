@@ -11,7 +11,7 @@ class LayoutTest extends \TestCase {
 		$layout->setContent( 'content' );
 		$layout->setCulture( $culture );
 
-		$scriptFile = 'test:///foo.phtml';
+		$scriptFile = $this->createFile( 'test:///foo.phtml' );
 		$output = $layout->render( $scriptFile );
 
 		self::assertTrue( is_string( $output ) );
@@ -23,7 +23,7 @@ class LayoutTest extends \TestCase {
 		$layout->setTitle( 'title' );
 		$layout->setContent( 'content' );
 
-		$scriptFile = 'test:///foo.phtml';
+		$scriptFile = $this->createFile( 'test:///foo.phtml' );
 		$output = $layout->render( $scriptFile );
 
 		self::assertTrue( is_string( $output ) );
@@ -34,7 +34,7 @@ class LayoutTest extends \TestCase {
 
 		$layout->setTitle( 'title' );
 
-		$scriptFile = 'test:///foo.phtml';
+		$scriptFile = $this->createFile( 'test:///foo.phtml' );
 		$output = $layout->render( $scriptFile );
 
 		self::assertTrue( is_string( $output ) );
@@ -43,7 +43,7 @@ class LayoutTest extends \TestCase {
 	public function testRenderNoTitle() {
 		$layout = new Layout();
 
-		$scriptFile = 'test:///foo.phtml';
+		$scriptFile = $this->createFile( 'test:///foo.phtml' );
 		$output = $layout->render( $scriptFile );
 
 		self::assertTrue( is_string( $output ) );
@@ -51,5 +51,19 @@ class LayoutTest extends \TestCase {
 
 	private function createCulture() {
 		return $this->getMock( '\Mend\I18n\Culture', array(), array(), '', false );
+	}
+
+	private function createFile( $location ) {
+		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'exists', 'getName' ), array( $location ) );
+
+		$file->expects( self::any() )
+			->method( 'exists' )
+			->will( self::returnValue( true ) );
+
+		$file->expects( self::any() )
+			->method( 'getName' )
+			->will( self::returnValue( $location ) );
+
+		return $file;
 	}
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Mend\Mvc;
 
+use Mend\IO\FileSystem\File;
 use Mend\Mvc\View\ViewException;
 
 if ( !defined( 'ENT_HTML5' ) ) {
@@ -56,19 +57,19 @@ class View {
 	/**
 	 * Renders this view using the given renderer.
 	 *
-	 * @param string $templateFile
+	 * @param File $templateFile
 	 *
 	 * @return string
 	 *
 	 * @throws ViewException
 	 */
-	public function render( $templateFile ) {
-		if ( !file_exists( $templateFile ) ) {
-			throw new ViewException( "No such view template file: '{$templateFile}'." );
+	public function render( File $templateFile ) {
+		if ( !$templateFile->exists() ) {
+			throw new ViewException( "No such view template file: '{$templateFile->getName()}'." );
 		}
 
 		ob_start();
-		require $templateFile;
+		require $templateFile->getName();
 		$output = ob_get_contents();
 		ob_end_clean();
 

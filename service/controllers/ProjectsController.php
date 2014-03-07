@@ -3,7 +3,6 @@ namespace Controller;
 
 use Mend\Mvc\View;
 use Mend\Mvc\View\Layout;
-use Mend\Mvc\View\ViewRenderer;
 use Mend\Mvc\Rest\RestResult;
 use Mend\Mvc\Rest\ResourceController;
 use Mend\Network\Web\WebRequest;

@@ -6,6 +6,7 @@ use Mend\I18n\Culture;
 use Mend\I18n\Locale;
 use Mend\I18n\ReadingDirection;
 use Mend\Mvc\View;
+use Mend\IO\FileSystem\File;
 
 class Layout extends View {
 	/**
@@ -53,13 +54,13 @@ class Layout extends View {
 	/**
 	 * Renders the layout.
 	 *
-	 * @param string $scriptFile
+	 * @param File $templateFile
 	 *
 	 * @return string
 	 */
-	public function render( $scriptFile ) {
+	public function render( File $templateFile ) {
 		$this->preRender();
-		return parent::render( $scriptFile );
+		return parent::render( $templateFile );
 	}
 
 	/**

@@ -1,11 +1,11 @@
 <?php
 namespace Mend\Mvc\Controller;
 
+use Mend\IO\FileSystem\File;
 use Mend\Mvc\Controller;
 use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\View;
 use Mend\Mvc\View\Layout;
-use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 
@@ -106,13 +106,13 @@ abstract class PageController extends Controller {
 			return '';
 		}
 
-		$templateFile = $this->viewTemplatePath . DIRECTORY_SEPARATOR . $this->getActionName() . '.phtml';
+		$templateFile = new File( $this->viewTemplatePath . DIRECTORY_SEPARATOR . $this->getActionName() . '.phtml' );
 		$renderedView = $this->view->render( $templateFile );
 
 		if ( $this->layoutEnabled && !is_null( $this->layout ) ) {
 			$this->layout->setContent( $renderedView );
 
-			$layoutFile = $this->layoutTemplatePath . DIRECTORY_SEPARATOR . $this->layoutTemplate;
+			$layoutFile = new File( $this->layoutTemplatePath . DIRECTORY_SEPARATOR . $this->layoutTemplate );
 			$renderedView = $this->layout->render( $layoutFile );
 		}
 

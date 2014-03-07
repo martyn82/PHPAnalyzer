@@ -32,4 +32,22 @@ class DirectoryTest extends \TestCase {
 		$directory = new Directory( $location );
 		self::assertEquals( $location, (string) $directory );
 	}
+
+	public function testDirectoryExists() {
+		$location = '/tmp';
+		$directory = new Directory( $location );
+		self::assertTrue( $directory->exists() );
+	}
+
+	public function testDirectoryIsDirectory() {
+		$location = '/tmp';
+		$directory = new Directory( $location );
+		self::assertTrue( $directory->isDirectory() );
+	}
+
+	public function testDirectoryIsFile() {
+		$location = '/tmp';
+		$directory = new Directory( $location );
+		self::assertFalse( $directory->isFile() );
+	}
 }

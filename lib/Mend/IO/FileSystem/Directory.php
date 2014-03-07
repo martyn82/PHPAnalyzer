@@ -37,7 +37,28 @@ class Directory implements FileSystem {
 	 * @return string
 	 */
 	public function getBaseName() {
-		return basename( $this->location );
+		return \basename( $this->location );
+	}
+
+	/**
+	 * @see FileSystem::exists()
+	 */
+	public function exists() {
+		return \file_exists( $this->location );
+	}
+
+	/**
+	 * @see FileSystem::isDirectory()
+	 */
+	public function isDirectory() {
+		return \is_dir( $this->location );
+	}
+
+	/**
+	 * @see FileSystem::isFile()
+	 */
+	public function isFile() {
+		return \is_file( $this->location );
 	}
 
 	/**

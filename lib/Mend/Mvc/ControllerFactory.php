@@ -1,7 +1,7 @@
 <?php
 namespace Mend\Mvc;
 
-use Mend\RClass;
+use Mend\ClassInformation;
 use Mend\Mvc\Controller;
 use Mend\Mvc\Controller\PageController;
 use Mend\Network\Web\WebRequest;
@@ -19,7 +19,7 @@ class ControllerFactory {
 	private $suffix;
 
 	/**
-	 * @var RClass
+	 * @var ClassInformation
 	 */
 	private $class;
 
@@ -28,12 +28,12 @@ class ControllerFactory {
 	 *
 	 * @param array $namespaces
 	 * @param string $suffix
-	 * @param RClass $class
+	 * @param ClassInformation $class
 	 */
-	public function __construct( array $namespaces, $suffix = null, RClass $class = null ) {
+	public function __construct( array $namespaces, $suffix = null, ClassInformation $class = null ) {
 		$this->namespaces = $namespaces;
 		$this->suffix = $suffix;
-		$this->class = $class ? : new RClass();
+		$this->class = $class ? : new ClassInformation();
 	}
 
 	/**

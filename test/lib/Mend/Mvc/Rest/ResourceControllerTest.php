@@ -49,17 +49,15 @@ class ResourceControllerTest extends \TestCase {
 			->method( 'getHeaders' )
 			->will( self::returnValue( new Map() ) );
 
-		$renderer = $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
-
-		$loader = $this->getMock(
-			'\Mend\Mvc\Controller\ControllerLoader',
+		$factory = $this->getMock(
+			'\Mend\Mvc\ControllerFactory',
 			array( 'getControllerClassName' ),
 			array(),
 			'',
 			false
 		);
 
-		$loader->expects( self::any() )
+		$factory->expects( self::any() )
 			->method( 'getControllerClassName' )
 			->will( self::returnValue( '\Mend\Mvc\Rest\DummyResourceController' ) );
 
@@ -79,7 +77,7 @@ class ResourceControllerTest extends \TestCase {
 			self::assertTrue( $action == 'update' );
 		};
 
-		$rest = new RestController( $request, $response, $renderer, $loader );
+		$rest = new RestController( $request, $response, $factory );
 		$rest->dispatch( 'dummy', $action );
 	}
 

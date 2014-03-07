@@ -103,7 +103,7 @@ class Autoloader {
 	 * @return boolean
 	 */
 	protected function includeFile( $fileName ) {
-		if ( !file_exists( $fileName ) ) {
+		if ( !\file_exists( $fileName ) ) {
 			return false;
 		}
 

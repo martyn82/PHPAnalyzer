@@ -20,7 +20,7 @@ class ControllerFactoryTest extends \TestCase {
 		$expectedFullName,
 		$classInMap
 	) {
-		$class = $this->createRClass( $classInMap );
+		$class = $this->createClassInformation( $classInMap );
 
 		$factory = new ControllerFactory( $mapping, $suffix, $class );
 		$className = $factory->getControllerClassByName( $controllerName );
@@ -44,7 +44,7 @@ class ControllerFactoryTest extends \TestCase {
 		$fullClassName,
 		$classInMap
 	) {
-		$class = $this->createRClass( $classInMap );
+		$class = $this->createClassInformation( $classInMap );
 
 		$factory = new ControllerFactory( $mapping, $suffix, $class );
 		$actual = $factory->getControllerNameByClass( $fullClassName );
@@ -65,7 +65,7 @@ class ControllerFactoryTest extends \TestCase {
 	}
 
 	public function testCreateController() {
-		$class = $this->createRClass( true );
+		$class = $this->createClassInformation( true );
 
 		$request = $this->createRequest();
 		$response = $this->createResponse();
@@ -80,7 +80,7 @@ class ControllerFactoryTest extends \TestCase {
 	 * @expectedException \Exception
 	 */
 	public function testCreateControllerFails() {
-		$class = $this->createRClass( false );
+		$class = $this->createClassInformation( false );
 
 		$request = $this->createRequest();
 		$response = $this->createResponse();
@@ -95,7 +95,7 @@ class ControllerFactoryTest extends \TestCase {
 	 * @expectedException \Exception
 	 */
 	public function testCreateNonPageController() {
-		$class = $this->createRClass( true, false );
+		$class = $this->createClassInformation( true, false );
 
 		$request = $this->createRequest();
 		$response = $this->createResponse();
@@ -106,8 +106,8 @@ class ControllerFactoryTest extends \TestCase {
 		self::fail( "Test should have triggered an exception." );
 	}
 
-	private function createRClass( $exists, $isSubclassOf = true ) {
-		$class = $this->getMock( '\Mend\RClass', array( 'exists', 'isSubclassOf' ) );
+	private function createClassInformation( $exists, $isSubclassOf = true ) {
+		$class = $this->getMock( '\Mend\ClassInformation', array( 'exists', 'isSubclassOf' ) );
 
 		$class->expects( self::any() )
 			->method( 'exists' )

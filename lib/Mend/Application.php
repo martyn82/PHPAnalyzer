@@ -5,8 +5,6 @@ use Mend\Config\ConfigProvider;
 use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\Controller\FrontController;
 use Mend\Mvc\View\Layout;
-use Mend\Mvc\View\ViewRenderer;
-use Mend\Mvc\View\ViewRendererOptions;
 use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;

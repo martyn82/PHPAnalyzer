@@ -14,7 +14,7 @@ class FileTest extends \TestCase {
 	 */
 	public function testNewFileInvalid() {
 		$file = new File( '' );
-		self::fail( "Exception expected." );
+		self::fail( "Test should have triggered an exception." );
 	}
 
 	public function testFileName() {
@@ -41,5 +41,23 @@ class FileTest extends \TestCase {
 		$location = '/tmp/file';
 		$file = new File( $location );
 		self::assertEquals( $location, (string) $file );
+	}
+
+	public function testFileExists() {
+		$location = '/tmp';
+		$file = new File( $location );
+		self::assertTrue( $file->exists() );
+	}
+
+	public function testFileIsDirectory() {
+		$location = '/tmp';
+		$file = new File( $location );
+		self::assertTrue( $file->isDirectory() );
+	}
+
+	public function testFileIsFile() {
+		$location = '/tmp';
+		$file = new File( $location );
+		self::assertFalse( $file->isFile() );
 	}
 }

@@ -37,13 +37,34 @@ class File implements FileSystem {
 	 * @return string
 	 */
 	public function getExtension() {
-		$parts = pathinfo( $this->location );
+		$parts = \pathinfo( $this->location );
 
 		if ( !empty( $parts[ 'extension' ] ) ) {
 			return $parts[ 'extension' ];
 		}
 
 		return '';
+	}
+
+	/**
+	 * @see FileSystem::exists()
+	 */
+	public function exists() {
+		return \file_exists( $this->location );
+	}
+
+	/**
+	 * @see FileSystem::isDirectory()
+	 */
+	public function isDirectory() {
+		return \is_dir( $this->location );
+	}
+
+	/**
+	 * @see FileSystem::isFile()
+	 */
+	public function isFile() {
+		return \is_file( $this->location );
 	}
 
 	/**

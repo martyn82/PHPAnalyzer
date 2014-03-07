@@ -1,7 +1,7 @@
 <?php
 namespace Mend;
 
-class RClass {
+class ClassInformation {
 	/**
 	 * Determines whether the class exists.
 	 *

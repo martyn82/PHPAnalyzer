@@ -1,31 +1,7 @@
 <?php
 namespace Mend\Mvc;
 
-// mock function {
-function file_exists( $filename ) {
-	return ViewTest::file_exists( $filename );
-}
-// }
-
 class ViewTest extends \TestCase {
-	private static $fileExistsResult;
-
-	public static function file_exists( $fileName ) {
-		if ( is_null( self::$fileExistsResult ) ) {
-			return \file_exists( $fileName );
-		}
-
-		return self::$fileExistsResult;
-	}
-
-	public function setUp() {
-		self::$fileExistsResult = null;
-	}
-
-	public function tearDown() {
-		self::$fileExistsResult = null;
-	}
-
 	/**
 	 * @dataProvider variableProvider
 	 *
@@ -70,8 +46,7 @@ class ViewTest extends \TestCase {
 	}
 
 	public function testRender() {
-		self::$fileExistsResult = true;
-		$templateFile = 'test:///foo.phtml';
+		$templateFile = $this->createFile( 'test:///foo.phtml' );
 
 		$view = new View();
 		$output = $view->render( $templateFile );
@@ -83,12 +58,25 @@ class ViewTest extends \TestCase {
 	 * @expectedException \Mend\Mvc\View\ViewException
 	 */
 	public function testRenderNonExistentFile() {
-		self::$fileExistsResult = false;
-		$templateFile = 'test:///foo.phtml';
+		$templateFile = $this->createFile( 'test:///foo.phtml', false );
 
 		$view = new View();
 		$output = $view->render( $templateFile );
 
 		self::fail( "Test should have triggered an exception." );
+	}
+
+	private function createFile( $location, $exists = true ) {
+		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getName', 'exists' ), array( $location ) );
+
+		$file->expects( self::any() )
+			->method( 'exists' )
+			->will( self::returnValue( $exists ) );
+
+		$file->expects( self::any() )
+			->method( 'getName' )
+			->will( self::returnValue( $location ) );
+
+		return $file;
 	}
 }

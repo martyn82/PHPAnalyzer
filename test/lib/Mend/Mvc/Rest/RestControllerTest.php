@@ -3,8 +3,6 @@ namespace Mend\Mvc\Rest;
 
 use Mend\Collections\Map;
 use Mend\Mvc\Controller;
-use Mend\Mvc\ViewRenderer;
-use Mend\Mvc\ViewRendererOptions;
 use Mend\Network\Web\Url;
 use Mend\Network\Web\HttpMethod;
 use Mend\Network\Web\WebRequest;
