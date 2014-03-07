@@ -110,9 +110,20 @@ class FrontController extends Controller {
 	 * @param string $actionName
 	 */
 	public function dispatch( $controllerName, $actionName ) {
+		$this->preDispatch();
+
 		$controller = $this->createController( $controllerName );
 		$controller->dispatchAction( $actionName );
+
+		$this->setActionResult( $controller->getActionResult() );
+
+		$this->postDispatch();
 	}
+
+	/**
+	 * @see Controller::postDispatch()
+	 */
+	protected function postDispatch() { /* no-op */ }
 
 	/**
 	 * Creates a controller instance by name.

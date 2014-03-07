@@ -19,7 +19,7 @@ $controller = $application->getController();
 $response = $controller->getResponse();
 $headers = $response->getHeaders();
 
-foreach ( $headers as $name => $value ) {
+foreach ( $headers->toArray() as $name => $value ) {
 	header( "{$name}: {$value}" );
 }
 

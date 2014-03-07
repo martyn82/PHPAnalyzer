@@ -4,12 +4,15 @@ namespace Mend\Mvc\Rest;
 use Mend\Mvc\Controller\ControllerException;
 use Mend\Mvc\Controller\FrontController;
 use Mend\Network\Web\HttpMethod;
+use Mend\Mvc\Controller\ActionResult;
 
 class RestController extends FrontController {
 	/**
 	 * @see FrontController::dispatchRequest()
 	 *
 	 * @throws ControllerException
+	 *
+	 * @return RestResponse
 	 */
 	public function dispatchRequest() {
 		$controllerName = $this->getControllerName();
@@ -46,6 +49,30 @@ class RestController extends FrontController {
 	}
 
 	/**
+	 * @see Controller::postDispatch()
+	 */
+	public function postDispatch() {
+		$result = $this->getActionResult();
+
+		$responseBody = array(
+			'page' => $result->getPageNumber(),
+			'resultsPerPage' => $result->getResultsPerPage(),
+			'totalResults' => $result->getTotalResultsCount(),
+			'data' => $result->getData()
+		);
+
+		$body = json_encode( array( 'response' => $responseBody ), JSON_NUMERIC_CHECK );
+
+		$response = $this->getResponse();
+		$headers = $response->getHeaders();
+
+		$headers->set( 'Content-Type', 'application/json' );
+		$headers->set( 'Content-Length', strlen( $body ) );
+
+		$response->setBody( $body );
+	}
+
+	/**
 	 * @see FrontController::parseRequest()
 	 */
 	protected function parseRequest( $defaultController = 'index', $defaultAction = null ) {
@@ -65,5 +92,21 @@ class RestController extends FrontController {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @see Controller::setActionResult()
+	 */
+	protected function setActionResult( ActionResult $result = null ) {
+		$result ? : new RestResult( array() );
+		parent::setActionResult( $result );
+	}
+
+	/**
+	 * @see Controller::getActionResult()
+	 */
+	protected function getActionResult() {
+		$result = parent::getActionResult();
+		return $result ? : new RestResult( array() );
 	}
 }

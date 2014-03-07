@@ -55,7 +55,7 @@ class ConfigProvider {
 			return (bool) $value;
 		}
 
-		return $value !== 'false';
+		return $value === 'true' || $value === '1';
 	}
 
 	/**

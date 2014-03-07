@@ -38,9 +38,13 @@ class RestControllerTest extends \TestCase {
 
 		$resourceController = $this->getMock(
 			'\Mend\Mvc\Rest\ResourceController',
-			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete' ),
+			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete', 'getResponse' ),
 			array( $request, $response, $renderer )
 		);
+
+		$resourceController->expects( self::any() )
+			->method( 'getResponse' )
+			->will( self::returnValue( $response ) );
 
 		$resourceController->expects( self::once() )
 			->method( $expectedActionMethod );
@@ -78,9 +82,13 @@ class RestControllerTest extends \TestCase {
 
 		$resourceController = $this->getMock(
 			'\Mend\Mvc\Rest\ResourceController',
-			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete' ),
+			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete', 'getResponse' ),
 			array( $request, $response, $renderer )
 		);
+
+		$resourceController->expects( self::any() )
+			->method( 'getResponse' )
+			->will( self::returnValue( $response ) );
 
 		$controller = new DummyRestController( $request, $response, $renderer, $loader );
 		$controller->setController( $resourceController );
@@ -102,7 +110,13 @@ class RestControllerTest extends \TestCase {
 	}
 
 	private function createResponse() {
-		return $this->getMock( '\Mend\Network\Web\WebResponse', array(), array(), '', false );
+		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array( 'getHeaders' ), array(), '', false );
+
+		$response->expects( self::any() )
+			->method( 'getHeaders' )
+			->will( self::returnValue( new Map() ) );
+
+		return $response;
 	}
 
 	private function createViewRenderer() {

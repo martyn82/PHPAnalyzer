@@ -1,6 +1,7 @@
 <?php
 namespace Mend\Mvc\Rest;
 
+use Mend\Collections\Map;
 use Mend\Network\Web\Url;
 
 class ResourceControllerTest extends \TestCase {
@@ -37,8 +38,15 @@ class ResourceControllerTest extends \TestCase {
 	 */
 	public function testDispatch( $action ) {
 		$request = $this->getMock( '\Mend\Network\Web\WebRequest', array(), array(), '', false );
-		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array(), array(), '', false );
+
+		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array( 'getHeaders' ), array(), '', false );
+
+		$response->expects( self::any() )
+			->method( 'getHeaders' )
+			->will( self::returnValue( new Map() ) );
+
 		$renderer = $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
+
 		$loader = $this->getMock(
 			'\Mend\Mvc\Controller\ControllerLoader',
 			array( 'getControllerClassName' ),

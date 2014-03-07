@@ -49,6 +49,11 @@ abstract class Controller {
 	private $viewRendererEnabled;
 
 	/**
+	 * @var ActionResult
+	 */
+	private $result;
+
+	/**
 	 * Constructs a new controller.
 	 *
 	 * @param WebRequest $request
@@ -113,7 +118,10 @@ abstract class Controller {
 		$this->actionName = $actionName;
 
 		$this->preDispatch();
-		$this->{$actionMethod}();
+
+		$result = $this->{$actionMethod}();
+		$this->setActionResult( $result );
+
 		$this->postDispatch();
 	}
 
@@ -238,5 +246,23 @@ abstract class Controller {
 	 */
 	protected function getActionName() {
 		return $this->actionName;
+	}
+
+	/**
+	 * Sets result of a call to action method.
+	 *
+	 * @param ActionResult $result
+	 */
+	protected function setActionResult( ActionResult $result = null ) {
+		$this->result = $result;
+	}
+
+	/**
+	 * Retrieves the result of the last action call.
+	 *
+	 * @return ActionResult
+	 */
+	protected function getActionResult() {
+		return $this->result;
 	}
 }

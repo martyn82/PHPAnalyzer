@@ -86,7 +86,9 @@ class ConfigProviderTest extends \TestCase {
 		return array(
 			array( 'string1', 'false', false ),
 			array( 'string2', 'true', true ),
-			array( 'string3', 'foo', true ),
+			array( 'string3', 'foo', false ),
+			array( 'string4', '1', true ),
+			array( 'string5', '0', false ),
 			array( 'integer1', 1, true ),
 			array( 'integer2', 0, false ),
 			array( 'integer3', 312, true ),
