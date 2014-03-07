@@ -3,7 +3,7 @@ namespace Mend\Mvc\Controller;
 
 use Mend\Mvc\Controller;
 use Mend\Mvc\View\Layout;
-use Mend\Mvc\View\View;
+use Mend\Mvc\View;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 

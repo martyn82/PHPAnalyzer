@@ -1,5 +1,5 @@
 <?php
-namespace Mend\Mvc\View;
+namespace Mend\Mvc;
 
 // mock function {
 function file_exists( $filename ) {

@@ -1,6 +1,8 @@
 <?php
 namespace Mend\Mvc\View;
 
+use Mend\Mvc\View;
+
 class ViewRenderer {
 	/**
 	 * @var ViewRendererOptions

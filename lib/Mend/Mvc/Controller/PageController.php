@@ -2,12 +2,12 @@
 namespace Mend\Mvc\Controller;
 
 use Mend\Mvc\Controller;
+use Mend\Mvc\ControllerFactory;
+use Mend\Mvc\View;
 use Mend\Mvc\View\Layout;
-use Mend\Mvc\View\View;
+use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
-use Mend\Mvc\ControllerFactory;
-use Mend\Mvc\View\ViewRenderer;
 
 abstract class PageController extends Controller {
 	/**

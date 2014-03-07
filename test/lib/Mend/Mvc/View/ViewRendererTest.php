@@ -88,7 +88,7 @@ class ViewRendererTest extends \TestCase {
 	}
 
 	private function createView() {
-		return $this->getMock( '\Mend\Mvc\View\View', array( 'render' ) );
+		return $this->getMock( '\Mend\Mvc\View', array( 'render' ) );
 	}
 
 	private function createLayout() {

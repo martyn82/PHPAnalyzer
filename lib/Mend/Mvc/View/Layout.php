@@ -5,6 +5,7 @@ use Mend\I18n\CharacterSet;
 use Mend\I18n\Culture;
 use Mend\I18n\Locale;
 use Mend\I18n\ReadingDirection;
+use Mend\Mvc\View;
 
 class Layout extends View {
 	/**

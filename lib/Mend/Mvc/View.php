@@ -1,5 +1,7 @@
 <?php
-namespace Mend\Mvc\View;
+namespace Mend\Mvc;
+
+use Mend\Mvc\View\ViewException;
 
 if ( !defined( 'ENT_HTML5' ) ) {
 	define( 'ENT_HTML5', 0 );

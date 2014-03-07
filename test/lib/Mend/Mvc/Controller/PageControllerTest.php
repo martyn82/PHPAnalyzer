@@ -67,7 +67,7 @@ class PageControllerTest extends \TestCase {
 	}
 
 	private function createView() {
-		return $this->getMock( '\Mend\Mvc\View\View' );
+		return $this->getMock( '\Mend\Mvc\View' );
 	}
 
 	private function createRequest( Url $url ) {
