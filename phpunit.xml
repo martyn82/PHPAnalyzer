@@ -12,14 +12,22 @@
 	bootstrap="test/bootstrap.php"
 >
 	<testsuites>
-		<testsuite name="AllTests">
+		<testsuite name="Library">
 			<directory>test/</directory>
+		</testsuite>
+		<testsuite name="Application">
+			<directory>app/test</directory>
+		</testsuite>
+		<testsuite name="Service">
+			<directory>service/test</directory>
 		</testsuite>
 	</testsuites>
 	
 	<filter>
 		<whitelist addUncoveredFilesFromWhitelist="true">
 			<directory suffix=".php">./lib</directory>
+			<directory suffix=".php">./app</directory>
+			<directory suffix=".php">./service</directory>
 		</whitelist>
 	</filter>
 	
