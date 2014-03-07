@@ -10,15 +10,9 @@ use Mend\Network\Web\HttpMethod;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 
-require_once "ControllerClassExists.php";
-
 class RestControllerTest extends \TestCase {
 	public function setUp() {
-		ControllerClassExists::$classExistsResult = null;
-	}
-
-	public function tearDown() {
-		ControllerClassExists::$classExistsResult = null;
+		self::markTestSkipped();
 	}
 
 	/**
@@ -29,17 +23,14 @@ class RestControllerTest extends \TestCase {
 	 * @param string $expectedActionMethod
 	 */
 	public function testDispatch( $urlString, $method, $expectedActionMethod ) {
-		ControllerClassExists::$classExistsResult = true;
-
 		$request = $this->createRequest( $urlString, $method );
 		$response = $this->createResponse();
-		$renderer = $this->createViewRenderer();
-		$loader = $this->createLoader();
+		$factory = $this->createFactory();
 
 		$resourceController = $this->getMock(
 			'\Mend\Mvc\Rest\ResourceController',
-			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete', 'getResponse' ),
-			array( $request, $response, $renderer )
+			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete', 'getResponse', 'getActionName', 'getControllerName' ),
+			array( $request, $response, $factory )
 		);
 
 		$resourceController->expects( self::any() )
@@ -49,7 +40,7 @@ class RestControllerTest extends \TestCase {
 		$resourceController->expects( self::once() )
 			->method( $expectedActionMethod );
 
-		$controller = new DummyRestController( $request, $response, $renderer, $loader );
+		$controller = new DummyRestController( $request, $response, $factory );
 		$controller->setController( $resourceController );
 
 		$controller->dispatchRequest();
@@ -73,24 +64,21 @@ class RestControllerTest extends \TestCase {
 		$urlString = 'http://www.example.org';
 		$method = 'non';
 
-		ControllerClassExists::$classExistsResult = true;
-
 		$request = $this->createRequest( $urlString, $method );
 		$response = $this->createResponse();
-		$renderer = $this->createViewRenderer();
-		$loader = $this->createLoader();
+		$factory = $this->createFactory();
 
 		$resourceController = $this->getMock(
 			'\Mend\Mvc\Rest\ResourceController',
-			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete', 'getResponse' ),
-			array( $request, $response, $renderer )
+			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete', 'getResponse', 'getActionName', 'getControllerName' ),
+			array( $request, $response, $factory )
 		);
 
 		$resourceController->expects( self::any() )
 			->method( 'getResponse' )
 			->will( self::returnValue( $response ) );
 
-		$controller = new DummyRestController( $request, $response, $renderer, $loader );
+		$controller = new DummyRestController( $request, $response, $factory );
 		$controller->setController( $resourceController );
 
 		$controller->dispatchRequest();
@@ -119,12 +107,8 @@ class RestControllerTest extends \TestCase {
 		return $response;
 	}
 
-	private function createViewRenderer() {
-		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
-	}
-
-	private function createLoader() {
-		return $this->getMock( '\Mend\Mvc\Controller\ControllerLoader', array(), array(), '', false );
+	private function createFactory() {
+		return $this->getMock( '\Mend\Mvc\ControllerFactory', array(), array(), '', false );
 	}
 }
 

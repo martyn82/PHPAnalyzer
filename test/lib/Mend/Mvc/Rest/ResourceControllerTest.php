@@ -31,6 +31,10 @@ class ResourceControllerTest extends \TestCase {
 		call_user_func( self::$actionDeleteStub );
 	}
 
+	public function setUp() {
+		self::markTestSkipped();
+	}
+
 	/**
 	 * @dataProvider stubProvider
 	 *
@@ -91,6 +95,14 @@ class ResourceControllerTest extends \TestCase {
 }
 
 class DummyResourceController extends ResourceController {
+	protected function getActionName() {
+		return '';
+	}
+
+	protected function getControllerName() {
+		return '';
+	}
+
 	public function actionRead() {
 		ResourceControllerTest::actionReadStub();
 	}

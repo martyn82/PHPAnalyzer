@@ -1,7 +1,7 @@
 <?php
 namespace Mend\Mvc\Rest;
 
-use Mend\Mvc\Controller\Controller;
+use Mend\Mvc\Controller;
 
 abstract class ResourceController extends Controller {
 	/**

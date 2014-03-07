@@ -1,19 +1,13 @@
 <?php
 namespace Mend\Mvc\Controller;
 
-use Mend\Collections\Map;
+use Mend\Mvc\Controller;
 use Mend\Mvc\View\Layout;
 use Mend\Mvc\View\View;
-use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 
 class FrontController extends Controller {
-	/**
-	 * @var ControllerLoader
-	 */
-	private $loader;
-
 	/**
 	 * @var string
 	 */
@@ -25,32 +19,7 @@ class FrontController extends Controller {
 	private $actionName;
 
 	/**
-	 * Constructs a new Front Controller.
-	 *
-	 * @param WebRequest $request
-	 * @param WebResponse $response
-	 * @param ViewRenderer $renderer
-	 * @param ControllerLoader $loader
-	 */
-	public function __construct(
-		WebRequest $request,
-		WebResponse $response,
-		ViewRenderer $renderer,
-		ControllerLoader $loader
-	) {
-		parent::__construct( $request, $response, $renderer );
-		$this->loader = $loader;
-	}
-
-	/**
-	 * @see Controller::setLayout()
-	 */
-	public function setLayout( Layout $layout ) {
-		parent::setLayout( $layout );
-	}
-
-	/**
-	 * Dispatches a request.
+	 * Dispatches current request.
 	 */
 	public function dispatchRequest() {
 		$controllerName = $this->getControllerName();
@@ -60,29 +29,36 @@ class FrontController extends Controller {
 	}
 
 	/**
-	 * Parses the current request.
+	 * Dispatches to given controller and action name.
 	 *
-	 * @param string $defaultController
-	 * @param string $defaultAction
+	 * @param string $controllerName
+	 * @param string $actionName
 	 */
-	protected function parseRequest( $defaultController = 'index', $defaultAction = 'index' ) {
-		$request = $this->getRequest();
-		$requestUrl = $request->getUrl();
-		$path = $requestUrl->getPath();
+	public function dispatch( $controllerName, $actionName ) {
+		$controller = $this->createController( $controllerName );
+		$controller->dispatchAction( $actionName );
+	}
 
-		$parts = explode( '/', trim( $path, '/' ) );
+	/**
+	 * Creates a new controller instance by name.
+	 *
+	 * @param string $controllerName
+	 *
+	 * @return Controller
+	 */
+	protected function createController( $controllerName ) {
+		$factory = $this->getFactory();
+		$controller = $factory->createController( $controllerName, $this->getRequest(), $this->getResponse() );
 
-		$this->controllerName = array_shift( $parts ) ? : $defaultController;
-		$this->actionName = array_shift( $parts ) ? : $defaultAction;
+		$controller->enableRender( true );
+		$controller->enableLayout( true );
+		$controller->setLayout( new Layout() );
+		$controller->setView( new View() );
+		$controller->setViewTemplatePath( 'views/' . $controllerName );
+		$controller->setLayoutTemplatePath( 'views/layout' );
+		$controller->setLayoutTemplate( 'default.phtml' );
 
-		$parameters = $request->getParameters();
-
-		for ( $i = 0; $i < count( $parts ); $i += 2 ) {
-			$key = $parts[ $i ];
-			$value = isset( $parts[ $i + 1 ] ) ? $parts[ $i + 1 ] : null;
-
-			$parameters->set( $key, $value );
-		}
+		return $controller;
 	}
 
 	/**
@@ -104,49 +80,28 @@ class FrontController extends Controller {
 	}
 
 	/**
-	 * Dispatch to given controller and action name.
+	 * Parses the current request.
 	 *
-	 * @param string $controllerName
-	 * @param string $actionName
+	 * @param string $defaultController
+	 * @param string $defaultAction
 	 */
-	public function dispatch( $controllerName, $actionName ) {
-		$this->preDispatch();
+	private function parseRequest( $defaultController = 'index', $defaultAction = 'index' ) {
+		$request = $this->getRequest();
+		$requestUrl = $request->getUrl();
+		$path = $requestUrl->getPath();
 
-		$controller = $this->createController( $controllerName );
-		$controller->dispatchAction( $actionName );
+		$parts = explode( '/', trim( $path, '/' ) );
 
-		$this->setActionResult( $controller->getActionResult() );
+		$this->controllerName = array_shift( $parts ) ? : $defaultController;
+		$this->actionName = array_shift( $parts ) ? : $defaultAction;
 
-		$this->postDispatch();
-	}
+		$parameters = $request->getParameters();
 
-	/**
-	 * @see Controller::postDispatch()
-	 */
-	protected function postDispatch() { /* no-op */ }
+		for ( $i = 0; $i < count( $parts ); $i += 2 ) {
+			$key = $parts[ $i ];
+			$value = isset( $parts[ $i + 1 ] ) ? $parts[ $i + 1 ] : null;
 
-	/**
-	 * Creates a controller instance by name.
-	 *
-	 * @param string $controllerName
-	 *
-	 * @return Controller
-	 *
-	 * @throws ControllerException
-	 */
-	protected function createController( $controllerName ) {
-		$controllerClassName = $this->loader->getControllerClassName( $controllerName );
-
-		if ( !class_exists( $controllerClassName, true ) ) {
-			throw new ControllerException( "Controller class not found: '{$controllerClassName}'." );
+			$parameters->set( $key, $value );
 		}
-
-		return new $controllerClassName(
-			$this->getRequest(),
-			$this->getResponse(),
-			$this->getRenderer(),
-			$this->getView(),
-			$this->getLayout()
-		);
 	}
 }

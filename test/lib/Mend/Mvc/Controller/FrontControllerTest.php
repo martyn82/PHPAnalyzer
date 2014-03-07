@@ -2,61 +2,55 @@
 namespace Mend\Mvc\Controller;
 
 use Mend\Collections\Map;
-use Mend\Mvc\View\ViewRendererOptions;
+use Mend\Mvc\Controller;
+use Mend\Mvc\ControllerFactory;
 use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 
-require_once 'ControllerClassExists.php';
-
 class FrontControllerTest extends \TestCase {
-	public function setUp() {
-		ControllerClassExists::$classExistsResult = null;
-	}
-
-	public function tearDown() {
-		ControllerClassExists::$classExistsResult = null;
-	}
-
-	public function testDispatch() {
-		ControllerClassExists::$classExistsResult = true;
-
+	public function testConstruct() {
 		$url = $this->createUrl( 'http://www.example.org/controller/action' );
 		$request = $this->createRequest( $url );
 		$response = $this->createResponse( $url );
-		$renderer = $this->createRenderer();
-		$loader = $this->createLoader( 'foo' );
+		$factory = $this->createFactory();
 
-		$layout = $this->getMock( '\Mend\Mvc\View\Layout' );
+		$controller = new FrontController( $request, $response, $factory );
 
-		$controller = new FrontController( $request, $response, $renderer, $loader );
-		$controller->setLayout( $layout );
-		$controller->dispatch( 'foo', 'bar' );
-	}
-
-	/**
-	 * @expectedException \Mend\Mvc\Controller\ControllerException
-	 */
-	public function testDispatchNonExistentController() {
-		ControllerClassExists::$classExistsResult = false;
-
-		$url = $this->createUrl( 'http://www.example.org/controller/action' );
-		$request = $this->createRequest( $url );
-		$response = $this->createResponse( $url );
-		$renderer = $this->createRenderer();
-		$loader = $this->createLoader( 'foo' );
-
-		$layout = $this->getMock( '\Mend\Mvc\View\Layout' );
-
-		$controller = new FrontController( $request, $response, $renderer, $loader );
-		$controller->setLayout( $layout );
-		$controller->dispatch( 'foo', 'bar' );
-
-		self::fail( "Test should have triggered an exception." );
+		self::assertEquals( $request, $controller->getRequest() );
+		self::assertEquals( $response, $controller->getResponse() );
 	}
 
 	/**
 	 * @dataProvider urlProvider
+	 *
+	 * @param Url $url
+	 * @param string $controllerName
+	 * @param string $actionName
+	 */
+	public function testDispatch( Url $url, $controllerName, $actionName ) {
+		$request = $this->createRequest( $url );
+		$response = $this->createResponse( $url );
+
+		$created = $this->createPageController( $request, $response );
+		$factory = $this->createFactory( $created );
+
+		$controller = new DummyFrontController( $request, $response, $factory );
+		$controller->dispatchRequest();
+
+		self::assertEquals( $controllerName, $controller->getControllerName() );
+		self::assertEquals( $actionName, $controller->getActionName() );
+	}
+
+	public function urlProvider() {
+		return array(
+			array( $this->createUrl( 'http://www.example.org/foo/bar' ), 'foo', 'bar' ),
+			array( $this->createUrl( 'http://www.example.org/foo/bar/key/value' ), 'foo', 'bar' )
+		);
+	}
+
+	/**
+	 * @dataProvider urlParamProvider
 	 *
 	 * @param string $urlString
 	 * @param array $parameters
@@ -65,10 +59,10 @@ class FrontControllerTest extends \TestCase {
 		$url = $this->createUrl( $urlString );
 		$request = $this->createRequest( $url );
 		$response = $this->createResponse( $url );
-		$renderer = $this->createRenderer();
-		$loader = new ControllerLoader( array( 'Mend\Mvc\Controller' ) );
+		$created = $this->createPageController( $request, $response );
+		$factory = $this->createFactory( $created );
 
-		$controller = new FrontController( $request, $response, $renderer, $loader );
+		$controller = new DummyFrontController( $request, $response, $factory );
 		$controller->dispatchRequest();
 
 		$request = $controller->getRequest();
@@ -77,7 +71,7 @@ class FrontControllerTest extends \TestCase {
 		self::assertEquals( $parameters, $params->toArray() );
 	}
 
-	public function urlProvider() {
+	public function urlParamProvider() {
 		return array(
 			array( 'http://www.example.org/foo/bar', array() ),
 			array( 'http://www.example.org', array() ),
@@ -87,49 +81,79 @@ class FrontControllerTest extends \TestCase {
 		);
 	}
 
-	private function createUrl( $urlString ) {
-		return Url::createFromString( $urlString );
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testDispatchNonExistentController() {
+		$url = $this->createUrl( 'http://www.example.org/controller/action' );
+		$request = $this->createRequest( $url );
+		$response = $this->createResponse( $url );
+		$factory = new ControllerFactory( array() );
+
+		$controller = new DummyFrontController( $request, $response, $factory );
+		$controller->dispatch( 'foo', 'bar' );
+
+		self::fail( "Test should have triggered an exception." );
+	}
+
+	private function createController( WebRequest $request, WebResponse $response ) {
+		$factory = $this->createFactory( null );
+
+		$controller = $this->getMock(
+			'\Mend\Mvc\Controller',
+			array( 'getControllerName', 'getActionName', 'dispatchAction' ),
+			array( $request, $response, $factory )
+		);
+
+		return $controller;
+	}
+
+	private function createPageController( WebRequest $request, WebResponse $response ) {
+		$factory = $this->createFactory( null );
+
+		$controller = $this->getMock(
+				'\Mend\Mvc\Controller\PageController',
+				array( 'getControllerName', 'getActionName', 'dispatchAction' ),
+				array( $request, $response, $factory )
+		);
+
+		return $controller;
+	}
+
+	private function createFactory( PageController $controller = null ) {
+		$factory = $this->getMock( '\Mend\Mvc\ControllerFactory', array( 'createController' ), array( array() ) );
+
+		if ( !is_null( $controller ) ) {
+			$controller->expects( self::any() )
+				->method( 'dispatchAction' );
+		}
+
+		$factory->expects( self::any() )
+			->method( 'createController' )
+			->will( self::returnValue( $controller ) );
+
+		return $factory;
 	}
 
 	private function createRequest( Url $url ) {
-		$request = $this->getMock( '\Mend\Network\Web\WebRequest', array( 'getUrl' ), array( $url ) );
-
-		$request->expects( self::any() )
-			->method( 'getUrl' )
-			->will( self::returnValue( $url ) );
-
-		return $request;
+		return new WebRequest( $url );
 	}
 
 	private function createResponse( Url $url ) {
 		return $this->getMock( '\Mend\Network\Web\WebResponse', array(), array( $url ) );
 	}
 
-	private function createRenderer() {
-		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array( new ViewRendererOptions() ) );
-	}
-
-	private function createLoader( $controllerName ) {
-		$loader = $this->getMock(
-			'\Mend\Mvc\Controller\ControllerLoader',
-			array( 'getControllerClassName' ),
-			array(),
-			'',
-			false
-		);
-
-		$loader->expects( self::any() )
-			->method( 'getControllerClassName' )
-			->will( self::returnValue( __NAMESPACE__ . '\\' . ucfirst( $controllerName ) . 'Controller' ) );
-
-		return $loader;
+	private function createUrl( $urlString ) {
+		return Url::createFromString( $urlString );
 	}
 }
 
-class FooController extends Controller {
-	public function actionBar() { /* no-op */ }
-}
+class DummyFrontController extends FrontController {
+	public function getControllerName() {
+		return parent::getControllerName();
+	}
 
-class IndexController extends Controller {
-	public function actionIndex() { /* no-op */ }
+	public function getActionName() {
+		return parent::getActionName();
+	}
 }

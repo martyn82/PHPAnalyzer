@@ -1,9 +1,9 @@
 <?php
 namespace Controller;
 
-use Mend\Mvc\Controller\Controller;
+use Mend\Mvc\Controller\PageController;
 
-class IndexController extends Controller {
+class IndexController extends PageController {
 	/**
 	 * Pre dispatch.
 	 */
