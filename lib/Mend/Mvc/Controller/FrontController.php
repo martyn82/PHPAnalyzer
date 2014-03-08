@@ -2,12 +2,13 @@
 namespace Mend\Mvc\Controller;
 
 use Mend\Mvc\Controller;
-use Mend\Mvc\View\Layout;
+use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\View;
+use Mend\Mvc\View\Layout;
+use Mend\Mvc\View\ViewOptions;
+use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
-use Mend\Mvc\View\ViewRenderer;
-use Mend\Mvc\View\ViewOptions;
 
 class FrontController extends Controller {
 	/**
@@ -21,13 +22,33 @@ class FrontController extends Controller {
 	private $actionName;
 
 	/**
+	 * @var ViewRenderer
+	 */
+	private $renderer;
+
+	/**
+	 * Constructs a new FrontController instance.
+	 *
+	 * @param WebRequest $request
+	 * @param WebResponse $response
+	 * @param ControllerFactory $factory
+	 * @param ViewRenderer $renderer
+	 */
+	public function __construct(
+		WebRequest $request,
+		WebResponse $response,
+		ControllerFactory $factory,
+		ViewRenderer $renderer
+	) {
+		parent::__construct( $request, $response, $factory );
+		$this->renderer = $renderer;
+	}
+
+	/**
 	 * Dispatches current request.
 	 */
 	public function dispatchRequest() {
-		$controllerName = $this->getControllerName();
-		$actionName = $this->getActionName();
-
-		$this->dispatch( $controllerName, $actionName );
+		$this->dispatch( $this->getControllerName(), $this->getActionName() );
 	}
 
 	/**
@@ -46,20 +67,17 @@ class FrontController extends Controller {
 	 *
 	 * @param string $controllerName
 	 *
-	 * @return Controller
+	 * @return PageController
 	 */
 	protected function createController( $controllerName ) {
-		$viewOptions = new ViewOptions();
-		$viewOptions->setRendererEnabled( true );
-		$viewOptions->setLayoutEnabled( true );
-		$viewOptions->setLayoutTemplate( 'default.phtml' );
-		$viewOptions->setLayoutTemplatePath( 'views/layout/' );
-		$viewOptions->setViewTemplatePath( 'views/' );
-
-		$renderer = new ViewRenderer( $viewOptions, new View(), new Layout() );
 		$factory = $this->getFactory();
 
-		return $factory->createController( $controllerName, $this->getRequest(), $this->getResponse(), $renderer );
+		return $factory->createController(
+			$controllerName,
+			$this->getRequest(),
+			$this->getResponse(),
+			$this->renderer
+		);
 	}
 
 	/**

@@ -8,6 +8,9 @@ use Mend\Mvc\View\Layout;
 use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
+use Mend\Mvc\View\ViewRenderer;
+use Mend\Mvc\View\ViewOptions;
+use Mend\Mvc\View;
 
 class Application {
 	/**
@@ -37,8 +40,9 @@ class Application {
 		$request = $this->createRequest();
 		$response = $this->createResponse( $request->getUrl() );
 		$factory = $this->createControllerFactory();
+		$renderer = $this->createViewRenderer();
 
-		$this->controller = $this->createController( $request, $response, $factory );
+		$this->controller = $this->createController( $request, $response, $factory, $renderer );
 	}
 
 	/**
@@ -82,24 +86,59 @@ class Application {
 	}
 
 	/**
+	 * Initializes the main view renderer.
+	 *
+	 * @return ViewRenderer
+	 */
+	protected function createViewRenderer() {
+		$renderEnabled = true;
+		$layoutEnabled = $this->config->getBoolean( ApplicationConfigKey::LAYOUT_ENABLED );
+		$defaultLayoutTemplate = $this->config->getString( ApplicationConfigKey::LAYOUT_DEFAULT_TEMPLATE );
+		$layoutTemplatePath = $this->config->getString( ApplicationConfigKey::LAYOUT_PATH );
+		$viewTemplatePath = $this->config->getString( ApplicationConfigKey::VIEW_PATH );
+
+		$viewOptions = new ViewOptions();
+
+		$viewOptions->setRendererEnabled( $renderEnabled );
+		$viewOptions->setLayoutEnabled( $layoutEnabled );
+		$viewOptions->setLayoutTemplate( $defaultLayoutTemplate );
+		$viewOptions->setLayoutTemplatePath( $layoutTemplatePath );
+		$viewOptions->setViewTemplatePath( $viewTemplatePath );
+
+		$layout = null;
+
+		if ( $viewOptions->getLayoutEnabled() ) {
+			$layout = new Layout();
+		}
+
+		return new ViewRenderer( $viewOptions, new View(), $layout );
+	}
+
+	/**
 	 * Initializes the main controller.
 	 *
 	 * @param WebRequest $request
 	 * @param WebResponse $response
 	 * @param ControllerFactory $factory
+	 * @param ViewRenderer $renderer
 	 *
 	 * @return FrontController
 	 *
 	 * @throws ApplicationException
 	 */
-	protected function createController( WebRequest $request, WebResponse $response, ControllerFactory $factory ) {
+	protected function createController(
+		WebRequest $request,
+		WebResponse $response,
+		ControllerFactory $factory,
+		ViewRenderer $renderer
+	) {
 		$controllerClassName = $this->config->getString( ApplicationConfigKey::CONTROLLER_CLASS_FRONT );
 
 		if ( is_null( $controllerClassName ) ) {
 			throw new ApplicationException( "Front controller not configued." );
 		}
 
-		$controller = new $controllerClassName( $request, $response, $factory );
+		$controller = new $controllerClassName( $request, $response, $factory, $renderer );
 
 		if ( !( $controller instanceof FrontController ) ) {
 			throw new ApplicationException( "Front controller must be an instance of FrontController." );

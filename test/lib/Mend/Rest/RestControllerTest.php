@@ -42,8 +42,9 @@ class RestControllerTest extends \TestCase {
 		}
 
 		$factory = $this->createFactory( $controller );
+		$renderer = $this->createViewRenderer();
 
-		$rest = new RestController( $request, $response, $factory );
+		$rest = new RestController( $request, $response, $factory, $renderer );
 		$rest->dispatchRequest();
 	}
 

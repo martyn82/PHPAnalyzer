@@ -15,8 +15,9 @@ class FrontControllerTest extends \TestCase {
 		$request = $this->createRequest( $url );
 		$response = $this->createResponse( $url );
 		$factory = $this->createFactory();
+		$renderer = $this->createViewRenderer();
 
-		$controller = new FrontController( $request, $response, $factory );
+		$controller = new FrontController( $request, $response, $factory, $renderer );
 
 		self::assertEquals( $request, $controller->getRequest() );
 		self::assertEquals( $response, $controller->getResponse() );
@@ -37,7 +38,7 @@ class FrontControllerTest extends \TestCase {
 		$created = $this->createPageController( $request, $response, $renderer );
 		$factory = $this->createFactory( $created );
 
-		$controller = new DummyFrontController( $request, $response, $factory );
+		$controller = new DummyFrontController( $request, $response, $factory, $renderer );
 		$controller->dispatchRequest();
 
 		self::assertEquals( $controllerName, $controller->getControllerName() );
@@ -66,7 +67,7 @@ class FrontControllerTest extends \TestCase {
 		$created = $this->createPageController( $request, $response, $renderer );
 		$factory = $this->createFactory( $created );
 
-		$controller = new DummyFrontController( $request, $response, $factory );
+		$controller = new DummyFrontController( $request, $response, $factory, $renderer );
 		$controller->dispatchRequest();
 
 		$request = $controller->getRequest();
