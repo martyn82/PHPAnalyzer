@@ -6,6 +6,9 @@ use Mend\Network\Web\HttpMethod;
 use Mend\Mvc\Controller;
 use Mend\Mvc\Controller\FrontController;
 use Mend\Mvc\Controller\PageController;
+use Mend\Mvc\ControllerFactory;
+use Mend\Network\Web\WebRequest;
+use Mend\Network\Web\WebResponse;
 
 global $_SERVER_BACKUP;
 $_SERVER_BACKUP = $_SERVER;
@@ -14,11 +17,15 @@ class ApplicationTest extends \TestCase {
 	public function setUp() {
 		global $_SERVER_BACKUP;
 		$_SERVER = $_SERVER_BACKUP;
+
+		MockControllerFactory::setController( null );
 	}
 
 	public function tearDown() {
 		global $_SERVER_BACKUP;
 		$_SERVER = $_SERVER_BACKUP;
+
+		MockControllerFactory::setController( null );
 	}
 
 	/**
@@ -28,9 +35,11 @@ class ApplicationTest extends \TestCase {
 	 * @param string $uri
 	 */
 	public function testRun( $method, $uri ) {
-		self::markTestSkipped();
-
 		$this->prepareGlobals( $method, $uri );
+
+		$controller = $this->createController();
+		MockControllerFactory::setController( $controller );
+
 		$config = $this->createConfig();
 
 		$application = new Application( $config );
@@ -51,7 +60,57 @@ class ApplicationTest extends \TestCase {
 		);
 	}
 
-	private function createConfig() {
+	/**
+	 * @expectedException \Mend\ApplicationException
+	 */
+	public function testRunNoControllerFactory() {
+		$this->prepareGlobals( HttpMethod::METHOD_GET, '/foo/bar' );
+		$config = $this->createConfig( false );
+
+		$application = new Application( $config );
+		$application->run();
+
+		self::fail( "Test should have triggered an exception." );
+	}
+
+	/**
+	 * @expectedException \Mend\ApplicationException
+	 */
+	public function testRunNoFrontController() {
+		$this->prepareGlobals( HttpMethod::METHOD_GET, '/foo/bar' );
+		$config = $this->createConfig( true, false );
+
+		$application = new Application( $config );
+		$application->run();
+
+		self::fail( "Test should have triggered an exception." );
+	}
+
+	/**
+	 * @expectedException \Mend\ApplicationException
+	 */
+	public function testRunInvalidFrontController() {
+		$this->prepareGlobals( HttpMethod::METHOD_GET, '/foo/bar' );
+		$config = $this->createConfig( true, true, '\Mend\FooController' );
+
+		$application = new Application( $config );
+		$application->run();
+
+		self::fail( "Test should have triggered an exception." );
+	}
+
+	private function createController() {
+		$controller = $this->getMock(
+			'\Mend\Mvc\Controller\PageController',
+			array(),
+			array(),
+			'',
+			false
+		);
+		return $controller;
+	}
+
+	private function createConfig( $withFactory = true, $withFrontController = true, $customFrontController = null ) {
 		$config = $this->getMock(
 			'\Mend\Config\ConfigProvider',
 			array(),
@@ -64,10 +123,14 @@ class ApplicationTest extends \TestCase {
 			->method( 'getString' )
 			->will(
 				self::returnCallback(
-					function ( $key ) {
+					function ( $key ) use ( $withFactory, $withFrontController, $customFrontController ) {
 						switch ( $key ) {
-							case ApplicationConfigKey::CONTROLLER_CLASS_MAIN:
-								return '\Mend\MockController';
+							case ApplicationConfigKey::CONTROLLER_FACTORY:
+								return $withFactory ? '\Mend\MockControllerFactory' : null;
+							case ApplicationConfigKey::CONTROLLER_CLASS_FRONT:
+								return $withFrontController
+									? ( $customFrontController ? : '\Mend\MockController' )
+									: null;
 							case ApplicationConfigKey::CONTROLLER_CLASS_SUFFIX:
 								return 'Controller';
 							case ApplicationConfigKey::VIEW_PATH:
@@ -116,6 +179,16 @@ class ApplicationTest extends \TestCase {
 
 class MockController extends FrontController {}
 class FooController extends PageController {
-	public function actionBar() {
+	public function actionBar() {}
+}
+class MockControllerFactory extends ControllerFactory {
+	private static $controller;
+
+	public static function setController( Controller $controller = null ) {
+		self::$controller = $controller;
+	}
+
+	public function createController( $controllerName, WebRequest $request, WebResponse $response ) {
+		return self::$controller;
 	}
 }

@@ -65,12 +65,20 @@ class Application {
 	 * Initializes the controller factory.
 	 *
 	 * @return ControllerFactory
+	 *
+	 * @throws ApplicationException
 	 */
 	protected function createControllerFactory() {
 		$controllerClassSuffix = $this->config->getString( ApplicationConfigKey::CONTROLLER_CLASS_SUFFIX );
 		$controllerNamespaces = $this->config->getArray( ApplicationConfigKey::CONTROLLER_CLASS_NAMESPACES );
 
-		return new ControllerFactory( $controllerNamespaces, $controllerClassSuffix );
+		$controllerFactory = $this->config->getString( ApplicationConfigKey::CONTROLLER_FACTORY );
+
+		if ( is_null( $controllerFactory ) ) {
+			throw new ApplicationException( "ControllerFactory is not configured." );
+		}
+
+		return new $controllerFactory( $controllerNamespaces, $controllerClassSuffix );
 	}
 
 	/**
@@ -81,10 +89,21 @@ class Application {
 	 * @param ControllerFactory $factory
 	 *
 	 * @return FrontController
+	 *
+	 * @throws ApplicationException
 	 */
 	protected function createController( WebRequest $request, WebResponse $response, ControllerFactory $factory ) {
-		$controllerClassName = $this->config->getString( ApplicationConfigKey::CONTROLLER_CLASS_MAIN );
+		$controllerClassName = $this->config->getString( ApplicationConfigKey::CONTROLLER_CLASS_FRONT );
+
+		if ( is_null( $controllerClassName ) ) {
+			throw new ApplicationException( "Front controller not configued." );
+		}
+
 		$controller = new $controllerClassName( $request, $response, $factory );
+
+		if ( !( $controller instanceof FrontController ) ) {
+			throw new ApplicationException( "Front controller must be an instance of FrontController." );
+		}
 
 		return $controller;
 	}

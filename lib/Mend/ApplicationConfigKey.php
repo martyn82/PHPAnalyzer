@@ -10,7 +10,8 @@ class ApplicationConfigKey {
 	const VIEW_PATH = 'application:view.path';
 	const VIEW_TEMPLATE_SUFFIX = 'application:view.suffix';
 
-	const CONTROLLER_CLASS_MAIN = 'application:controller.class.main';
+	const CONTROLLER_FACTORY = 'application:controller.factory';
+	const CONTROLLER_CLASS_FRONT = 'application:controller.class.front';
 	const CONTROLLER_CLASS_NAMESPACES = 'application:controller.class.namespaces';
 	const CONTROLLER_CLASS_SUFFIX = 'application:controller.class.suffix';
 }
