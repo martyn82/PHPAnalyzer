@@ -7,6 +7,7 @@ use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
+use Mend\IO\FileSystem\FileSystem;
 
 abstract class PageController extends Controller {
 	/**
@@ -89,7 +90,12 @@ abstract class PageController extends Controller {
 	 * @return string
 	 */
 	protected function render() {
-		$templateFile = new File( $this->getActionName() . '.phtml' );
+		$templateFile = new File(
+			$this->getControllerName()
+			. FileSystem::DIRECTORY_SEPARATOR
+			. $this->getActionName()
+			. '.phtml'
+		);
 		return $this->renderer->render( $templateFile );
 	}
 
