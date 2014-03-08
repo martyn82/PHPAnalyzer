@@ -1,12 +1,13 @@
 <?php
 namespace Mend;
 
-use Mend\Network\Web\Url;
-use Mend\Network\Web\HttpMethod;
 use Mend\Mvc\Controller;
+use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\Controller\FrontController;
 use Mend\Mvc\Controller\PageController;
-use Mend\Mvc\ControllerFactory;
+use Mend\Mvc\View\ViewRenderer;
+use Mend\Network\Web\HttpMethod;
+use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 
@@ -91,7 +92,7 @@ class ApplicationTest extends \TestCase {
 	 */
 	public function testRunInvalidFrontController() {
 		$this->prepareGlobals( HttpMethod::METHOD_GET, '/foo/bar' );
-		$config = $this->createConfig( true, true, '\Mend\FooController' );
+		$config = $this->createConfig( true, true, '\Mend\BarController' );
 
 		$application = new Application( $config );
 		$application->run();
@@ -181,6 +182,14 @@ class MockController extends FrontController {}
 class FooController extends PageController {
 	public function actionBar() {}
 }
+class BarController extends Controller {
+	protected function getControllerName() {
+		return 'bar';
+	}
+	protected function getActionName() {
+		return '';
+	}
+}
 class MockControllerFactory extends ControllerFactory {
 	private static $controller;
 
@@ -188,7 +197,12 @@ class MockControllerFactory extends ControllerFactory {
 		self::$controller = $controller;
 	}
 
-	public function createController( $controllerName, WebRequest $request, WebResponse $response ) {
+	public function createController(
+		$controllerName,
+		WebRequest $request,
+		WebResponse $response,
+		ViewRenderer $renderer
+	) {
 		return self::$controller;
 	}
 }

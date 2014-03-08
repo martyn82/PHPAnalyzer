@@ -4,6 +4,8 @@ namespace Mend\IO\FileSystem;
 use Mend\IO\FileVisitor;
 
 interface FileSystem {
+	const DIRECTORY_SEPARATOR = DIRECTORY_SEPARATOR;
+
 	/**
 	 * Retrieves the fully qualified name of this object.
 	 *

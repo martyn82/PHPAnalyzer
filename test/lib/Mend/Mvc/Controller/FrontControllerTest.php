@@ -7,6 +7,7 @@ use Mend\Mvc\ControllerFactory;
 use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
+use Mend\Mvc\View\ViewRenderer;
 
 class FrontControllerTest extends \TestCase {
 	public function testConstruct() {
@@ -31,8 +32,9 @@ class FrontControllerTest extends \TestCase {
 	public function testDispatch( Url $url, $controllerName, $actionName ) {
 		$request = $this->createRequest( $url );
 		$response = $this->createResponse( $url );
+		$renderer = $this->createViewRenderer();
 
-		$created = $this->createPageController( $request, $response );
+		$created = $this->createPageController( $request, $response, $renderer );
 		$factory = $this->createFactory( $created );
 
 		$controller = new DummyFrontController( $request, $response, $factory );
@@ -59,7 +61,9 @@ class FrontControllerTest extends \TestCase {
 		$url = $this->createUrl( $urlString );
 		$request = $this->createRequest( $url );
 		$response = $this->createResponse( $url );
-		$created = $this->createPageController( $request, $response );
+		$renderer = $this->createViewRenderer();
+
+		$created = $this->createPageController( $request, $response, $renderer );
 		$factory = $this->createFactory( $created );
 
 		$controller = new DummyFrontController( $request, $response, $factory );
@@ -96,6 +100,10 @@ class FrontControllerTest extends \TestCase {
 		self::fail( "Test should have triggered an exception." );
 	}
 
+	private function createViewRenderer() {
+		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
+	}
+
 	private function createController( WebRequest $request, WebResponse $response ) {
 		$factory = $this->createFactory( null );
 
@@ -108,13 +116,13 @@ class FrontControllerTest extends \TestCase {
 		return $controller;
 	}
 
-	private function createPageController( WebRequest $request, WebResponse $response ) {
+	private function createPageController( WebRequest $request, WebResponse $response, ViewRenderer $renderer ) {
 		$factory = $this->createFactory( null );
 
 		$controller = $this->getMock(
 				'\Mend\Mvc\Controller\PageController',
 				array( 'getControllerName', 'getActionName', 'dispatchAction' ),
-				array( $request, $response, $factory )
+				array( $request, $response, $factory, $renderer )
 		);
 
 		return $controller;

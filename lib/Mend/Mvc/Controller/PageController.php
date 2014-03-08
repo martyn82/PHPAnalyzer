@@ -4,8 +4,7 @@ namespace Mend\Mvc\Controller;
 use Mend\IO\FileSystem\File;
 use Mend\Mvc\Controller;
 use Mend\Mvc\ControllerFactory;
-use Mend\Mvc\View;
-use Mend\Mvc\View\Layout;
+use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 
@@ -21,39 +20,27 @@ abstract class PageController extends Controller {
 	private $actionName;
 
 	/**
-	 * @var Layout
+	 * @var ViewRenderer
 	 */
-	private $layout;
+	private $renderer;
 
 	/**
-	 * @var View
+	 * Constructs a new PageController instance.
+	 *
+	 * @param WebRequest $request
+	 * @param WebResponse $response
+	 * @param ControllerFactory $factory
+	 * @param ViewRenderer $renderer
 	 */
-	private $view;
-
-	/**
-	 * @var boolean
-	 */
-	private $layoutEnabled;
-
-	/**
-	 * @var boolean
-	 */
-	private $renderEnabled;
-
-	/**
-	 * @var string
-	 */
-	private $viewTemplatePath;
-
-	/**
-	 * @var string
-	 */
-	private $layoutTemplatePath;
-
-	/**
-	 * @var string
-	 */
-	private $layoutTemplate;
+	public function __construct(
+		WebRequest $request,
+		WebResponse $response,
+		ControllerFactory $factory,
+		ViewRenderer $renderer
+	) {
+		parent::__construct( $request, $response, $factory );
+		$this->renderer = $renderer;
+	}
 
 	/**
 	 * Dispatches given action.
@@ -102,21 +89,35 @@ abstract class PageController extends Controller {
 	 * @return string
 	 */
 	protected function render() {
-		if ( !$this->renderEnabled || is_null( $this->view ) ) {
-			return '';
-		}
+		$templateFile = new File( $this->getActionName() . '.phtml' );
+		return $this->renderer->render( $templateFile );
+	}
 
-		$templateFile = new File( $this->viewTemplatePath . DIRECTORY_SEPARATOR . $this->getActionName() . '.phtml' );
-		$renderedView = $this->view->render( $templateFile );
+	/**
+	 * Retrieves the view renderer.
+	 *
+	 * @return ViewRenderer
+	 */
+	protected function getViewRenderer() {
+		return $this->renderer;
+	}
 
-		if ( $this->layoutEnabled && !is_null( $this->layout ) ) {
-			$this->layout->setContent( $renderedView );
+	/**
+	 * Retrieves the current layout.
+	 *
+	 * @return Layout
+	 */
+	protected function getLayout() {
+		return $this->renderer->getLayout();
+	}
 
-			$layoutFile = new File( $this->layoutTemplatePath . DIRECTORY_SEPARATOR . $this->layoutTemplate );
-			$renderedView = $this->layout->render( $layoutFile );
-		}
-
-		return $renderedView;
+	/**
+	 * Retrieves the current view.
+	 *
+	 * @return View
+	 */
+	protected function getView() {
+		return $this->renderer->getView();
 	}
 
 	/**
@@ -136,86 +137,5 @@ abstract class PageController extends Controller {
 	 */
 	protected function getActionName() {
 		return $this->actionName;
-	}
-
-	/**
-	 * Sets the Layout.
-	 *
-	 * @param Layout $layout
-	 */
-	public function setLayout( Layout $layout ) {
-		$this->layout = $layout;
-	}
-
-	/**
-	 * Retrieves the layout.
-	 *
-	 * @return Layout
-	 */
-	public function getLayout() {
-		return $this->layout;
-	}
-
-	/**
-	 * Sets the view.
-	 *
-	 * @param View $view
-	 */
-	public function setView( View $view ) {
-		$this->view = $view;
-	}
-
-	/**
-	 * Retrieves the view.
-	 *
-	 * @return View
-	 */
-	public function getView() {
-		return $this->view;
-	}
-
-	/**
-	 * Enables or disables the layout.
-	 *
-	 * @param boolean $enable
-	 */
-	public function enableLayout( $enable = true ) {
-		$this->layoutEnabled = (bool) $enable;
-	}
-
-	/**
-	 * Enables or disables the view rendering.
-	 *
-	 * @param boolean $enable
-	 */
-	public function enableRender( $enable = true ) {
-		$this->renderEnabled = (bool) $enable;
-	}
-
-	/**
-	 * Sets the path to view templates.
-	 *
-	 * @param string $path
-	 */
-	public function setViewTemplatePath( $path ) {
-		$this->viewTemplatePath = (string) $path;
-	}
-
-	/**
-	 * Sets the path to layout templates.
-	 *
-	 * @param string $path
-	 */
-	public function setLayoutTemplatePath( $path ) {
-		$this->layoutTemplatePath = (string) $path;
-	}
-
-	/**
-	 * Sets the layout template file name.
-	 *
-	 * @param string $template
-	 */
-	public function setLayoutTemplate( $template ) {
-		$this->layoutTemplate = (string) $template;
 	}
 }

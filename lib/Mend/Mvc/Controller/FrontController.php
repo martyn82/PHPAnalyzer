@@ -6,6 +6,8 @@ use Mend\Mvc\View\Layout;
 use Mend\Mvc\View;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
+use Mend\Mvc\View\ViewRenderer;
+use Mend\Mvc\View\ViewOptions;
 
 class FrontController extends Controller {
 	/**
@@ -47,18 +49,17 @@ class FrontController extends Controller {
 	 * @return Controller
 	 */
 	protected function createController( $controllerName ) {
+		$viewOptions = new ViewOptions();
+		$viewOptions->setRendererEnabled( true );
+		$viewOptions->setLayoutEnabled( true );
+		$viewOptions->setLayoutTemplate( 'default.phtml' );
+		$viewOptions->setLayoutTemplatePath( 'views/layout/' );
+		$viewOptions->setViewTemplatePath( 'views/' );
+
+		$renderer = new ViewRenderer( $viewOptions, new View(), new Layout() );
 		$factory = $this->getFactory();
-		$controller = $factory->createController( $controllerName, $this->getRequest(), $this->getResponse() );
 
-		$controller->enableRender( true );
-		$controller->enableLayout( true );
-		$controller->setLayout( new Layout() );
-		$controller->setView( new View() );
-		$controller->setViewTemplatePath( 'views/' . $controllerName );
-		$controller->setLayoutTemplatePath( 'views/layout' );
-		$controller->setLayoutTemplate( 'default.phtml' );
-
-		return $controller;
+		return $factory->createController( $controllerName, $this->getRequest(), $this->getResponse(), $renderer );
 	}
 
 	/**

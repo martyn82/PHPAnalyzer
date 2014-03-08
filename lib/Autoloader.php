@@ -107,7 +107,7 @@ class Autoloader {
 			return false;
 		}
 
-		$dir = realpath( dirname( $fileName ) );
+		$dir = \realpath( dirname( $fileName ) );
 		require $dir . self::DIRECTORY_SEPARATOR . basename( $fileName );
 		return true;
 	}

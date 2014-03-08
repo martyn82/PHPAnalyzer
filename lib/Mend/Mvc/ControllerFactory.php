@@ -6,6 +6,7 @@ use Mend\Mvc\Controller;
 use Mend\Mvc\Controller\PageController;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
+use Mend\Mvc\View\ViewRenderer;
 
 class ControllerFactory {
 	/**
@@ -42,12 +43,18 @@ class ControllerFactory {
 	 * @param string $controllerName
 	 * @param WebRequest $request
 	 * @param WebResponse $response
+	 * @param ViewRenderer $renderer
 	 *
 	 * @return PageController
 	 *
 	 * @throws \Exception
 	 */
-	public function createController( $controllerName, WebRequest $request, WebResponse $response ) {
+	public function createController(
+		$controllerName,
+		WebRequest $request,
+		WebResponse $response,
+		ViewRenderer $renderer
+	) {
 		$controllerClassName = $this->getControllerClassByName( $controllerName );
 
 		if ( is_null( $controllerClassName ) ) {
@@ -58,7 +65,7 @@ class ControllerFactory {
 			throw new \Exception( "Controller '{$controllerClassName}' must be an instance of PageController." );
 		}
 
-		return new $controllerClassName( $request, $response, $this );
+		return new $controllerClassName( $request, $response, $this, $renderer );
 	}
 
 	/**

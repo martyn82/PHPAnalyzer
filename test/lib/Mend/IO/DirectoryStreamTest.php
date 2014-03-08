@@ -3,6 +3,7 @@ namespace Mend\IO;
 
 use Mend\IO\FileSystem\Directory;
 use Mend\IO\FileSystem\File;
+use Mend\IO\FileSystem\FileSystem;
 
 class DirectoryStreamTest extends \TestCase {
 	public function testDirectoryReturns() {
@@ -71,19 +72,19 @@ class DirectoryStreamTest extends \TestCase {
 		$isFile = !empty( $fileName );
 
 		$iterator = $this->getMock(
-				'\DirectoryIterator',
-				array(
-						'current',
-						'valid',
-						'next',
-						'isDir',
-						'isFile',
-						'getPath',
-						'getFilename'
-				),
-				array( $path . ( $isFile ? '' : DIRECTORY_SEPARATOR . $fileName ) ),
-				'',
-				false
+			'\DirectoryIterator',
+			array(
+				'current',
+				'valid',
+				'next',
+				'isDir',
+				'isFile',
+				'getPath',
+				'getFilename'
+			),
+			array( $path . ( $isFile ? '' : FileSystem::DIRECTORY_SEPARATOR . $fileName ) ),
+			'',
+			false
 		);
 
 		$iterator->expects( self::any() )->method( 'isDir' )->will( self::returnValue( !$isFile ) );

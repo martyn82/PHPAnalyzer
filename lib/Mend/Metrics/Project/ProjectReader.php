@@ -6,6 +6,7 @@ use Mend\IO\DirectoryStream;
 use Mend\IO\FileSystem\Directory;
 use Mend\IO\FileSystem\File;
 use Mend\IO\FileSystem\FileArray;
+use Mend\IO\FileSystem\FileSystem;
 
 class ProjectReader {
 	/**
@@ -102,13 +103,21 @@ class ProjectReader {
 					continue;
 				}
 
-				$files[] = new File( $iterator->getPath() . DIRECTORY_SEPARATOR . $iterator->getFilename() );
+				$files[] = new File(
+					$iterator->getPath()
+					. FileSystem::DIRECTORY_SEPARATOR
+					. $iterator->getFilename()
+				);
 			}
 			else if ( $iterator->isDir() ) {
 				$files = array_merge(
 					$files,
 					$this->getFilesFromStream(
-						new \DirectoryIterator( $iterator->getPath() . DIRECTORY_SEPARATOR . $iterator->getFilename() ),
+						new \DirectoryIterator(
+							$iterator->getPath()
+							. FileSystem::DIRECTORY_SEPARATOR
+							. $iterator->getFilename()
+						),
 						$extensions
 					)
 				);

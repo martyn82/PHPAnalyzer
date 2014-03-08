@@ -1,15 +1,15 @@
 <?php
 namespace Controller;
 
-use Mend\Mvc\Controller\Controller;
+use Mend\Mvc\Controller\PageController;
 use Mend\Network\Web\HttpStatus;
 
-class IndexController extends Controller {
+class IndexController extends PageController {
 	/**
 	 * Index action.
 	 */
 	public function actionIndex() {
-		$this->enableRenderer( false );
+		$this->enableRender( false );
 
 		$response = $this->getResponse();
 		$response->setStatusCode( HttpStatus::STATUS_BAD_REQUEST );

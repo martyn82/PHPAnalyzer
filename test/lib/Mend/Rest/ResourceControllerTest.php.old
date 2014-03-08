@@ -1,0 +1,123 @@
+<?php
+namespace Mend\Rest;
+
+use Mend\Collections\Map;
+use Mend\Network\Web\Url;
+
+class ResourceControllerTest extends \TestCase {
+	private static $actionReadStub;
+	private static $actionIndexStub;
+	private static $actionCreateStub;
+	private static $actionUpdateStub;
+	private static $actionDeleteStub;
+
+	public static function actionReadStub() {
+		call_user_func( self::$actionReadStub );
+	}
+
+	public static function actionIndexStub() {
+		call_user_func( self::$actionIndexStub );
+	}
+
+	public static function actionCreateStub() {
+		call_user_func( self::$actionCreateStub );
+	}
+
+	public static function actionUpdateStub() {
+		call_user_func( self::$actionUpdateStub );
+	}
+
+	public static function actionDeleteStub() {
+		call_user_func( self::$actionDeleteStub );
+	}
+
+	public function setUp() {
+		self::markTestSkipped();
+	}
+
+	/**
+	 * @dataProvider stubProvider
+	 *
+	 * @param string $action
+	 */
+	public function testDispatch( $action ) {
+		$request = $this->getMock( '\Mend\Network\Web\WebRequest', array(), array(), '', false );
+
+		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array( 'getHeaders' ), array(), '', false );
+
+		$response->expects( self::any() )
+			->method( 'getHeaders' )
+			->will( self::returnValue( new Map() ) );
+
+		$factory = $this->getMock(
+			'\Mend\Mvc\ControllerFactory',
+			array( 'getControllerClassName' ),
+			array(),
+			'',
+			false
+		);
+
+		$factory->expects( self::any() )
+			->method( 'getControllerClassName' )
+			->will( self::returnValue( '\Mend\Mvc\Rest\DummyResourceController' ) );
+
+		self::$actionReadStub = function () use ( $action ) {
+			self::assertTrue( $action == 'read' );
+		};
+		self::$actionDeleteStub = function () use ( $action ) {
+			self::assertTrue( $action == 'delete' );
+		};
+		self::$actionCreateStub = function () use ( $action ) {
+			self::assertTrue( $action == 'create' );
+		};
+		self::$actionIndexStub = function () use ( $action ) {
+			self::assertTrue( $action == 'index' );
+		};
+		self::$actionUpdateStub = function () use ( $action ) {
+			self::assertTrue( $action == 'update' );
+		};
+
+		$rest = new RestController( $request, $response, $factory );
+		$rest->dispatch( 'dummy', $action );
+	}
+
+	public function stubProvider() {
+		return array(
+			array( 'index' ),
+			array( 'read' ),
+			array( 'create' ),
+			array( 'update' ),
+			array( 'delete' )
+		);
+	}
+}
+
+class DummyResourceController extends ResourceController {
+	protected function getActionName() {
+		return '';
+	}
+
+	protected function getControllerName() {
+		return '';
+	}
+
+	public function actionRead() {
+		ResourceControllerTest::actionReadStub();
+	}
+
+	public function actionIndex() {
+		ResourceControllerTest::actionIndexStub();
+	}
+
+	public function actionCreate() {
+		ResourceControllerTest::actionCreateStub();
+	}
+
+	public function actionUpdate() {
+		ResourceControllerTest::actionUpdateStub();
+	}
+
+	public function actionDelete() {
+		ResourceControllerTest::actionDeleteStub();
+	}
+}

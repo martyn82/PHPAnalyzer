@@ -69,9 +69,10 @@ class ControllerFactoryTest extends \TestCase {
 
 		$request = $this->createRequest();
 		$response = $this->createResponse();
+		$renderer = $this->createViewRenderer();
 
 		$factory = new ControllerFactory( array( __NAMESPACE__ ), 'Controller', $class );
-		$controller = $factory->createController( 'dummy', $request, $response );
+		$controller = $factory->createController( 'dummy', $request, $response, $renderer );
 
 		self::assertInstanceOf( '\Mend\Mvc\Controller\PageController', $controller );
 	}
@@ -84,9 +85,10 @@ class ControllerFactoryTest extends \TestCase {
 
 		$request = $this->createRequest();
 		$response = $this->createResponse();
+		$renderer = $this->createViewRenderer();
 
 		$factory = new ControllerFactory( array( __NAMESPACE__ ), null, $class );
-		$controller = $factory->createController( 'dummy', $request, $response );
+		$controller = $factory->createController( 'dummy', $request, $response, $renderer );
 
 		self::fail( "Test should have triggered an exception." );
 	}
@@ -99,9 +101,10 @@ class ControllerFactoryTest extends \TestCase {
 
 		$request = $this->createRequest();
 		$response = $this->createResponse();
+		$renderer = $this->createViewRenderer();
 
 		$factory = new ControllerFactory( array( __NAMESPACE__ ), null, $class );
-		$controller = $factory->createController( 'dummy', $request, $response );
+		$controller = $factory->createController( 'dummy', $request, $response, $renderer );
 
 		self::fail( "Test should have triggered an exception." );
 	}
@@ -118,6 +121,10 @@ class ControllerFactoryTest extends \TestCase {
 			->will( self::returnValue( $isSubclassOf) );
 
 		return $class;
+	}
+
+	private function createViewRenderer() {
+		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
 	}
 
 	private function createRequest() {
