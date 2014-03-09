@@ -1,6 +1,8 @@
 <?php
 namespace Controller;
 
+require_once "ControllerTest.php";
+
 class IndexControllerTest extends ControllerTest {
 	public function testDispatchIndex() {
 		$urlString = 'http://www.example.org/foo/bar';

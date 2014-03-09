@@ -103,7 +103,7 @@ abstract class PageController extends Controller {
 		$headers = $response->getHeaders();
 		$headers->set(
 			'Content-Type',
-			$this->context->getContentType() . ';charset=' . $this->context->getCharacterSet()
+			$this->context->getContentType() . '; charset=' . $this->context->getCharacterSet()
 		);
 	}
 

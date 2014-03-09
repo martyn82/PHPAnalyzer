@@ -15,3 +15,5 @@ if ( !isset( $autoLoader ) ) {
 }
 
 $autoLoader->addNamespace( "Controller", SERVICE_DIR . "/controllers" );
+$autoLoader->addNamespace( "Record", SERVICE_DIR . "/model/Record" );
+$autoLoader->addNamespace( "Repository", SERVICE_DIR . "/model/Repository" );

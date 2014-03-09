@@ -4,6 +4,15 @@ namespace Mend\Rest;
 use Mend\Mvc\Controller\PageController;
 
 abstract class ResourceController extends PageController {
+	const PARAMETER_PAGE = 'page';
+	const FIRST_PAGE = 1;
+	const RESULTS_PER_PAGE = 10;
+
+	/**
+	 * @var ResourceResult
+	 */
+	private $result;
+
 	/**
 	 * Action to list all resources.
 	 */
@@ -28,4 +37,60 @@ abstract class ResourceController extends PageController {
 	 * Action to delete a single resource.
 	 */
 	abstract public function actionDelete();
+
+	/**
+	 * @see PageController::render()
+	 */
+	protected function render() {
+		$result = $this->getResult();
+
+		$response = array(
+			'totalResults' => $result->getTotalResultsCount(),
+			'page' => $result->getPageNumber(),
+			'itemsPerPage' => $result->getResultsPerPage(),
+			'results' => $result->getData()
+		);
+
+		return json_encode( $response, JSON_NUMERIC_CHECK );
+	}
+
+	/**
+	 * Sets the resource result instance.
+	 *
+	 * @param ResourceResult $result
+	 */
+	protected function setResult( ResourceResult $result ) {
+		$this->result = $result;
+	}
+
+	/**
+	 * Retrieves the resource result.
+	 *
+	 * @return ResourceResult
+	 */
+	private function getResult() {
+		return $this->result ? : new ResourceResult( array() );
+	}
+
+	/**
+	 * Retrieves the requested page number.
+	 *
+	 * @return integer
+	 */
+	protected function getPageNumber() {
+		$request = $this->getRequest();
+		$parameters = $request->getParameters();
+
+		return (int) $parameters->get( self::PARAMETER_PAGE, self::FIRST_PAGE );
+	}
+
+	/**
+	 * Retrieves the offset for a list of resources based on requested page parameter.
+	 *
+	 * @return integer
+	 */
+	protected function getOffset() {
+		$page = $this->getPageNumber();
+		return self::RESULTS_PER_PAGE * ( $page - 1 );
+	}
 }

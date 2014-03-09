@@ -9,16 +9,23 @@ abstract class ControllerTest extends \TestCase {
 		return Url::createFromString( $urlString );
 	}
 
-	protected function createRequest( Url $url ) {
-		return $this->getMock( '\Mend\Network\Web\WebRequest', array(), array( $url ) );
+	protected function createRequest( Url $url, Map $parameters = null ) {
+		$parameters = $parameters ? : new Map();
+		$request = $this->getMock( '\Mend\Network\Web\WebRequest', array( 'getParameters' ), array( $url ) );
+
+		$request->expects( self::any() )
+			->method( 'getParameters' )
+			->will( self::returnValue( $parameters ) );
+
+		return $request;
 	}
 
 	protected function createResponse( Url $url ) {
 		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array(), array( $url ) );
 
 		$response->expects( self::any() )
-		->method( 'getHeaders' )
-		->will( self::returnValue( new Map() ) );
+			->method( 'getHeaders' )
+			->will( self::returnValue( new Map() ) );
 
 		return $response;
 	}

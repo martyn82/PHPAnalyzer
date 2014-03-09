@@ -1,6 +1,8 @@
 <?php
 namespace Controller;
 
+require_once "ControllerTest.php";
+
 use Mend\Network\Web\Url;
 
 class ProjectsControllerTest extends ControllerTest {

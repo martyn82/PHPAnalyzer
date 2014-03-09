@@ -1,9 +1,7 @@
 <?php
 namespace Mend\Rest;
 
-use Mend\Mvc\Controller\ActionResult;
-
-class RestResult extends ActionResult {
+class ResourceResult {
 	/**
 	 * @var integer
 	 */
@@ -18,6 +16,11 @@ class RestResult extends ActionResult {
 	 * @var integer
 	 */
 	private $resultsPerPage;
+	
+	/**
+	 * @var array
+	 */
+	private $data;
 
 	/**
 	 * Constructs a new rest response instance.
@@ -28,10 +31,19 @@ class RestResult extends ActionResult {
 	 * @param integer $resultsPerPage
 	 */
 	public function __construct( array $data, $pageNumber = null, $totalResultCount = null, $resultsPerPage = null ) {
-		parent::__construct( $data );
+		$this->data = $data;
 		$this->pageNumber = (int) $pageNumber ? : 1;
 		$this->totalResultCount = (int) $totalResultCount ? : count( $data );
 		$this->resultsPerPage = (int) $resultsPerPage;
+	}
+	
+	/**
+	 * Retrieves the data.
+	 *
+	 * @return array
+	 */
+	public function getData() {
+		return $this->data;
 	}
 
 	/**
