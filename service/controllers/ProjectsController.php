@@ -4,11 +4,13 @@ namespace Controller;
 use Mend\Data\Page;
 use Mend\Data\SortDirection;
 use Mend\Data\SortOptions;
+use Mend\IO\FileSystem\Directory;
 use Mend\Rest\ResourceController;
 use Mend\Rest\ResourceResult;
 
-use Repository\ProjectRepository;
 use Record\ProjectRecord;
+use Repository\ProjectRepository;
+use Mend\Metrics\Project\ProjectReport;
 
 class ProjectsController extends ResourceController {
 	/**
@@ -50,7 +52,7 @@ class ProjectsController extends ResourceController {
 		$result = new ResourceResult(
 			array(
 				'project' => $project->toArray(),
-				'reports' => array()
+				'reports' => $project->reports
 			)
 		);
 

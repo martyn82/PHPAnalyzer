@@ -6,6 +6,7 @@ use Mend\IO\FileSystem\FileSystem;
 use Mend\Mvc\Context;
 use Mend\Mvc\Controller;
 use Mend\Mvc\ControllerFactory;
+use Mend\Mvc\View;
 use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;

@@ -3,61 +3,31 @@
  */
 
 var serviceConsumer,
-	serviceLocation = 'http://service.analyze.local';
+	serviceLocation = 'http://analyze.local/service/projects';
 
 google.load( 'visualization', '1.0', { 'packages': [ 'corechart' ] } );
 google.setOnLoadCallback( function () {
 	var tabView = new TabView( document.getElementById( 'tabs' ) );
-	
+
 	serviceConsumer = new RESTClient();
 
-	serviceConsumer.get( serviceLocation + '/project/sample/', true, function ( response ) {
-		var project = response.bodyJSON;
-		
+	serviceConsumer.get( serviceLocation + '?id=phpanalyzer', true, function ( response ) {
+		var results = response.bodyJSON.results,
+			project = results.project,
+			reports = results.reports;
+
 		setProjectDetails( project );
 		
-		var reports = [],
-			reportResponse;
-
-		for ( var i = 0; i < project.reports.length; i++ ) {
-			reportResponse = serviceConsumer.get( serviceLocation + '/' + project.reports[ i ], false );
-			reports.push( reportResponse.bodyJSON );
-		}
-
-		var volumeResponse;
-
-		for ( var i = 0; i < reports.length; i++ ) {
-			volumeResponse = serviceConsumer.get( serviceLocation + '/' + reports[ i ].volume, false );
-			reports[ i ].volume = volumeResponse.bodyJSON;
-		}
-
-		drawVolumeTimeChart( reports );
-		
-		var complexityResponse;
-		for ( var i = 0; i < reports.length; i++ ) {
-			complexityResponse = serviceConsumer.get( serviceLocation + '/' + reports[ i ].complexity, false );
-			reports[ i ].complexity = complexityResponse.bodyJSON;
-		}
-		
-		drawComplexityTimeChart( reports );
-		
-		var unitSizeResponse;
+		var projectReports = [];
 		
 		for ( var i = 0; i < reports.length; i++ ) {
-			unitSizeResponse = serviceConsumer.get( serviceLocation + '/' + reports[ i ].unitSize, false );
-			reports[ i ].unitSize = unitSizeResponse.bodyJSON;
+			projectReports.push( reports[ i ].report );
 		}
 		
-		drawUnitSizeTimeChart( reports );
-		
-		var duplicationResponse;
-		
-		for ( var i = 0; i < reports.length; i++ ) {
-			duplicationResponse = serviceConsumer.get( serviceLocation + '/' + reports[ i ].duplication, false );
-			reports[ i ].duplication = duplicationResponse.bodyJSON;
-		}
-		
-		drawDuplicationTimeChart( reports );
+		drawVolumeTimeChart( projectReports );
+		drawComplexityTimeChart( projectReports );
+		drawUnitSizeTimeChart( projectReports );
+		drawDuplicationTimeChart( projectReports );
 	} );
 } );
 
@@ -68,8 +38,15 @@ function timeChartSelectionHandler( chart, reports, drawChartCallback, reportNam
 		return;
 	}
 
-	var report = reports[ selection[ 0 ].row ];
-	drawChartCallback( report.dateTime, report[ reportName ] );
+	var report = reports[ selection[ 0 ].row ],
+		reportLevels = reportName.split( '.' ),
+		finalReport = report;
+	
+	for ( var i = 0; i < reportLevels.length; i++ ) {
+		finalReport = finalReport[ reportLevels[ i ] ];
+	}
+	
+	drawChartCallback( report.dateTime, finalReport );
 };
 
 function setProjectDetails( project ) {
@@ -81,10 +58,8 @@ function drawVolumeTimeChart( reports ) {
 	table.addColumn( 'datetime', 'Time' );
 	table.addColumn( 'number', 'Lines' );
 	table.addColumn( 'number', 'Lines of code' );
-	table.addColumn( 'number', 'Files' );
-	table.addColumn( 'number', 'Packages' );
-	table.addColumn( 'number', 'Classes' );
-	table.addColumn( 'number', 'Methods' );
+	table.addColumn( 'number', 'Blank lines' );
+	table.addColumn( 'number', 'Comments' );
 
 	var rows = [],
 		report;
@@ -93,12 +68,10 @@ function drawVolumeTimeChart( reports ) {
 		report = reports[ i ];
 		rows.push( [
 			new Date( report.dateTime ),
-			report.volume.totalLines,
-			report.volume.totalLinesOfCode,
-			report.volume.fileCount,
-			report.volume.packageCount,
-			report.volume.classCount,
-			report.volume.methodCount
+			report.volume.lines.absolute,
+			report.volume.linesOfCode.absolute,
+			report.volume.linesBlank.absolute,
+			report.volume.linesOfComments.absolute
 		] );
 	}
 	
@@ -108,6 +81,28 @@ function drawVolumeTimeChart( reports ) {
 	chart.draw( table, {
 		'title': 'Volume over time',
 		'pointSize': 5
+	} );
+	
+	google.visualization.events.addListener( chart, 'select', function () {
+		timeChartSelectionHandler( chart, reports, drawVolumeChart, 'volume' );
+	} );
+};
+
+function drawVolumeChart( dateTime, report ) {
+	var table = new google.visualization.DataTable();
+	table.addColumn( 'string', 'Lines' );
+	table.addColumn( 'number', 'Absolute' );
+	table.addColumn( 'number', 'Relative' );
+	
+	table.addRows( [
+		[ 'LOC', report.linesOfCode.absolute, report.linesOfCode.relative ],
+		[ 'Blanks', report.linesBlank.absolute, report.linesBlank.relative ],
+		[ 'Comments', report.linesOfComments.absolute, report.linesOfComments.relative ]
+	] );
+	
+	var chart = new google.visualization.PieChart( document.getElementById( 'chart-volume' ) );
+	chart.draw( table, {
+		'title': 'Volume facts for ' + dateTime.toString()
 	} );
 };
 
@@ -126,10 +121,10 @@ function drawComplexityTimeChart( reports ) {
 		report = reports[ i ];
 		rows.push( [
 			new Date( report.dateTime ),
-			report.complexity.low.absoluteLOC,
-			report.complexity.moderate.absoluteLOC,
-			report.complexity.high.absoluteLOC,
-			report.complexity.veryHigh.absoluteLOC
+			report.complexity[ 1 ].absolute,
+			report.complexity[ 2 ].absolute,
+			report.complexity[ 3 ].absolute,
+			report.complexity[ 4 ].absolute
 		] );
 	}
 	
@@ -153,10 +148,10 @@ function drawComplexityChart( dateTime, report ) {
 	table.addColumn( 'number', 'Relative LOC' );
 	
 	table.addRows( [
-		[ 'Low risk', report.low.absoluteLOC, report.low.relativeLOC ],
-		[ 'Moderate risk', report.moderate.absoluteLOC, report.moderate.relativeLOC ],
-		[ 'High risk', report.high.absoluteLOC, report.high.relativeLOC ],
-		[ 'Very high risk', report.veryHigh.absoluteLOC, report.veryHigh.relativeLOC ]
+		[ 'Low risk', report[ 1 ].absolute, report[ 1 ].relative ],
+		[ 'Moderate risk', report[ 2 ].absolute, report[ 2 ].relative ],
+		[ 'High risk', report[ 3 ].absolute, report[ 3 ].relative ],
+		[ 'Very high risk', report[ 4 ].absolute, report[ 4 ].relative ]
 	] );
 	
 	var chart = new google.visualization.PieChart( document.getElementById( 'chart-complexity' ) );
@@ -180,10 +175,10 @@ function drawUnitSizeTimeChart( reports ) {
 		report = reports[ i ];
 		rows.push( [
 			new Date( report.dateTime ),
-			report.unitSize.small.absoluteLOC,
-			report.unitSize.medium.absoluteLOC,
-			report.unitSize.large.absoluteLOC,
-			report.unitSize.veryLarge.absoluteLOC
+			report.unitSize[ 1 ].absolute,
+			report.unitSize[ 2 ].absolute,
+			report.unitSize[ 3 ].absolute,
+			report.unitSize[ 4 ].absolute
 		] );
 	}
 	
@@ -207,10 +202,10 @@ function drawUnitSizeChart( dateTime, report ) {
 	table.addColumn( 'number', 'Relative LOC' );
 	
 	table.addRows( [
-		[ 'Small', report.small.absoluteLOC, report.small.relativeLOC ],
-		[ 'Medium', report.medium.absoluteLOC, report.medium.relativeLOC ],
-		[ 'Large', report.large.absoluteLOC, report.large.relativeLOC ],
-		[ 'Very large', report.veryLarge.absoluteLOC, report.veryLarge.relativeLOC ]
+		[ 'Small', report[ 1 ].absolute, report[ 1 ].relative ],
+		[ 'Medium', report[ 2 ].absolute, report[ 2 ].relative ],
+		[ 'Large', report[ 3 ].absolute, report[ 3 ].relative ],
+		[ 'Very large', report[ 4 ].absolute, report[ 4 ].relative ]
 	] );
 	
 	var chart = new google.visualization.PieChart( document.getElementById( 'chart-unitsize' ) );
@@ -232,8 +227,8 @@ function drawDuplicationTimeChart( reports ) {
 		report = reports[ i ];
 		rows.push( [
 			new Date( report.dateTime ),
-			report.duplication.absoluteLOC,
-			report.volume.totalLinesOfCode
+			report.duplication.duplications.absolute,
+			report.volume.lines.absolute
 		] );
 	}
 	
@@ -246,7 +241,7 @@ function drawDuplicationTimeChart( reports ) {
 	} );
 	
 	google.visualization.events.addListener( chart, 'select', function () {
-		timeChartSelectionHandler( chart, reports, drawDuplicationChart, 'duplication' );
+		timeChartSelectionHandler( chart, reports, drawDuplicationChart, 'duplication.duplications' );
 	} );
 };
 
@@ -256,8 +251,8 @@ function drawDuplicationChart( dateTime, report ) {
 	table.addColumn( 'number', 'Lines' );
 	
 	table.addRows( [
-		[ 'Duplications', report.absoluteLOC ],
-		[ 'Original', Math.round( report.absoluteLOC / report.relativeLOC * 100 ) ]
+		[ 'Duplications', report.absolute ],
+		[ 'Original', Math.round( report.absolute / report.relative * 100 ) ]
 	] );
 	
 	var chart = new google.visualization.PieChart( document.getElementById( 'chart-duplication' ) );

@@ -23,7 +23,7 @@ class RestController extends FrontController {
 				break;
 
 			case HttpMethod::METHOD_GET:
-				$actionName = ( $this->getResourceId() == null )
+				$actionName = ( $this->getActionName() == null )
 					? RestAction::ACTION_INDEX
 					: RestAction::ACTION_READ;
 				break;
@@ -45,17 +45,19 @@ class RestController extends FrontController {
 	}
 
 	/**
-	 * Retrieves the resource ID.
-	 *
-	 * @return integer
+	 * @see FrontController::parseRequest()
 	 */
-	protected function getResourceId() {
-		$actionName = $this->getActionName();
+	protected function parseRequest( $defaultController = 'index', $defaultAction = null ) {
+		parent::parseRequest( $defaultController, $defaultAction );
+	}
 
-		if ( is_numeric( $actionName ) ) {
-			return (int) $actionName;
-		}
-
-		return null;
+	/**
+	 * @see FrontController::createController()
+	 */
+	protected function createController( $controllerName ) {
+		/* @var $controller ResourceController */
+		$controller = parent::createController( $controllerName );
+		$controller->setResourceId( $this->getActionName() );
+		return $controller;
 	}
 }

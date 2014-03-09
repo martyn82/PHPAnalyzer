@@ -13,6 +13,9 @@ use Mend\IO\FileSystem\FileSystem;
 use Mend\IO\Stream\FileStreamReader;
 
 use Record\ProjectRecord;
+use Mend\Metrics\Project\ProjectReport;
+use Mend\Metrics\Report\ReportType;
+use Mend\Metrics\Project\EntityReport;
 
 class ProjectRepository implements Repository {
 	/**
@@ -26,6 +29,59 @@ class ProjectRepository implements Repository {
 	 * @see Repository::all()
 	 */
 	public function all( SortOptions $sortOptions, Page $page, & $totalCount = 0 ) {
+		$reports = $this->loadData();
+		$projects = array();
+
+		foreach ( $reports as $projectKey => $projectReports ) {
+			$report = reset( $projectReports );
+			$projects[ $projectKey ] = $report[ 'project' ];
+		}
+
+		return array_map(
+			function ( array $project ) {
+				return new ProjectRecord( $project[ 'name' ], $project[ 'key' ], new Directory( $project[ 'path' ] ) );
+			},
+			array_values( $projects )
+		);
+	}
+
+	/**
+	 * @see Repository::get()
+	 */
+	public function get( $id ) {
+		$reports = $this->loadData();
+
+		if ( empty( $reports[ $id ] ) ) {
+			throw new \Exception( "Project with id '{$id}' not found." );
+		}
+
+		$report = reset( $reports[ $id ] );
+		$projectData = $report[ 'project' ];
+
+		$project = new ProjectRecord(
+			$projectData[ 'name' ],
+			$projectData[ 'key' ],
+			new Directory( $projectData[ 'path' ] )
+		);
+
+		$project->reports = array_map(
+			function ( array $report ) use ( $project ) {
+				return array(
+					'report' => $report
+				);
+			},
+			$reports[ $id ]
+		);
+
+		return $project;
+	}
+
+	/**
+	 * Loads project data.
+	 *
+	 * @return array
+	 */
+	private function loadData() {
 		$dataDir = new Directory( 'data/' );
 		$stream = new DirectoryStream( $dataDir );
 		$dirIterator = $stream->getIterator();
@@ -53,59 +109,15 @@ class ProjectRepository implements Repository {
 			$reader->close();
 
 			$report = json_decode( $contents, true );
-			$projects[ $report[ 'project' ][ 'key' ] ] = $report[ 'project' ];
-		}
 
-		return array_map(
-			function ( array $project ) {
-				return new ProjectRecord( $project[ 'name' ], $project[ 'key' ], new Directory( $project[ 'path' ] ) );
-			},
-			array_values( $projects )
-		);
-	}
-
-	/**
-	 * @see Repository::get()
-	 */
-	public function get( $id ) {
-		$dataDir = new Directory( 'data/' );
-		$stream = new DirectoryStream( $dataDir );
-		$dirIterator = $stream->getIterator();
-		$dataFiles = new FileArray();
-
-		foreach ( $dirIterator as $iterator ) {
-			if ( !$iterator->isFile() || $iterator->getExtension() != 'json' ) {
-				continue;
+			if ( !isset( $projects[ $report[ 'project' ][ 'key' ] ] ) ) {
+				$projects[ $report[ 'project' ][ 'key' ] ] = array( $report );
 			}
-
-			$dataFiles[] = new File(
-				$iterator->getPath()
-				. FileSystem::DIRECTORY_SEPARATOR
-				. $iterator->getFilename()
-			);
-		}
-
-		$project = array();
-
-		foreach ( $dataFiles as $file ) {
-			/* @var $file File */
-			$reader = new FileStreamReader( $file );
-			$reader->open();
-			$contents = $reader->read();
-			$reader->close();
-
-			$report = json_decode( $contents, true );
-
-			if ( $id == $report[ 'project' ][ 'key' ] ) {
-				$project = $report[ 'project' ];
-				break;
+			else {
+				$projects[ $report[ 'project' ][ 'key' ] ][] = $report;
 			}
 		}
 
-		if ( empty( $project ) ) {
-			return null;
-		}
-
-		return new ProjectRecord( $project[ 'name' ], $project[ 'key' ], new Directory( $project[ 'path' ] ) );
+		return $projects;
 	}
 }
