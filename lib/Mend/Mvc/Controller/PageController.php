@@ -41,7 +41,13 @@ abstract class PageController extends Controller {
 	) {
 		parent::__construct( $request, $response, $factory );
 		$this->renderer = $renderer;
+		$this->init();
 	}
+
+	/**
+	 * Initializer template method.
+	 */
+	protected function init() { /* no-op */ }
 
 	/**
 	 * Dispatches given action.
@@ -78,6 +84,10 @@ abstract class PageController extends Controller {
 	 * Called after dispatch action.
 	 */
 	protected function postDispatch() {
+		if ( $this->getViewRenderer()->isDisabled() ) {
+			return;
+		}
+
 		$rendered = $this->render();
 
 		$response = $this->getResponse();
@@ -96,6 +106,7 @@ abstract class PageController extends Controller {
 			. $this->getActionName()
 			. '.phtml'
 		);
+
 		return $this->renderer->render( $templateFile );
 	}
 

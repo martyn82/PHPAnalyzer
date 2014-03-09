@@ -65,7 +65,7 @@ class View {
 	 */
 	public function render( File $templateFile ) {
 		if ( !$templateFile->exists() ) {
-			throw new ViewException( "No such view template file: '{$templateFile->getName()}'." );
+			throw new ViewException( "View template file does not exist: '{$templateFile->getName()}'." );
 		}
 
 		ob_start();

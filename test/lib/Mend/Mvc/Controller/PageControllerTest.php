@@ -67,7 +67,7 @@ class PageControllerTest extends \TestCase {
 			->will( self::returnValue( $enableLayout ) );
 
 		$options->expects( self::any() )
-			->method( 'getRenderEnabled' )
+			->method( 'getRendererEnabled' )
 			->will( self::returnValue( $enableRender ) );
 
 		return $options;
@@ -76,7 +76,22 @@ class PageControllerTest extends \TestCase {
 	private function createViewRenderer( ViewOptions $options = null, View $view = null, Layout $layout = null ) {
 		$view = $view ? : $this->createView();
 		$options = $options ? : $this->createViewOptions();
-		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array( 'render' ), array( $options, $view, $layout ) );
+
+		$renderer = $this->getMock(
+			'\Mend\Mvc\View\ViewRenderer',
+			array( 'render', 'isEnabled', 'isDisabled' ),
+			array( $options, $view, $layout )
+		);
+
+		$renderer->expects( self::any() )
+			->method( 'isDisabled' )
+			->will( self::returnValue( !$options->getRendererEnabled() ) );
+
+		$renderer->expects( self::any() )
+			->method( 'isEnabled' )
+			->will( self::returnValue( $options->getRendererEnabled() ) );
+
+		return $renderer;
 	}
 
 	private function createLayout() {
