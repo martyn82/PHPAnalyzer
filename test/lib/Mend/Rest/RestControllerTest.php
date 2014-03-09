@@ -8,6 +8,7 @@ use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 use Mend\Mvc\View\ViewRenderer;
+use Mend\Mvc\Context;
 
 class RestControllerTest extends \TestCase {
 	/**
@@ -22,8 +23,9 @@ class RestControllerTest extends \TestCase {
 		$request = $this->createRequest( $method, $url );
 		$response = $this->createResponse( $url );
 		$renderer = $this->createViewRenderer();
+		$context = $this->createContext();
 
-		$controller = $this->createController( $request, $response, $renderer );
+		$controller = $this->createController( $request, $response, $renderer, $context );
 
 		$actions = array(
 			'actionIndex',
@@ -43,8 +45,9 @@ class RestControllerTest extends \TestCase {
 
 		$factory = $this->createFactory( $controller );
 		$renderer = $this->createViewRenderer();
+		$context = $this->createContext();
 
-		$rest = new RestController( $request, $response, $factory, $renderer );
+		$rest = new RestController( $request, $response, $factory, $renderer, $context );
 		$rest->dispatchRequest();
 	}
 
@@ -66,6 +69,10 @@ class RestControllerTest extends \TestCase {
 	public function testDispatchInvalidMethod() {
 		$this->testDispatch( HttpMethod::METHOD_OPTIONS, 'http://www.example.org/foo/1', null );
 		self::fail( "Test should have triggered an exception." );
+	}
+
+	private function createContext() {
+		return $this->getMock( '\Mend\Mvc\Context', array(), array(), '', false );
 	}
 
 	private function createViewRenderer() {
@@ -100,12 +107,17 @@ class RestControllerTest extends \TestCase {
 		return $factory;
 	}
 
-	private function createController( WebRequest $request, WebResponse $response, ViewRenderer $renderer ) {
+	private function createController(
+		WebRequest $request,
+		WebResponse $response,
+		ViewRenderer $renderer,
+		Context $context
+	) {
 		$factory = $this->createFactory();
 		$controller = $this->getMock(
 			'\Mend\Rest\ResourceController',
 			array( 'actionIndex', 'actionRead', 'actionCreate', 'actionUpdate', 'actionDelete', 'render' ),
-			array( $request, $response, $factory, $renderer )
+			array( $request, $response, $factory, $renderer, $context )
 		);
 
 		return $controller;

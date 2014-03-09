@@ -9,8 +9,9 @@ class IndexControllerTest extends ControllerTest {
 		$response = $this->createResponse( $url );
 		$factory = $this->createFactory();
 		$renderer = $this->createViewRenderer();
+		$context = $this->createContext();
 
-		$controller = new IndexController( $request, $response, $factory, $renderer );
+		$controller = new IndexController( $request, $response, $factory, $renderer, $context );
 		$controller->dispatchAction( 'index' );
 	}
 }

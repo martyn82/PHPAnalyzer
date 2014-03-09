@@ -108,4 +108,17 @@ class ConfigProviderTest extends \TestCase {
 
 		self::assertEquals( $default, $provider->getValue( 'foo', $default ) );
 	}
+
+	public function testGetDefaultNull() {
+		$reader = $this->getMock( '\Mend\Config\ArrayConfigReader', array(), array( array() ) );
+		$provider = new ConfigProvider( $reader );
+		$default = null;
+
+		self::assertEquals( $default, $provider->getValue( 'foo', $default ) );
+		self::assertEquals( $default, $provider->getString( 'foo', $default ) );
+		self::assertEquals( (array) $default, $provider->getArray( 'foo', $default ) );
+		self::assertEquals( $default, $provider->getInteger( 'foo', $default ) );
+		self::assertEquals( $default, $provider->getBoolean( 'foo', $default ) );
+		self::assertEquals( $default, $provider->getFloat( 'foo', $default ) );
+	}
 }

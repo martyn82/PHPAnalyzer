@@ -1,11 +1,13 @@
 <?php
 namespace Mend;
 
+use Mend\Mvc\Context;
 use Mend\Mvc\Controller;
 use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\Controller\FrontController;
 use Mend\Mvc\Controller\PageController;
 use Mend\Mvc\View\ViewRenderer;
+
 use Mend\Network\Web\HttpMethod;
 use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
@@ -100,6 +102,90 @@ class ApplicationTest extends \TestCase {
 		self::fail( "Test should have triggered an exception." );
 	}
 
+	public function testRunCustomContext() {
+		$this->prepareGlobals( HttpMethod::METHOD_GET, '/foo/bar' );
+
+		$controller = $this->createController();
+		MockControllerFactory::setController( $controller );
+
+		$context = $this->createContext( 'foo/bar', '.baz' );
+		$config = $this->createConfig( true, true, null, $context );
+
+		$application = new Application( $config );
+		$application->run();
+	}
+
+	public function testRunPredefinedContext() {
+		$this->prepareGlobals( HttpMethod::METHOD_GET, '/foo/bar' );
+
+		$controller = $this->createController();
+		MockControllerFactory::setController( $controller );
+
+		$config = $this->createConfig( true, true, null, null, '\Mend\Mvc\Context\HtmlContext' );
+
+		$application = new Application( $config );
+		$application->run();
+	}
+
+	/**
+	 * @expectedException \Mend\ApplicationException
+	 */
+	public function testRunNonExistentContext() {
+		$this->prepareGlobals( HttpMethod::METHOD_GET, '/foo/bar' );
+
+		$controller = $this->createController();
+		MockControllerFactory::setController( $controller );
+
+		$config = $this->createConfig( true, true, null, null, 'MockContext' );
+
+		$application = new Application( $config );
+		$application->run();
+
+		self::fail( "Test should have triggered an exception." );
+	}
+
+	/**
+	 * @expectedException \Mend\ApplicationException
+	 */
+	public function testRunInvalidContext() {
+		$this->prepareGlobals( HttpMethod::METHOD_GET, '/foo/bar' );
+
+		$controller = $this->createController();
+		MockControllerFactory::setController( $controller );
+
+		$config = $this->createConfig( true, true, null, null, '\Mend\MockController' );
+
+		$application = new Application( $config );
+		$application->run();
+
+		self::fail( "Test should have triggered an exception." );
+	}
+
+
+	private function createContext( $contentType, $templateFileSuffix ) {
+		$context = $this->getMock(
+			'\Mend\Mvc\Context',
+			array( 'getCharacterSet', 'getTemplateFileSuffix', 'getContentType' ),
+			array( $contentType, $templateFileSuffix ),
+			'',
+			false
+		);
+
+		$context->expects( self::any() )
+			->method( 'getCharacterSet' )
+			->will( self::returnValue( 'utf-8' ) );
+
+		$context->expects( self::any() )
+			->method( 'getTemplateFileSuffix' )
+			->will( self::returnValue( $templateFileSuffix) );
+
+		$context->expects( self::any() )
+			->method( 'getContentType' )
+			->will( self::returnValue( $contentType ) );
+
+		return $context;
+	}
+
 	private function createController() {
 		$controller = $this->getMock(
 			'\Mend\Mvc\Controller\PageController',
@@ -108,10 +194,17 @@ class ApplicationTest extends \TestCase {
 			'',
 			false
 		);
+
 		return $controller;
 	}
 
-	private function createConfig( $withFactory = true, $withFrontController = true, $customFrontController = null ) {
+	private function createConfig(
+		$withFactory = true,
+		$withFrontController = true,
+		$customFrontController = null,
+		Context $context = null,
+		$contextClassName = null
+	) {
 		$config = $this->getMock(
 			'\Mend\Config\ConfigProvider',
 			array(),
@@ -124,18 +217,36 @@ class ApplicationTest extends \TestCase {
 			->method( 'getString' )
 			->will(
 				self::returnCallback(
-					function ( $key ) use ( $withFactory, $withFrontController, $customFrontController ) {
+					function ( $key )
+						use ( $withFactory, $withFrontController, $customFrontController, $context, $contextClassName )
+					{
 						switch ( $key ) {
 							case ApplicationConfigKey::CONTROLLER_FACTORY:
 								return $withFactory ? '\Mend\MockControllerFactory' : null;
+
 							case ApplicationConfigKey::CONTROLLER_CLASS_FRONT:
+								$customFrontController = $customFrontController ? : '\Mend\MockController';
 								return $withFrontController
-									? ( $customFrontController ? : '\Mend\MockController' )
+									? $customFrontController
 									: null;
+
 							case ApplicationConfigKey::CONTROLLER_CLASS_SUFFIX:
 								return 'Controller';
+
 							case ApplicationConfigKey::VIEW_PATH:
 								return 'test:///views';
+
+							case ApplicationConfigKey::CONTEXT_CHARSET:
+								return $context ? $context->getCharacterSet() : null;
+
+							case ApplicationConfigKey::CONTEXT_CLASS:
+								return $contextClassName;
+
+							case ApplicationConfigKey::CONTEXT_TYPE:
+								return $context ? $context->getContentType() : null;
+
+							case ApplicationConfigKey::CONTEXT_VIEW_SUFFIX:
+								return $context ? $context->getTemplateFileSuffix() : null;
 						}
 					}
 				)
@@ -201,7 +312,8 @@ class MockControllerFactory extends ControllerFactory {
 		$controllerName,
 		WebRequest $request,
 		WebResponse $response,
-		ViewRenderer $renderer
+		ViewRenderer $renderer,
+		Context $context
 	) {
 		return self::$controller;
 	}

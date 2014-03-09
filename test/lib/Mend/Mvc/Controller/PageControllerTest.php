@@ -1,6 +1,7 @@
 <?php
 namespace Mend\Mvc\Controller;
 
+use Mend\Mvc\Context;
 use Mend\Mvc\View;
 use Mend\Mvc\View\Layout;
 use Mend\Mvc\View\ViewOptions;
@@ -23,8 +24,9 @@ class PageControllerTest extends \TestCase {
 		$layout = $this->createLayout();
 		$viewOptions = $this->createViewOptions( $enableRender, true );
 		$renderer = $this->createViewRenderer( $viewOptions, $view, $layout );
+		$context = $this->createContext();
 
-		$controller = new DummyPageController( $request, $response, $factory, $renderer );
+		$controller = new DummyPageController( $request, $response, $factory, $renderer, $context );
 		$controller->dispatchAction( 'bar' );
 
 		self::assertEquals( 'bar', $controller->getActionName() );
@@ -33,6 +35,12 @@ class PageControllerTest extends \TestCase {
 		self::assertEquals( $view, $controller->getView() );
 		self::assertEquals( $layout, $controller->getLayout() );
 		self::assertEquals( $renderer, $controller->getViewRenderer() );
+		self::assertEquals( $context, $controller->getContext() );
+
+		$newContext = $this->createContext();
+		$controller->setContext( $newContext );
+
+		self::assertEquals( $newContext, $controller->getContext() );
 	}
 
 	public function switchProvider() {
@@ -52,11 +60,16 @@ class PageControllerTest extends \TestCase {
 		$response = $this->createResponse( $url );
 		$factory = $this->createFactory();
 		$renderer = $this->createViewRenderer();
+		$context = $this->createContext();
 
-		$controller = new DummyPageController( $request, $response, $factory, $renderer );
+		$controller = new DummyPageController( $request, $response, $factory, $renderer, $context );
 		$controller->dispatchAction( 'non' );
 
 		self::fail( "Test shoud have triggered an exception" );
+	}
+
+	private function createContext() {
+		return $this->getMock( '\Mend\Mvc\Context', array(), array(), '', false );
 	}
 
 	private function createViewOptions( $enableRender = true, $enableLayout = true ) {
@@ -132,5 +145,13 @@ class DummyPageController extends PageController {
 
 	public function getViewRenderer() {
 		return parent::getViewRenderer();
+	}
+
+	public function getContext() {
+		return parent::getContext();
+	}
+
+	public function setContext( Context $context ) {
+		parent::setContext( $context );
 	}
 }

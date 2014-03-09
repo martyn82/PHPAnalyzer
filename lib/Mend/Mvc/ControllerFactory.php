@@ -4,9 +4,9 @@ namespace Mend\Mvc;
 use Mend\ClassInformation;
 use Mend\Mvc\Controller;
 use Mend\Mvc\Controller\PageController;
+use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
-use Mend\Mvc\View\ViewRenderer;
 
 class ControllerFactory {
 	/**
@@ -53,7 +53,8 @@ class ControllerFactory {
 		$controllerName,
 		WebRequest $request,
 		WebResponse $response,
-		ViewRenderer $renderer
+		ViewRenderer $renderer,
+		Context $context
 	) {
 		$controllerClassName = $this->getControllerClassByName( $controllerName );
 
@@ -65,7 +66,7 @@ class ControllerFactory {
 			throw new \Exception( "Controller '{$controllerClassName}' must be an instance of PageController." );
 		}
 
-		return new $controllerClassName( $request, $response, $this, $renderer );
+		return new $controllerClassName( $request, $response, $this, $renderer, $context );
 	}
 
 	/**

@@ -79,7 +79,13 @@ class ConfigProvider {
 	 * @return array
 	 */
 	public function getArray( $name, $default = null ) {
-		return explode( ',', $this->getString( $name ) );
+		$value = $this->getString( $name );
+
+		if ( empty( $value ) ) {
+			return array();
+		}
+
+		return explode( ',',  $value );
 	}
 
 	/**

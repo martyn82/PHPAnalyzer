@@ -2,12 +2,13 @@
 namespace Mend\Mvc\Controller;
 
 use Mend\IO\FileSystem\File;
+use Mend\IO\FileSystem\FileSystem;
+use Mend\Mvc\Context;
 use Mend\Mvc\Controller;
 use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
-use Mend\IO\FileSystem\FileSystem;
 
 abstract class PageController extends Controller {
 	/**
@@ -26,21 +27,29 @@ abstract class PageController extends Controller {
 	private $renderer;
 
 	/**
+	 * @var Context
+	 */
+	private $context;
+
+	/**
 	 * Constructs a new PageController instance.
 	 *
 	 * @param WebRequest $request
 	 * @param WebResponse $response
 	 * @param ControllerFactory $factory
 	 * @param ViewRenderer $renderer
+	 * @param Context $context
 	 */
 	public function __construct(
 		WebRequest $request,
 		WebResponse $response,
 		ControllerFactory $factory,
-		ViewRenderer $renderer
+		ViewRenderer $renderer,
+		Context $context
 	) {
 		parent::__construct( $request, $response, $factory );
 		$this->renderer = $renderer;
+		$this->context = $context;
 		$this->init();
 	}
 
@@ -104,10 +113,28 @@ abstract class PageController extends Controller {
 			$this->getControllerName()
 			. FileSystem::DIRECTORY_SEPARATOR
 			. $this->getActionName()
-			. '.phtml'
+			. $this->context->getTemplateFileSuffix()
 		);
 
 		return $this->renderer->render( $templateFile );
+	}
+
+	/**
+	 * Retrieves the context.
+	 *
+	 * @return Context
+	 */
+	protected function getContext() {
+		return $this->context;
+	}
+
+	/**
+	 * Sets a new context.
+	 *
+	 * @param Context $context
+	 */
+	protected function setContext( Context $context ) {
+		$this->context = $context;
 	}
 
 	/**
@@ -143,7 +170,8 @@ abstract class PageController extends Controller {
 	protected function getControllerName() {
 		if ( is_null( $this->controllerName ) ) {
 			$fullClassName = get_class( $this );
-			$this->controllerName = $this->getFactory()->getControllerNameByClass( $fullClassName );
+			$factory = $this->getFactory();
+			$this->controllerName = $factory->getControllerNameByClass( $fullClassName );
 		}
 
 		return $this->controllerName;

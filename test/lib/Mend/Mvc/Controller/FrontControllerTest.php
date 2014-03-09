@@ -8,6 +8,7 @@ use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 use Mend\Mvc\View\ViewRenderer;
+use Mend\Mvc\Context;
 
 class FrontControllerTest extends \TestCase {
 	public function testConstruct() {
@@ -16,8 +17,9 @@ class FrontControllerTest extends \TestCase {
 		$response = $this->createResponse( $url );
 		$factory = $this->createFactory();
 		$renderer = $this->createViewRenderer();
+		$context = $this->createContext();
 
-		$controller = new FrontController( $request, $response, $factory, $renderer );
+		$controller = new FrontController( $request, $response, $factory, $renderer, $context );
 
 		self::assertEquals( $request, $controller->getRequest() );
 		self::assertEquals( $response, $controller->getResponse() );
@@ -34,11 +36,12 @@ class FrontControllerTest extends \TestCase {
 		$request = $this->createRequest( $url );
 		$response = $this->createResponse( $url );
 		$renderer = $this->createViewRenderer();
+		$context = $this->createContext();
 
-		$created = $this->createPageController( $request, $response, $renderer );
+		$created = $this->createPageController( $request, $response, $renderer, $context );
 		$factory = $this->createFactory( $created );
 
-		$controller = new DummyFrontController( $request, $response, $factory, $renderer );
+		$controller = new DummyFrontController( $request, $response, $factory, $renderer, $context );
 		$controller->dispatchRequest();
 
 		self::assertEquals( $controllerName, $controller->getControllerName() );
@@ -63,11 +66,12 @@ class FrontControllerTest extends \TestCase {
 		$request = $this->createRequest( $url );
 		$response = $this->createResponse( $url );
 		$renderer = $this->createViewRenderer();
+		$context = $this->createContext();
 
-		$created = $this->createPageController( $request, $response, $renderer );
+		$created = $this->createPageController( $request, $response, $renderer, $context );
 		$factory = $this->createFactory( $created );
 
-		$controller = new DummyFrontController( $request, $response, $factory, $renderer );
+		$controller = new DummyFrontController( $request, $response, $factory, $renderer, $context );
 		$controller->dispatchRequest();
 
 		$request = $controller->getRequest();
@@ -93,9 +97,10 @@ class FrontControllerTest extends \TestCase {
 		$url = $this->createUrl( 'http://www.example.org/controller/action' );
 		$request = $this->createRequest( $url );
 		$response = $this->createResponse( $url );
+		$context = $this->createContext();
 		$factory = new ControllerFactory( array() );
 
-		$controller = new DummyFrontController( $request, $response, $factory );
+		$controller = new DummyFrontController( $request, $response, $factory, $context );
 		$controller->dispatch( 'foo', 'bar' );
 
 		self::fail( "Test should have triggered an exception." );
@@ -117,16 +122,25 @@ class FrontControllerTest extends \TestCase {
 		return $controller;
 	}
 
-	private function createPageController( WebRequest $request, WebResponse $response, ViewRenderer $renderer ) {
+	private function createPageController(
+		WebRequest $request,
+		WebResponse $response,
+		ViewRenderer $renderer,
+		Context $context
+	) {
 		$factory = $this->createFactory( null );
 
 		$controller = $this->getMock(
 				'\Mend\Mvc\Controller\PageController',
 				array( 'getControllerName', 'getActionName', 'dispatchAction' ),
-				array( $request, $response, $factory, $renderer )
+				array( $request, $response, $factory, $renderer, $context )
 		);
 
 		return $controller;
+	}
+
+	private function createContext() {
+		return $this->getMock( '\Mend\Mvc\Context', array(), array(), '', false );
 	}
 
 	private function createFactory( PageController $controller = null ) {

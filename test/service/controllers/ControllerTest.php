@@ -30,4 +30,8 @@ abstract class ControllerTest extends \TestCase {
 	protected function createViewRenderer() {
 		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
 	}
+
+	protected function createContext() {
+		return $this->getMock( '\Mend\Mvc\Context', array(), array(), '', false );
+	}
 }

@@ -2,15 +2,22 @@
 namespace Mend;
 
 use Mend\Config\ConfigProvider;
+
+use Mend\I18n\CharacterSet;
+
+use Mend\Mvc\Context;
 use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\Controller\FrontController;
+
+use Mend\Mvc\View;
 use Mend\Mvc\View\Layout;
+use Mend\Mvc\View\ViewOptions;
+use Mend\Mvc\View\ViewRenderer;
+
+use Mend\Network\MimeType;
 use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
-use Mend\Mvc\View\ViewRenderer;
-use Mend\Mvc\View\ViewOptions;
-use Mend\Mvc\View;
 
 class Application {
 	/**
@@ -41,8 +48,9 @@ class Application {
 		$response = $this->createResponse( $request->getUrl() );
 		$factory = $this->createControllerFactory();
 		$renderer = $this->createViewRenderer();
+		$context = $this->createContext();
 
-		$this->controller = $this->createController( $request, $response, $factory, $renderer );
+		$this->controller = $this->createController( $request, $response, $factory, $renderer, $context );
 	}
 
 	/**
@@ -115,12 +123,44 @@ class Application {
 	}
 
 	/**
+	 * Initializes the default context.
+	 *
+	 * @return Context
+	 *
+	 * @throws ApplicationException
+	 */
+	protected function createContext() {
+		$contextClass = $this->config->getString( ApplicationConfigKey::CONTEXT_CLASS );
+
+		if ( empty( $contextClass ) ) {
+			$characterSet = $this->config->getString( ApplicationConfigKey::CONTEXT_CHARSET, CharacterSet::UNICODE_UTF8 );
+			$templateFileSuffix = $this->config->getString( ApplicationConfigKey::CONTEXT_VIEW_SUFFIX );
+			$contentType = $this->config->getString( ApplicationConfigKey::CONTEXT_TYPE, MimeType::HTML );
+
+			return Context::create( $contentType, $templateFileSuffix, $characterSet );
+		}
+
+		$classInfo = new ClassInformation();
+
+		if ( !$classInfo->exists( $contextClass, true ) ) {
+			throw new ApplicationException( "The context class '{$contextClass}' does not exist." );
+		}
+
+		if ( !$classInfo->isSubclassOf( $contextClass, '\Mend\Mvc\Context' ) ) {
+			throw new ApplicationException( "The context class '{$contextClass}' must be an instance of Context." );
+		}
+
+		return new $contextClass();
+	}
+
+	/**
 	 * Initializes the main controller.
 	 *
 	 * @param WebRequest $request
 	 * @param WebResponse $response
 	 * @param ControllerFactory $factory
 	 * @param ViewRenderer $renderer
+	 * @param Context $context
 	 *
 	 * @return FrontController
 	 *
@@ -130,21 +170,22 @@ class Application {
 		WebRequest $request,
 		WebResponse $response,
 		ControllerFactory $factory,
-		ViewRenderer $renderer
+		ViewRenderer $renderer,
+		Context $context
 	) {
 		$controllerClassName = $this->config->getString( ApplicationConfigKey::CONTROLLER_CLASS_FRONT );
 
 		if ( is_null( $controllerClassName ) ) {
-			throw new ApplicationException( "Front controller not configued." );
+			throw new ApplicationException( "Front controller not configured." );
 		}
 
-		$controller = new $controllerClassName( $request, $response, $factory, $renderer );
+		$classInfo = new ClassInformation();
 
-		if ( !( $controller instanceof FrontController ) ) {
+		if ( !$classInfo->isSubclassOf( $controllerClassName, '\Mend\Mvc\Controller\FrontController' ) ) {
 			throw new ApplicationException( "Front controller must be an instance of FrontController." );
 		}
 
-		return $controller;
+		return new $controllerClassName( $request, $response, $factory, $renderer, $context );
 	}
 
 	/**

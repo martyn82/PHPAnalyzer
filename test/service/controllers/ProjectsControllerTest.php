@@ -4,42 +4,37 @@ namespace Controller;
 use Mend\Network\Web\Url;
 
 class ProjectsControllerTest extends ControllerTest {
-	private $request;
-	private $response;
-	private $factory;
-	private $renderer;
+	private $controller;
 
 	public function setUp() {
 		$url = $this->createUrl( 'http://www.example.org/projects' );
-		$this->request = $this->createRequest( $url );
-		$this->response = $this->createResponse( $url );
+		$request = $this->createRequest( $url );
+		$response = $this->createResponse( $url );
 
-		$this->factory = $this->createFactory();
-		$this->renderer = $this->createViewRenderer();
+		$factory = $this->createFactory();
+		$renderer = $this->createViewRenderer();
+		$context = $this->createContext();
+
+		$this->controller = new ProjectsController( $request, $response, $factory, $renderer, $context );
 	}
 
 	public function testActionIndex() {
-		$controller = new ProjectsController( $this->request, $this->response, $this->factory, $this->renderer );
-		$controller->dispatchAction( 'index' );
+		$this->controller->dispatchAction( 'index' );
 	}
 
 	public function testActionRead() {
-		$controller = new ProjectsController( $this->request, $this->response, $this->factory, $this->renderer );
-		$controller->dispatchAction( 'read' );
+		$this->controller->dispatchAction( 'read' );
 	}
 
 	public function testActionCreate() {
-		$controller = new ProjectsController( $this->request, $this->response, $this->factory, $this->renderer );
-		$controller->dispatchAction( 'create' );
+		$this->controller->dispatchAction( 'create' );
 	}
 
 	public function testActionUpdate() {
-		$controller = new ProjectsController( $this->request, $this->response, $this->factory, $this->renderer );
-		$controller->dispatchAction( 'update' );
+		$this->controller->dispatchAction( 'update' );
 	}
 
 	public function testActionDelete() {
-		$controller = new ProjectsController( $this->request, $this->response, $this->factory, $this->renderer );
-		$controller->dispatchAction( 'delete' );
+		$this->controller->dispatchAction( 'delete' );
 	}
 }

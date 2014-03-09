@@ -1,6 +1,7 @@
 <?php
 namespace Mend\Mvc\Controller;
 
+use Mend\Mvc\Context;
 use Mend\Mvc\Controller;
 use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\View;
@@ -27,21 +28,29 @@ class FrontController extends Controller {
 	private $renderer;
 
 	/**
+	 * @var Context
+	 */
+	private $context;
+
+	/**
 	 * Constructs a new FrontController instance.
 	 *
 	 * @param WebRequest $request
 	 * @param WebResponse $response
 	 * @param ControllerFactory $factory
 	 * @param ViewRenderer $renderer
+	 * @param Context $context
 	 */
 	public function __construct(
 		WebRequest $request,
 		WebResponse $response,
 		ControllerFactory $factory,
-		ViewRenderer $renderer
+		ViewRenderer $renderer,
+		Context $context
 	) {
 		parent::__construct( $request, $response, $factory );
 		$this->renderer = $renderer;
+		$this->context = $context;
 	}
 
 	/**
@@ -76,7 +85,8 @@ class FrontController extends Controller {
 			$controllerName,
 			$this->getRequest(),
 			$this->getResponse(),
-			$this->renderer
+			$this->renderer,
+			$this->context
 		);
 	}
 
