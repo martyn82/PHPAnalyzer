@@ -4,9 +4,6 @@ namespace Repository;
 use Mend\Data\Page;
 use Mend\Data\Repository;
 use Mend\Data\SortOptions;
-<<<<<<< HEAD
-use Mend\IO\FileSystem\Directory;
-=======
 
 use Mend\IO\DirectoryStream;
 use Mend\IO\FileSystem\Directory;
@@ -14,7 +11,6 @@ use Mend\IO\FileSystem\File;
 use Mend\IO\FileSystem\FileArray;
 use Mend\IO\FileSystem\FileSystem;
 use Mend\IO\Stream\FileStreamReader;
->>>>>>> 6db1c58... WIP
 
 use Record\ProjectRecord;
 
@@ -30,9 +26,6 @@ class ProjectRepository implements Repository {
 	 * @see Repository::all()
 	 */
 	public function all( SortOptions $sortOptions, Page $page, & $totalCount = 0 ) {
-<<<<<<< HEAD
-		return array();
-=======
 		$dataDir = new Directory( 'data/' );
 		$stream = new DirectoryStream( $dataDir );
 		$dirIterator = $stream->getIterator();
@@ -69,16 +62,12 @@ class ProjectRepository implements Repository {
 			},
 			array_values( $projects )
 		);
->>>>>>> 6db1c58... WIP
 	}
 
 	/**
 	 * @see Repository::get()
 	 */
 	public function get( $id ) {
-<<<<<<< HEAD
-		return null;
-=======
 		$dataDir = new Directory( 'data/' );
 		$stream = new DirectoryStream( $dataDir );
 		$dirIterator = $stream->getIterator();
@@ -118,6 +107,5 @@ class ProjectRepository implements Repository {
 		}
 
 		return new ProjectRecord( $project[ 'name' ], $project[ 'key' ], new Directory( $project[ 'path' ] ) );
->>>>>>> 6db1c58... WIP
 	}
 }
