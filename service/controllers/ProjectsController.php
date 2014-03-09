@@ -43,7 +43,19 @@ class ProjectsController extends ResourceController {
 	/**
 	 * @see ResourceController::actionRead()
 	 */
-	public function actionRead() {}
+	public function actionRead() {
+		$projectRepository = new ProjectRepository();
+		$project = $projectRepository->get( $this->getResourceId() );
+
+		$result = new ResourceResult(
+			array(
+				'project' => $project->toArray(),
+				'reports' => array()
+			)
+		);
+
+		$this->setResult( $result );
+	}
 
 	/**
 	 * @see ResourceController::actionCreate()
