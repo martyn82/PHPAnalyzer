@@ -13,21 +13,22 @@
 >
 	<testsuites>
 		<testsuite name="Library">
-			<directory>test/</directory>
-		</testsuite>
-		<testsuite name="Application">
-			<directory>app/test</directory>
+			<directory>test/lib</directory>
 		</testsuite>
 		<testsuite name="Service">
-			<directory>service/test</directory>
+			<directory>test/service</directory>
 		</testsuite>
 	</testsuites>
 	
 	<filter>
 		<whitelist addUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">./lib</directory>
-			<!-- directory suffix=".php">./app</directory>
-			<directory suffix=".php">./service</directory -->
+			<directory suffix=".php">lib</directory>
+			<directory suffix=".php">service</directory>
+			
+			<exclude>
+				<file>service/bootstrap.php</file>
+				<directory suffix=".php">service/public</directory>
+			</exclude>
 		</whitelist>
 	</filter>
 	
