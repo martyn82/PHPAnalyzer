@@ -93,14 +93,18 @@ abstract class PageController extends Controller {
 	 * Called after dispatch action.
 	 */
 	protected function postDispatch() {
-		if ( $this->getViewRenderer()->isDisabled() ) {
-			return;
+		$response = $this->getResponse();
+
+		if ( $this->getViewRenderer()->isEnabled() ) {
+			$rendered = $this->render();
+			$response->setBody( $rendered );
 		}
 
-		$rendered = $this->render();
-
-		$response = $this->getResponse();
-		$response->setBody( $rendered );
+		$headers = $response->getHeaders();
+		$headers->set(
+			'Content-Type',
+			$this->context->getContentType() . ';charset=' . $this->context->getCharacterSet()
+		);
 	}
 
 	/**

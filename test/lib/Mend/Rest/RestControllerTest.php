@@ -1,14 +1,15 @@
 <?php
 namespace Mend\Rest;
 
+use Mend\Collections\Map;
+use Mend\Mvc\Context;
 use Mend\Mvc\Controller;
 use Mend\Mvc\Controller\PageController;
+use Mend\Mvc\View\ViewRenderer;
 use Mend\Network\Web\HttpMethod;
 use Mend\Network\Web\Url;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
-use Mend\Mvc\View\ViewRenderer;
-use Mend\Mvc\Context;
 
 class RestControllerTest extends \TestCase {
 	/**
@@ -94,7 +95,13 @@ class RestControllerTest extends \TestCase {
 	}
 
 	private function createResponse( Url $url ) {
-		return $this->getMock( '\Mend\Network\Web\WebResponse', array(), array( $url ) );
+		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array( 'getHeaders' ), array( $url ) );
+
+		$response->expects( self::any() )
+			->method( 'getHeaders' )
+			->will( self::returnValue( new Map() ) );
+
+		return $response;
 	}
 
 	private function createFactory( Controller $controller = null ) {

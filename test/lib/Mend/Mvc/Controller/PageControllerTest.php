@@ -1,6 +1,7 @@
 <?php
 namespace Mend\Mvc\Controller;
 
+use Mend\Collections\Map;
 use Mend\Mvc\Context;
 use Mend\Mvc\View;
 use Mend\Mvc\View\Layout;
@@ -120,7 +121,13 @@ class PageControllerTest extends \TestCase {
 	}
 
 	private function createResponse( Url $url ) {
-		return $this->getMock( '\Mend\Network\Web\WebResponse', array(), array( $url ) );
+		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array( 'getHeaders' ), array( $url ) );
+
+		$response->expects( self::any() )
+			->method( 'getHeaders' )
+			->will( self::returnValue( new Map() ) );
+
+		return $response;
 	}
 
 	private function createFactory() {

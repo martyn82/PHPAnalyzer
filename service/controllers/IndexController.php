@@ -1,6 +1,7 @@
 <?php
 namespace Controller;
 
+use Mend\Mvc\Context\TextContext;
 use Mend\Mvc\Controller\PageController;
 use Mend\Network\Web\HttpStatus;
 
@@ -10,6 +11,7 @@ class IndexController extends PageController {
 	 */
 	protected function init() {
 		$this->getViewRenderer()->disable();
+		$this->setContext( new TextContext() );
 	}
 
 	/**
@@ -18,7 +20,6 @@ class IndexController extends PageController {
 	public function actionIndex() {
 		$response = $this->getResponse();
 
-		$response->getHeaders()->set( 'Content-Type', 'text/plain' );
 		$response->setStatusCode( HttpStatus::STATUS_BAD_REQUEST );
 		$response->setStatusDescription( "Bad request" );
 		$response->setBody( "No resource specified." );
