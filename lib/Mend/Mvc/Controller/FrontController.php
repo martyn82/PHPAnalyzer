@@ -114,7 +114,7 @@ class FrontController extends Controller {
 	 * @param string $defaultController
 	 * @param string $defaultAction
 	 */
-	private function parseRequest( $defaultController = 'index', $defaultAction = 'index' ) {
+	protected function parseRequest( $defaultController = 'index', $defaultAction = 'index' ) {
 		$request = $this->getRequest();
 		$requestUrl = $request->getUrl();
 		$path = $requestUrl->getPath();

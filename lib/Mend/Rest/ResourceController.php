@@ -9,6 +9,11 @@ abstract class ResourceController extends PageController {
 	const RESULTS_PER_PAGE = 10;
 
 	/**
+	 * @var string
+	 */
+	private $resourceId;
+
+	/**
 	 * @var ResourceResult
 	 */
 	private $result;
@@ -52,6 +57,24 @@ abstract class ResourceController extends PageController {
 		);
 
 		return json_encode( $response, JSON_NUMERIC_CHECK );
+	}
+
+	/**
+	 * Sets the resource ID.
+	 *
+	 * @param string $id
+	 */
+	public function setResourceId( $id ) {
+		$this->resourceId = $id;
+	}
+
+	/**
+	 * Retrieves the resource ID.
+	 *
+	 * @return string
+	 */
+	public function getResourceId() {
+		return $this->resourceId;
 	}
 
 	/**
