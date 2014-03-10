@@ -2,25 +2,38 @@
 namespace Controller;
 
 use Mend\Data\DataPage;
+use Mend\Data\Repository;
 use Mend\Data\SortDirection;
 use Mend\Data\SortOptions;
 use Mend\IO\FileSystem\Directory;
+use Mend\Metrics\Project\ProjectReport;
+use Mend\Mvc\Context;
+use Mend\Mvc\ControllerFactory;
+use Mend\Mvc\View\ViewRenderer;
+use Mend\Network\Web\WebRequest;
+use Mend\Network\Web\WebResponse;
 use Mend\Rest\ResourceController;
 use Mend\Rest\ResourceResult;
 
 use Record\ProjectRecord;
 use Repository\ProjectRepository;
-use Mend\Metrics\Project\ProjectReport;
-use Mend\Network\Web\WebRequest;
-use Mend\Network\Web\WebResponse;
-use Mend\Mvc\ControllerFactory;
-use Mend\Mvc\View\ViewRenderer;
-use Mend\Mvc\Context;
-use Mend\Data\Repository;
 
 class ProjectsController extends ResourceController {
+	/**
+	 * @var Repository
+	 */
 	private $repository;
 
+	/**
+	 * Constructs a new ProjectController instance.
+	 *
+	 * @param WebRequest $request
+	 * @param WebResponse $response
+	 * @param ControllerFactory $factory
+	 * @param ViewRenderer $renderer
+	 * @param Context $context
+	 * @param Repository $repository
+	 */
 	public function __construct(
 		WebRequest $request,
 		WebResponse $response,
@@ -42,10 +55,10 @@ class ProjectsController extends ResourceController {
 		$sortOptions = new SortOptions();
 		$sortOptions->addSortField( 'key', SortDirection::ASCENDING );
 
-		$page = new DataPage( self::RESULTS_PER_PAGE, $this->getOffset() );
+		$dataPage = new DataPage( self::RESULTS_PER_PAGE, $this->getOffset() );
 
 		$totalCount = 0;
-		$results = $projectRepository->all( $sortOptions, $page, $totalCount );
+		$results = $projectRepository->all( $sortOptions, $dataPage, $totalCount );
 
 		$result = new ResourceResult(
 			array_map(

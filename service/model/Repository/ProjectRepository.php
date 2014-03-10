@@ -12,10 +12,11 @@ use Mend\IO\FileSystem\FileArray;
 use Mend\IO\FileSystem\FileSystem;
 use Mend\IO\Stream\FileStreamReader;
 
-use Record\ProjectRecord;
+use Mend\Metrics\Project\EntityReport;
 use Mend\Metrics\Project\ProjectReport;
 use Mend\Metrics\Report\ReportType;
-use Mend\Metrics\Project\EntityReport;
+
+use Record\ProjectRecord;
 
 class ProjectRepository implements Repository {
 	/**
@@ -47,6 +48,8 @@ class ProjectRepository implements Repository {
 
 	/**
 	 * @see Repository::get()
+	 *
+	 * @throws \Exception
 	 */
 	public function get( $id ) {
 		$reports = $this->loadData( $id );
