@@ -1,7 +1,7 @@
 <?php
 namespace Repository;
 
-use Mend\Data\Page;
+use Mend\Data\DataPage;
 use Mend\Data\Repository;
 use Mend\Data\SortOptions;
 
@@ -21,14 +21,14 @@ class ProjectRepository implements Repository {
 	/**
 	 * @see Repository::matching()
 	 */
-	public function matching( array $criteria, SortOptions $sortOptions, Page $page, & $totalCount = 0 ) {
+	public function matching( array $criteria, SortOptions $sortOptions, DataPage $page, & $totalCount = 0 ) {
 		return array();
 	}
 
 	/**
 	 * @see Repository::all()
 	 */
-	public function all( SortOptions $sortOptions, Page $page, & $totalCount = 0 ) {
+	public function all( SortOptions $sortOptions, DataPage $page, & $totalCount = 0 ) {
 		$reports = $this->loadData();
 		$projects = array();
 

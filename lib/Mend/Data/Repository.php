@@ -7,23 +7,23 @@ interface Repository {
 	 *
 	 * @param array $criteria
 	 * @param SortOptions $sortOptions
-	 * @param Page $page
+	 * @param DataPage $page
 	 * @param integer $totalCount
 	 *
 	 * @return array
 	 */
-	function matching( array $criteria, SortOptions $sortOptions, Page $page, & $totalCount = 0 );
+	function matching( array $criteria, SortOptions $sortOptions, DataPage $page, & $totalCount = 0 );
 
 	/**
 	 * Retrieves all records.
 	 *
 	 * @param SortOptions $sortOptions
-	 * @param Page $page
+	 * @param DataPage $page
 	 * @param integer $totalCount
 	 *
 	 * @return array
 	*/
-	function all( SortOptions $sortOptions, Page $page, & $totalCount = 0 );
+	function all( SortOptions $sortOptions, DataPage $page, & $totalCount = 0 );
 
 	/**
 	 * Retrieves the record with given ID.

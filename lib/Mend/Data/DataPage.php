@@ -1,7 +1,7 @@
 <?php
 namespace Mend\Data;
 
-class Page {
+class DataPage {
 	/**
 	 * @var integer
 	 */

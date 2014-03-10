@@ -1,7 +1,7 @@
 <?php
 namespace Controller;
 
-use Mend\Data\Page;
+use Mend\Data\DataPage;
 use Mend\Data\SortDirection;
 use Mend\Data\SortOptions;
 use Mend\IO\FileSystem\Directory;
@@ -42,7 +42,7 @@ class ProjectsController extends ResourceController {
 		$sortOptions = new SortOptions();
 		$sortOptions->addSortField( 'key', SortDirection::ASCENDING );
 
-		$page = new Page( self::RESULTS_PER_PAGE, $this->getOffset() );
+		$page = new DataPage( self::RESULTS_PER_PAGE, $this->getOffset() );
 
 		$totalCount = 0;
 		$results = $projectRepository->all( $sortOptions, $page, $totalCount );
