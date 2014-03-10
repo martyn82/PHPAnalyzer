@@ -11,13 +11,33 @@ use Mend\Rest\ResourceResult;
 use Record\ProjectRecord;
 use Repository\ProjectRepository;
 use Mend\Metrics\Project\ProjectReport;
+use Mend\Network\Web\WebRequest;
+use Mend\Network\Web\WebResponse;
+use Mend\Mvc\ControllerFactory;
+use Mend\Mvc\View\ViewRenderer;
+use Mend\Mvc\Context;
+use Mend\Data\Repository;
 
 class ProjectsController extends ResourceController {
+	private $repository;
+
+	public function __construct(
+		WebRequest $request,
+		WebResponse $response,
+		ControllerFactory $factory,
+		ViewRenderer $renderer,
+		Context $context,
+		Repository $repository = null
+	) {
+		parent::__construct( $request, $response, $factory, $renderer, $context );
+		$this->repository = $repository ? : new ProjectRepository();
+	}
+
 	/**
 	 * @see ResourceController::actionIndex()
 	 */
 	public function actionIndex() {
-		$projectRepository = new ProjectRepository();
+		$projectRepository = $this->repository;
 
 		$sortOptions = new SortOptions();
 		$sortOptions->addSortField( 'key', SortDirection::ASCENDING );
@@ -46,7 +66,7 @@ class ProjectsController extends ResourceController {
 	 * @see ResourceController::actionRead()
 	 */
 	public function actionRead() {
-		$projectRepository = new ProjectRepository();
+		$projectRepository = $this->repository;
 		$project = $projectRepository->get( $this->getResourceId() );
 
 		$result = new ResourceResult(

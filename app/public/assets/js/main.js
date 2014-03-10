@@ -7,11 +7,13 @@ var serviceConsumer,
 
 google.load( 'visualization', '1.0', { 'packages': [ 'corechart' ] } );
 google.setOnLoadCallback( function () {
+	var projectId = document.getElementById( 'project-id' ).getAttribute( 'data-value' );
+	
 	var tabView = new TabView( document.getElementById( 'tabs' ) );
 
 	serviceConsumer = new RESTClient();
 
-	serviceConsumer.get( serviceLocation + '?id=phpanalyzer', true, function ( response ) {
+	serviceConsumer.get( serviceLocation + '?id=' + projectId, true, function ( response ) {
 		var results = response.bodyJSON.results,
 			project = results.project,
 			reports = results.reports;
@@ -25,6 +27,7 @@ google.setOnLoadCallback( function () {
 		}
 		
 		drawVolumeTimeChart( projectReports );
+		drawEntityTimeChart( projectReports );
 		drawComplexityTimeChart( projectReports );
 		drawUnitSizeTimeChart( projectReports );
 		drawDuplicationTimeChart( projectReports );
@@ -42,8 +45,16 @@ function timeChartSelectionHandler( chart, reports, drawChartCallback, reportNam
 		reportLevels = reportName.split( '.' ),
 		finalReport = report;
 	
+	if ( !finalReport ) {
+		return;
+	}
+	
 	for ( var i = 0; i < reportLevels.length; i++ ) {
 		finalReport = finalReport[ reportLevels[ i ] ];
+	}
+	
+	if ( !finalReport ) {
+		return;
 	}
 	
 	drawChartCallback( report.dateTime, finalReport );
@@ -56,7 +67,7 @@ function setProjectDetails( project ) {
 function drawVolumeTimeChart( reports ) {
 	var table = new google.visualization.DataTable();
 	table.addColumn( 'datetime', 'Time' );
-	table.addColumn( 'number', 'Lines' );
+	table.addColumn( 'number', 'Total lines' );
 	table.addColumn( 'number', 'Lines of code' );
 	table.addColumn( 'number', 'Blank lines' );
 	table.addColumn( 'number', 'Comments' );
@@ -77,10 +88,11 @@ function drawVolumeTimeChart( reports ) {
 	
 	table.addRows( rows );
 	
-	var chart = new google.visualization.LineChart( document.getElementById( 'chart-volume-time' ) );
+	var chart = new google.visualization.AreaChart( document.getElementById( 'chart-volume-time' ) );
 	chart.draw( table, {
 		'title': 'Volume over time',
-		'pointSize': 5
+		'pointSize': 5,
+		'colors': [ '#000000', '#0101df', '#ffff00', '#298a08' ]
 	} );
 	
 	google.visualization.events.addListener( chart, 'select', function () {
@@ -102,7 +114,63 @@ function drawVolumeChart( dateTime, report ) {
 	
 	var chart = new google.visualization.PieChart( document.getElementById( 'chart-volume' ) );
 	chart.draw( table, {
-		'title': 'Volume facts for ' + dateTime.toString()
+		'title': 'Volume facts for ' + dateTime.toString(),
+		'colors': [ '#0101df', '#ffff00', '#298a08' ]
+	} );
+};
+
+function drawEntityTimeChart( reports ) {
+	var table = new google.visualization.DataTable();
+	table.addColumn( 'datetime', 'Time' );
+	table.addColumn( 'number', 'Methods' );
+	table.addColumn( 'number', 'Classes' );
+	table.addColumn( 'number', 'Files' );
+	table.addColumn( 'number', 'Packages' );
+
+	var rows = [],
+		report;
+
+	for ( var i = 0; i < reports.length; i++ ) {
+		report = reports[ i ];
+		rows.push( [
+			new Date( report.dateTime ),
+			report.entity.methods.methods.length,
+			report.entity.classes.classes.length,
+			report.entity.files.files.length,
+			report.entity.packages.packages.length
+		] );
+	}
+
+	table.addRows( rows );
+
+	var chart = new google.visualization.LineChart( document.getElementById( 'chart-density-time' ) );
+	chart.draw( table, {
+		'title': 'Density over time',
+		'pointSize': 5,
+		'colors': [ '#8a0808', '#886a08', '#4b8a08', '#08298a' ]
+	} );
+
+	google.visualization.events.addListener( chart, 'select', function () {
+		timeChartSelectionHandler( chart, reports, drawEntityChart, 'entity' );
+	} );
+};
+
+function drawEntityChart( dateTime, report ) {
+	var table = new google.visualization.DataTable();
+	table.addColumn( 'string', 'Entity' );
+	table.addColumn( 'number', 'Count' );
+
+	table.addRows( [
+		[ 'Methods', report.methods.methods.length ],
+		[ 'Classes', report.classes.classes.length ],
+		[ 'Files', report.files.files.length ],
+		[ 'Packages', report.packages.packages.length ]
+	] );
+
+	var chart = new google.visualization.PieChart( document.getElementById( 'chart-density' ) );
+	chart.draw( table, {
+		'title': 'Density facts for ' + dateTime.toString(),
+		'colors': [ '#8a0808', '#886a08', '#4b8a08', '#08298a' ]
 	} );
 };
 
@@ -133,7 +201,8 @@ function drawComplexityTimeChart( reports ) {
 	var chart = new google.visualization.LineChart( document.getElementById( 'chart-complexity-time' ) );
 	chart.draw( table, {
 		'title': 'Complexity over time',
-		'pointSize': 5
+		'pointSize': 5,
+		'colors': [ '#80ff00', '#ffff00', '#ff8000', '#df0101' ]
 	} );
 	
 	google.visualization.events.addListener( chart, 'select', function () {
@@ -156,7 +225,8 @@ function drawComplexityChart( dateTime, report ) {
 	
 	var chart = new google.visualization.PieChart( document.getElementById( 'chart-complexity' ) );
 	chart.draw( table, {
-		'title': 'Complexity risk partitions for ' + dateTime.toString()
+		'title': 'Complexity risk partitions for ' + dateTime.toString(),
+		'colors': [ '#80ff00', '#ffff00', '#ff8000', '#df0101' ]
 	} );
 };
 
@@ -187,7 +257,8 @@ function drawUnitSizeTimeChart( reports ) {
 	var chart = new google.visualization.LineChart( document.getElementById( 'chart-unitsize-time' ) );
 	chart.draw( table, {
 		'title': 'Unit size over time',
-		'pointSize': 5
+		'pointSize': 5,
+		'colors': [ '#80ff00', '#ffff00', '#ff8000', '#df0101' ]
 	} );
 	
 	google.visualization.events.addListener( chart, 'select', function () {
@@ -210,15 +281,16 @@ function drawUnitSizeChart( dateTime, report ) {
 	
 	var chart = new google.visualization.PieChart( document.getElementById( 'chart-unitsize' ) );
 	chart.draw( table, {
-		'title': 'Unit size partitions for ' + dateTime.toString()
+		'title': 'Unit size partitions for ' + dateTime.toString(),
+		'colors': [ '#80ff00', '#ffff00', '#ff8000', '#df0101' ]
 	} );
 };
 
 function drawDuplicationTimeChart( reports ) {
 	var table = new google.visualization.DataTable();
 	table.addColumn( 'datetime', 'Time' );
-	table.addColumn( 'number', 'Duplicated LOC' );
 	table.addColumn( 'number', 'Total LOC' );
+	table.addColumn( 'number', 'Duplicated LOC' );
 	
 	var rows = [],
 		report;
@@ -227,8 +299,8 @@ function drawDuplicationTimeChart( reports ) {
 		report = reports[ i ];
 		rows.push( [
 			new Date( report.dateTime ),
-			report.duplication.duplications.absolute,
-			report.volume.lines.absolute
+			report.volume.lines.absolute,
+			report.duplication.duplications.absolute
 		] );
 	}
 	
@@ -237,7 +309,8 @@ function drawDuplicationTimeChart( reports ) {
 	var chart = new google.visualization.LineChart( document.getElementById( 'chart-duplication-time' ) );
 	chart.draw( table, {
 		'title': 'Duplication over time',
-		'pointSize': 5
+		'pointSize': 5,
+		'colors': [ '#80ff00', '#df0101' ]
 	} );
 	
 	google.visualization.events.addListener( chart, 'select', function () {
@@ -247,7 +320,7 @@ function drawDuplicationTimeChart( reports ) {
 
 function drawDuplicationChart( dateTime, report ) {
 	var table = new google.visualization.DataTable();
-	table.addColumn( 'string', 'Code block' );
+	table.addColumn( 'string', 'Slice' );
 	table.addColumn( 'number', 'Lines' );
 	
 	table.addRows( [
@@ -257,6 +330,7 @@ function drawDuplicationChart( dateTime, report ) {
 	
 	var chart = new google.visualization.PieChart( document.getElementById( 'chart-duplication' ) );
 	chart.draw( table, {
-		'title': 'Duplication for ' + dateTime.toString()
+		'title': 'Duplication for ' + dateTime.toString(),
+		'colors': [ '#df0101', '#80ff00' ]
 	} );
 };

@@ -31,6 +31,7 @@ class Analyzer {
 	public static function getOptions() {
 		return array(
 			Options::OPT_CONFIGURATION_FILE . ':',
+			Options::OPT_DATE . ':',
 			Options::OPT_SUMMARIZE,
 			Options::OPT_VERBOSITY_FLAG,
 			Options::OPT_HELP
@@ -76,6 +77,10 @@ class Analyzer {
 			switch ( $opt ) {
 				case Options::OPT_CONFIGURATION_FILE:
 					$this->settings->setConfigFile( $value );
+					break;
+
+				case Options::OPT_DATE:
+					$this->settings->setDate( \DateTime::createFromFormat( "Y-m-d H:i:s", $value ) );
 					break;
 
 				case Options::OPT_SUMMARIZE:

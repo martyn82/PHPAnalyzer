@@ -6,3 +6,5 @@ vendor/
 .classpath
 .buildpath
 coverage.xml
+service/data
+service/config/projects

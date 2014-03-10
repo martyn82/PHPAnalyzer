@@ -49,7 +49,7 @@ class ProjectRepository implements Repository {
 	 * @see Repository::get()
 	 */
 	public function get( $id ) {
-		$reports = $this->loadData();
+		$reports = $this->loadData( $id );
 
 		if ( empty( $reports[ $id ] ) ) {
 			throw new \Exception( "Project with id '{$id}' not found." );
@@ -79,9 +79,11 @@ class ProjectRepository implements Repository {
 	/**
 	 * Loads project data.
 	 *
+	 * @param string $id
+	 *
 	 * @return array
 	 */
-	private function loadData() {
+	protected function loadData( $id = null ) {
 		$dataDir = new Directory( 'data/' );
 		$stream = new DirectoryStream( $dataDir );
 		$dirIterator = $stream->getIterator();
@@ -89,6 +91,14 @@ class ProjectRepository implements Repository {
 
 		foreach ( $dirIterator as $iterator ) {
 			if ( !$iterator->isFile() || $iterator->getExtension() != 'json' ) {
+				continue;
+			}
+
+			if ( !is_null( $id ) && substr( $iterator->getFilename(), 0, strlen( $id ) ) != $id ) {
+				continue;
+			}
+
+			if ( $iterator->getSize() == 0 ) {
 				continue;
 			}
 

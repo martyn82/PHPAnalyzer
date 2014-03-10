@@ -1,6 +1,8 @@
 <?php
 require_once realpath( __DIR__ . "/.." ) . "/bootstrap.php";
 
+ini_set( 'memory_limit', '1G' );
+
 define( 'APP_DIR', realpath( __DIR__ . "/../service" ) );
 
 chdir( APP_DIR );

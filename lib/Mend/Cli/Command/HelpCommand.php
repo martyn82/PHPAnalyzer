@@ -20,6 +20,7 @@ Options:
 	-%help%			Displays this help message.
 	-%summary%			Turns on summary. This will output a summary report to the console.
 	-%verbose%			Turns on verbosity mode. Prints verbose message to the console.
+	-%date%				Set a date and time for the report (format: yyyy-mm-dd hh:mm:ss, defaults to now)
 
 HELP;
 
@@ -58,6 +59,7 @@ HELP;
 			'%help%' => Options::OPT_HELP,
 			'%verbose%' => Options::OPT_VERBOSITY_FLAG,
 			'%summary%' => Options::OPT_SUMMARIZE,
+			'%date%' => Options::OPT_DATE,
 			'%defaultMemoryLimit%' => $this->defaultMemoryLimit
 		);
 

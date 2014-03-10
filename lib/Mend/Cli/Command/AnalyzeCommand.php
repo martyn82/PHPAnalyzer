@@ -138,7 +138,9 @@ class AnalyzeCommand extends Command {
 	 * @return string
 	 */
 	private function createFormattedReport( ConfigProvider $config ) {
-		$report = $this->createReport( $config );
+		$dateTime = $this->options->getDate() ? : new \DateTime();
+
+		$report = $this->createReport( $config, $dateTime );
 
 		if ( $this->options->getSummarize() ) {
 			$template = $this->getTemplate( $config );
@@ -157,11 +159,13 @@ class AnalyzeCommand extends Command {
 	 * Creates a report from config.
 	 *
 	 * @param ConfigProvider $config
+	 * @param \DateTime $dateTime
 	 *
 	 * @return ProjectReport
 	 */
-	private function createReport( ConfigProvider $config ) {
-		$builder = $this->createReportBuilder( $config );
+	private function createReport( ConfigProvider $config, \DateTime $dateTime ) {
+		$builder = $this->createReportBuilder( $config, $dateTime );
+
 		return $builder->extractEntities()
 			->extractVolume()
 			->analyzeUnitSize()
@@ -174,14 +178,15 @@ class AnalyzeCommand extends Command {
 	 * Creates a report builder from config.
 	 *
 	 * @param ConfigProvider $config
+	 * @param \DateTime $dateTime
 	 *
 	 * @return ProjectReportBuilder
 	 */
-	private function createReportBuilder( ConfigProvider $config ) {
+	private function createReportBuilder( ConfigProvider $config, \DateTime $dateTime ) {
 		$project = $this->createProject( $config );
 		$fileExtensions = $config->getArray( 'analysis:extensions', array() );
 
-		return new ProjectReportBuilder( $project, $fileExtensions );
+		return new ProjectReportBuilder( $project, $dateTime, $fileExtensions );
 	}
 
 	/**

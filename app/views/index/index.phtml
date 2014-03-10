@@ -1,13 +1,17 @@
 <h1>
 	<span>Analysis results for:</span>
 	<span id="project-name"></span>
+	<var id="project-id" data-value="<?php echo $this->project ?>"></var>
 </h1>
 
 <div class="tab-view" id="tabs">
 	<nav>
 		<ul>
 			<li>
-				<a class="active" href="#tab-project">Project</a>
+				<a class="active" href="#tab-size">Size</a>
+			</li>
+			<li>
+				<a href="#tab-density">Density</a>
 			</li>
 			<li>
 				<a href="#tab-complexity">Complexity</a>
@@ -21,10 +25,15 @@
 		</ul>
 	</nav>
 
-	<section class="tab-sheet active" id="tab-project">
+	<section class="tab-sheet active" id="tab-size">
 		<div id="chart-volume-time" class="chart"></div>
 		<div id="chart-volume" class="chart"></div>
 		<div id="chart-ranks" class="chart"></div>
+	</section>
+
+	<section class="tab-sheet" id="tab-density">
+		<div id="chart-density-time" class="chart"></div>
+		<div id="chart-density" class="chart"></div>
 	</section>
 
 	<section class="tab-sheet" id="tab-complexity">

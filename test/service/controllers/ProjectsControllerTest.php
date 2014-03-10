@@ -4,6 +4,8 @@ namespace Controller;
 require_once "ControllerTest.php";
 
 use Mend\Network\Web\Url;
+use Record\ProjectRecord;
+use Mend\IO\FileSystem\Directory;
 
 class ProjectsControllerTest extends ControllerTest {
 	private $controller;
@@ -16,8 +18,20 @@ class ProjectsControllerTest extends ControllerTest {
 		$factory = $this->createFactory();
 		$renderer = $this->createViewRenderer();
 		$context = $this->createContext();
+		$repository = $this->getMock( '\Repository\ProjectRepository', array( 'loadData', 'get' ) );
 
-		$this->controller = new ProjectsController( $request, $response, $factory, $renderer, $context );
+		$repository->expects( self::any() )
+			->method( 'loadData' )
+			->will( self::returnValue( array() ) );
+
+		$record = new ProjectRecord( 'name', 'key', new Directory( '/foo' ) );
+		$record->reports = array();
+
+		$repository->expects( self::any() )
+			->method( 'get' )
+			->will( self::returnValue( $record ) );
+
+		$this->controller = new ProjectsController( $request, $response, $factory, $renderer, $context, $repository );
 	}
 
 	public function testActionIndex() {

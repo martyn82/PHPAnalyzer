@@ -34,12 +34,13 @@ class ProjectReportBuilder {
 	 * Constructs a new project report builder.
 	 *
 	 * @param Project $project
+	 * @param \DateTime $dateTime
 	 * @param array $extensions
 	 */
-	public function __construct( Project $project, array $extensions = null ) {
+	public function __construct( Project $project, \DateTime $dateTime = null, array $extensions = null ) {
 		$this->project = $project;
 		$this->fileExtensions = $extensions;
-		$this->report = new ProjectReport( $project );
+		$this->report = new ProjectReport( $project, $dateTime );
 	}
 
 	/**

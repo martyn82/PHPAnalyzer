@@ -21,5 +21,15 @@ class IndexController extends PageController {
 	 * Index action.
 	 */
 	public function actionIndex() {
+		$request = $this->getRequest();
+		$parameters = $request->getParameters();
+
+		if ( !$parameters->hasKey( 'project' ) ) {
+			throw new \RuntimeException( "No project parameter specified." );
+		}
+
+		$projectId = $parameters->get( 'project' );
+		$view = $this->getView();
+		$view->assign( 'project', $projectId );
 	}
 }

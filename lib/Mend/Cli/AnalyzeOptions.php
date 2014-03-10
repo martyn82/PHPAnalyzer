@@ -23,11 +23,18 @@ class AnalyzeOptions {
 	private $templatePath;
 
 	/**
+	 * @var \DateTime
+	 */
+	private $date;
+
+	/**
 	 * Constructs a new options object.
 	 */
 	public function __construct() {
 		$this->verbose = false;
 		$this->summarize = false;
+		$this->templatePath = null;
+		$this->date = null;
 	}
 
 	/**
@@ -40,39 +47,21 @@ class AnalyzeOptions {
 	}
 
 	/**
-	 * Sets verbosity flag value.
-	 *
-	 * @param boolean $value
-	 */
-	public function setVerbose( $value ) {
-		$this->verbose = (bool) $value;
-	}
-
-	/**
-	 * Sets the summarize flag value.
-	 *
-	 * @param boolean $value
-	 */
-	public function setSummarize( $value ) {
-		$this->summarize = (bool) $value;
-	}
-
-	/**
-	 * Sets the template path.
-	 *
-	 * @param string $value
-	 */
-	public function setTemplatePath( $value ) {
-		$this->templatePath = $value;
-	}
-
-	/**
 	 * Retrieves the configuration file.
 	 *
 	 * @return string
 	 */
 	public function getConfigFile() {
 		return $this->configFile;
+	}
+
+	/**
+	 * Sets verbosity flag value.
+	 *
+	 * @param boolean $value
+	 */
+	public function setVerbose( $value ) {
+		$this->verbose = (bool) $value;
 	}
 
 	/**
@@ -85,6 +74,15 @@ class AnalyzeOptions {
 	}
 
 	/**
+	 * Sets the summarize flag value.
+	 *
+	 * @param boolean $value
+	 */
+	public function setSummarize( $value ) {
+		$this->summarize = (bool) $value;
+	}
+
+	/**
 	 * Retrieves the summarize flag.
 	 *
 	 * @return boolean
@@ -94,11 +92,38 @@ class AnalyzeOptions {
 	}
 
 	/**
+	 * Sets the template path.
+	 *
+	 * @param string $value
+	 */
+	public function setTemplatePath( $value ) {
+		$this->templatePath = $value;
+	}
+
+	/**
 	 * Retrieves the template path.
 	 *
 	 * @return string
 	 */
 	public function getTemplatePath() {
 		return $this->templatePath;
+	}
+
+	/**
+	 * Sets the report date time.
+	 *
+	 * @param \DateTime $date
+	 */
+	public function setDate( \DateTime $date ) {
+		$this->date = $date;
+	}
+
+	/**
+	 * Retrieves the report date time.
+	 *
+	 * @return \DateTime
+	 */
+	public function getDate() {
+		return $this->date;
 	}
 }
