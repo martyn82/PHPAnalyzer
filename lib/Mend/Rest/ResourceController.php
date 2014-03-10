@@ -91,7 +91,7 @@ abstract class ResourceController extends PageController {
 	 *
 	 * @return ResourceResult
 	 */
-	private function getResult() {
+	protected function getResult() {
 		return $this->result ? : new ResourceResult( array() );
 	}
 
