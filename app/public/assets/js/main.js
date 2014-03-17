@@ -2,6 +2,8 @@
  * main.js
  */
 
+var CHART_POINT_SIZE = 3;
+
 var serviceConsumer,
 	serviceLocation = 'http://analyze.local/service/projects';
 
@@ -91,7 +93,7 @@ function drawVolumeTimeChart( reports ) {
 	var chart = new google.visualization.AreaChart( document.getElementById( 'chart-volume-time' ) );
 	chart.draw( table, {
 		'title': 'Volume over time',
-		'pointSize': 5,
+		'pointSize': CHART_POINT_SIZE,
 		'colors': [ '#000000', '#0101df', '#ffff00', '#298a08' ]
 	} );
 	
@@ -146,7 +148,7 @@ function drawEntityTimeChart( reports ) {
 	var chart = new google.visualization.LineChart( document.getElementById( 'chart-density-time' ) );
 	chart.draw( table, {
 		'title': 'Density over time',
-		'pointSize': 5,
+		'pointSize': CHART_POINT_SIZE,
 		'colors': [ '#8a0808', '#886a08', '#4b8a08', '#08298a' ]
 	} );
 
@@ -201,7 +203,7 @@ function drawComplexityTimeChart( reports ) {
 	var chart = new google.visualization.LineChart( document.getElementById( 'chart-complexity-time' ) );
 	chart.draw( table, {
 		'title': 'Complexity over time',
-		'pointSize': 5,
+		'pointSize': CHART_POINT_SIZE,
 		'colors': [ '#80ff00', '#ffff00', '#ff8000', '#df0101' ]
 	} );
 	
@@ -257,7 +259,7 @@ function drawUnitSizeTimeChart( reports ) {
 	var chart = new google.visualization.LineChart( document.getElementById( 'chart-unitsize-time' ) );
 	chart.draw( table, {
 		'title': 'Unit size over time',
-		'pointSize': 5,
+		'pointSize': CHART_POINT_SIZE,
 		'colors': [ '#80ff00', '#ffff00', '#ff8000', '#df0101' ]
 	} );
 	
@@ -309,7 +311,7 @@ function drawDuplicationTimeChart( reports ) {
 	var chart = new google.visualization.LineChart( document.getElementById( 'chart-duplication-time' ) );
 	chart.draw( table, {
 		'title': 'Duplication over time',
-		'pointSize': 5,
+		'pointSize': CHART_POINT_SIZE,
 		'colors': [ '#80ff00', '#df0101' ]
 	} );
 	

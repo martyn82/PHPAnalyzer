@@ -1,6 +1,7 @@
 <?php
 namespace Repository;
 
+use Mend\Data\DataMapper;
 use Mend\Data\DataPage;
 use Mend\Data\Repository;
 use Mend\Data\SortOptions;
@@ -18,7 +19,21 @@ use Mend\Metrics\Report\ReportType;
 
 use Record\ProjectRecord;
 
-class ProjectRepository implements Repository {
+class ProjectRepository extends Repository {
+	/**
+	 * @var DataMapper
+	 */
+	private $mapper;
+
+	/**
+	 * Constructs a new ProjectRepository instance.
+	 *
+	 * @param DataMapper $mapper
+	 */
+	public function __construct( DataMapper $mapper ) {
+		$this->mapper = $mapper;
+	}
+
 	/**
 	 * @see Repository::matching()
 	 */
@@ -52,6 +67,8 @@ class ProjectRepository implements Repository {
 	 * @throws \Exception
 	 */
 	public function get( $id ) {
+		return $this->mapper->select();
+
 		$reports = $this->loadData( $id );
 
 		if ( empty( $reports[ $id ] ) ) {
@@ -77,60 +94,5 @@ class ProjectRepository implements Repository {
 		);
 
 		return $project;
-	}
-
-	/**
-	 * Loads project data.
-	 *
-	 * @param string $id
-	 *
-	 * @return array
-	 */
-	protected function loadData( $id = null ) {
-		$dataDir = new Directory( 'data/' );
-		$stream = new DirectoryStream( $dataDir );
-		$dirIterator = $stream->getIterator();
-		$dataFiles = new FileArray();
-
-		foreach ( $dirIterator as $iterator ) {
-			if ( !$iterator->isFile() || $iterator->getExtension() != 'json' ) {
-				continue;
-			}
-
-			if ( !is_null( $id ) && substr( $iterator->getFilename(), 0, strlen( $id ) ) != $id ) {
-				continue;
-			}
-
-			if ( $iterator->getSize() == 0 ) {
-				continue;
-			}
-
-			$dataFiles[] = new File(
-				$iterator->getPath()
-				. FileSystem::DIRECTORY_SEPARATOR
-				. $iterator->getFilename()
-			);
-		}
-
-		$projects = array();
-
-		foreach ( $dataFiles as $file ) {
-			/* @var $file File */
-			$reader = new FileStreamReader( $file );
-			$reader->open();
-			$contents = $reader->read();
-			$reader->close();
-
-			$report = json_decode( $contents, true );
-
-			if ( !isset( $projects[ $report[ 'project' ][ 'key' ] ] ) ) {
-				$projects[ $report[ 'project' ][ 'key' ] ] = array( $report );
-			}
-			else {
-				$projects[ $report[ 'project' ][ 'key' ] ][] = $report;
-			}
-		}
-
-		return $projects;
 	}
 }
