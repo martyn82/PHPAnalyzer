@@ -15,9 +15,6 @@ use Mend\Network\Web\WebResponse;
 use Mend\Rest\ResourceController;
 use Mend\Rest\ResourceResult;
 
-use Record\ProjectRecord;
-use Repository\ProjectRepository;
-
 class ProjectsController extends ResourceController {
 	/**
 	 * @var Repository

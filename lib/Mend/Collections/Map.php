@@ -9,9 +9,11 @@ class Map {
 
 	/**
 	 * Constructs a new Map.
+	 *
+	 * @param array $data
 	 */
-	public function __construct() {
-		$this->data = array();
+	public function __construct( array $data = array() ) {
+		$this->data = $data;
 	}
 
 	/**

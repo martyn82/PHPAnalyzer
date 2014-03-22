@@ -1,5 +1,7 @@
 <?php
-namespace Repository;
+namespace Model\Project;
+
+use Mend\Collections\Map;
 
 use Mend\Data\DataMapper;
 use Mend\Data\DataPage;
@@ -17,9 +19,7 @@ use Mend\Metrics\Project\EntityReport;
 use Mend\Metrics\Project\ProjectReport;
 use Mend\Metrics\Report\ReportType;
 
-use Record\ProjectRecord;
-
-class ProjectRepository extends Repository {
+class ProjectRepository implements Repository {
 	/**
 	 * @var DataMapper
 	 */
@@ -37,14 +37,14 @@ class ProjectRepository extends Repository {
 	/**
 	 * @see Repository::matching()
 	 */
-	public function matching( array $criteria, SortOptions $sortOptions, DataPage $page, & $totalCount = 0 ) {
+	public function matching( Map $criteria, SortOptions $sortOptions, DataPage $page ) {
 		return array();
 	}
 
 	/**
 	 * @see Repository::all()
 	 */
-	public function all( SortOptions $sortOptions, DataPage $page, & $totalCount = 0 ) {
+	public function all( SortOptions $sortOptions, DataPage $page ) {
 		$reports = $this->loadData();
 		$projects = array();
 
@@ -66,16 +66,16 @@ class ProjectRepository extends Repository {
 	 *
 	 * @throws \Exception
 	 */
-	public function get( $id ) {
+	public function get( $identity ) {
 		return $this->mapper->select();
 
-		$reports = $this->loadData( $id );
+		$reports = $this->loadData( $identity );
 
-		if ( empty( $reports[ $id ] ) ) {
-			throw new \Exception( "Project with id '{$id}' not found." );
+		if ( empty( $reports[ $identity ] ) ) {
+			throw new \Exception( "Project with id '{$identity}' not found." );
 		}
 
-		$report = reset( $reports[ $id ] );
+		$report = reset( $reports[ $identity ] );
 		$projectData = $report[ 'project' ];
 
 		$project = new ProjectRecord(
@@ -90,7 +90,7 @@ class ProjectRepository extends Repository {
 					'report' => $report
 				);
 			},
-			$reports[ $id ]
+			$reports[ $identity ]
 		);
 
 		return $project;

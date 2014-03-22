@@ -11,7 +11,6 @@ $autoLoader = new Autoloader();
 
 $autoLoader->addNamespace( "Mend", LIB_DIR . "/Mend" );
 $autoLoader->addNamespace( "Controller", APP_DIR . "/controllers" );
-$autoLoader->addNamespace( "Record", APP_DIR . "/model/Record" );
-$autoLoader->addNamespace( "Repository", APP_DIR . "/model/Repository" );
+$autoLoader->addNamespace( "Model", APP_DIR . "/model" );
 
 $autoLoader->register();

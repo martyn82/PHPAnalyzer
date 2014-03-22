@@ -1,19 +1,50 @@
 <?php
 namespace Mend\Data\Storage;
 
+use Mend\Collections\Map;
+use Mend\Data\DataPage;
+use Mend\Data\SortOptions;
+
 abstract class Storage {
 	/**
-	 * Retrieves an object of given type and ID.
+	 * Retrieves a result set of given entity that satisfy the criteria.
 	 *
-	 * @param string $type
-	 * @param string $id
+	 * @param string $entity
+	 * @param Map $criteria
+	 * @param SortOptions $sortOptions
+	 * @param DataPage $dataPage
 	 *
 	 * @return ResultSet
 	 */
-	abstract public function read( $type, $id );
+	abstract public function select( $entity, Map $criteria, SortOptions $sortOptions, DataPage $dataPage );
 
-	abstract public function create();
-	abstract public function update();
-	abstract public function delete();
-	abstract public function search();
+	/**
+	 * Inserts given records.
+	 *
+	 * @param string $entity
+	 * @param RecordSet $records
+	 *
+	 * @return ResultSet
+	 */
+	abstract public function insert( $entity, RecordSet $records );
+
+	/**
+	 * Updates given records.
+	 *
+	 * @param string $entity
+	 * @param RecordSet $records
+	 *
+	 * @return ResultSet
+	 */
+	abstract public function update( $entity, RecordSet $records );
+
+	/**
+	 * Deletes given records.
+	 *
+	 * @param string $entity
+	 * @param RecordSet $records
+	 *
+	 * @return ResultSet
+	 */
+	abstract public function delete( $entity, RecordSet $records );
 }

@@ -3,9 +3,9 @@ namespace Controller;
 
 require_once "ControllerTest.php";
 
-use Mend\Network\Web\Url;
-use Record\ProjectRecord;
 use Mend\IO\FileSystem\Directory;
+use Mend\Network\Web\Url;
+use Mend\Metrics\Project\Project;
 
 class ProjectsControllerTest extends ControllerTest {
 	private $controller;
@@ -18,13 +18,17 @@ class ProjectsControllerTest extends ControllerTest {
 		$factory = $this->createFactory();
 		$renderer = $this->createViewRenderer();
 		$context = $this->createContext();
-		$repository = $this->getMock( '\Repository\ProjectRepository', array( 'loadData', 'get' ) );
+
+		$repository = $this->getMockBuilder( '\Model\Project\ProjectRepository' )
+			->disableOriginalConstructor()
+			->setMethods( array( 'loadData', 'get' ) )
+			->getMock();
 
 		$repository->expects( self::any() )
 			->method( 'loadData' )
 			->will( self::returnValue( array() ) );
 
-		$record = new ProjectRecord( 'name', 'key', new Directory( '/foo' ) );
+		$record = new Project( 'name', 'key', new Directory( '/foo' ) );
 		$record->reports = array();
 
 		$repository->expects( self::any() )

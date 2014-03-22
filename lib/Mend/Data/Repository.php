@@ -1,36 +1,36 @@
 <?php
 namespace Mend\Data;
 
+use Mend\Collections\Map;
+
 interface Repository {
 	/**
-	 * Retrieves all criteria matching records.
+	 * Retrieves all objects matching given criteria.
 	 *
-	 * @param array $criteria
+	 * @param Map $criteria
 	 * @param SortOptions $sortOptions
 	 * @param DataPage $page
-	 * @param integer $totalCount
 	 *
-	 * @return array
+	 * @return DataObjectCollection
 	 */
-	function matching( array $criteria, SortOptions $sortOptions, DataPage $page, & $totalCount = 0 );
+	function matching( Map $criteria, SortOptions $sortOptions, DataPage $page );
 
 	/**
-	 * Retrieves all records.
+	 * Retrieves all objects.
 	 *
 	 * @param SortOptions $sortOptions
 	 * @param DataPage $page
-	 * @param integer $totalCount
 	 *
-	 * @return array
+	 * @return DataObjectCollection
 	*/
-	function all( SortOptions $sortOptions, DataPage $page, & $totalCount = 0 );
+	function all( SortOptions $sortOptions, DataPage $page );
 
 	/**
-	 * Retrieves the record with given ID.
+	 * Retrieves the object with given identity.
 	 *
-	 * @param integer $id
+	 * @param string $identity
 	 *
-	 * @return object
+	 * @return DataObject
 	*/
-	function get( $id );
+	function get( $identity );
 }
