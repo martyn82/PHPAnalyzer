@@ -70,7 +70,9 @@ class PageControllerTest extends \TestCase {
 	}
 
 	private function createContext() {
-		return $this->getMock( '\Mend\Mvc\Context', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Mvc\Context' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createViewOptions( $enableRender = true, $enableLayout = true ) {
@@ -117,7 +119,9 @@ class PageControllerTest extends \TestCase {
 	}
 
 	private function createRequest( Url $url ) {
-		return $this->getMock( '\Mend\Network\Web\WebRequest', array(), array( $url ) );
+		return $this->getMockBuilder( '\Mend\Network\Web\WebRequest' )
+			->setConstructorArgs( array( $url ) )
+			->getMock();
 	}
 
 	private function createResponse( Url $url ) {
@@ -131,7 +135,9 @@ class PageControllerTest extends \TestCase {
 	}
 
 	private function createFactory() {
-		return $this->getMock( '\Mend\Mvc\ControllerFactory', array(), array( array() ) );
+		return $this->getMockBuilder( '\Mend\Mvc\ControllerFactory' )
+			->setConstructorArgs( array( array() ) )
+			->getMock();
 	}
 }
 

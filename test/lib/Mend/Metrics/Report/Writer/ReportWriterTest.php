@@ -3,7 +3,10 @@ namespace Mend\Metrics\Report\Writer;
 
 class ReportWriterTest extends \TestCase {
 	public function testConstructor() {
-		$report = $this->getMock( '\Mend\Metrics\Project\ProjectReport', array(), array(), '', false );
+		$report = $this->getMockBuilder( '\Mend\Metrics\Project\ProjectReport' )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$formatter = $this->getMock( '\Mend\Metrics\Report\Formatter\ReportFormatter' );
 
 		$writer = new DummyReportWriter( $report, $formatter );
@@ -14,7 +17,9 @@ class ReportWriterTest extends \TestCase {
 	}
 
 	public function testWrite() {
-		$report = $this->getMock( '\Mend\Metrics\Project\ProjectReport', array(), array(), '', false );
+		$report = $this->getMockBuilder( '\Mend\Metrics\Project\ProjectReport' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$formatter = $this->getMock( '\Mend\Metrics\Report\Formatter\ReportFormatter', array( 'format' ) );
 
@@ -41,7 +46,10 @@ class ReportWriterTest extends \TestCase {
 	}
 
 	public function testReportAsString() {
-		$report = $this->getMock( '\Mend\Metrics\Project\ProjectReport', array(), array(), '', false );
+		$report = $this->getMockBuilder( '\Mend\Metrics\Project\ProjectReport' )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$formatter = $this->getMock( '\Mend\Metrics\Report\Formatter\ReportFormatter', array( 'format' ) );
 
 		$reportString = 'foo report string';

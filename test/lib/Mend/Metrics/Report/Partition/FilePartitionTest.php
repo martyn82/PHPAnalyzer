@@ -9,7 +9,10 @@ class FilePartitionTest extends \TestCase {
 		$relative = (float) mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
 
 		$files = new FileArray();
-		$files[] = $this->getMock( '\Mend\IO\FileSystem\File', array(), array( '/tmp/foo' ), '', false );
+		$files[] = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setConstructorArgs( array( '/tmp/foo' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$partition = new FilePartition( $absolute, $relative, $files );
 

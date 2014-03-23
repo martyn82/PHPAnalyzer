@@ -19,7 +19,10 @@ class ProjectReaderTest extends \TestCase {
 	public function testConstructor() {
 		$root = new Directory( $this->getDirName() );
 
-		$project = $this->getMock( '\Mend\Metrics\Project\Project', array( 'getRoot' ), array( 'Foo', 'foo', $root ) );
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->setMethods( array( 'getRoot' ) )
+			->setConstructorArgs( array( 'Foo', 'foo', $root ) )
+			->getMock();
 
 		$project->expects( self::any() )
 			->method( 'getRoot' )
@@ -30,13 +33,19 @@ class ProjectReaderTest extends \TestCase {
 	}
 
 	public function testGetFilesEmptyDir() {
-		$root = $this->getMock( '\Mend\IO\FileSystem\Directory', array(), array( $this->getDirName() ), '', false );
+		$root = $this->getMockBuilder( '\Mend\IO\FileSystem\Directory' )
+			->setConstructorArgs( array( $this->getDirName() ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$root->expects( self::any() )
 			->method( 'getName' )
 			->will( self::returnValue( $this->getDirName() ) );
 
-		$project = $this->getMock( '\Mend\Metrics\Project\Project', array( 'getRoot' ), array( 'foo', 'bar', $root ) );
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->setMethods( array( 'getRoot' ) )
+			->setConstructorArgs( array( 'foo', 'bar', $root ) )
+			->getMock();
 
 		$project->expects( self::any() )
 			->method( 'getRoot' )
@@ -61,23 +70,19 @@ class ProjectReaderTest extends \TestCase {
 	 * @group current
 	 */
 	public function testGetFiles() {
-		$root = $this->getMock(
-			'\Mend\IO\FileSystem\Directory',
-			array(),
-			array( $this->getDirName() ),
-			'',
-			false
-		);
+		$root = $this->getMockBuilder( '\Mend\IO\FileSystem\Directory' )
+			->setConstructorArgs( array( $this->getDirName() ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$root->expects( self::any() )
 			->method( 'getName' )
 			->will( self::returnValue( $this->getDirName() ) );
 
-		$project = $this->getMock(
-			'\Mend\Metrics\Project\Project',
-			array( 'getRoot' ),
-			array( 'foo', 'bar', $root )
-		);
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->setMethods( array( 'getRoot' ) )
+			->setConstructorArgs( array( 'foo', 'bar', $root ) )
+			->getMock();
 
 		$project->expects( self::any() )
 			->method( 'getRoot' )

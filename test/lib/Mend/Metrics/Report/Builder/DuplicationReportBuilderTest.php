@@ -7,7 +7,9 @@ class DuplicationReportBuilderTest extends \TestCase {
 	public function testComputeDuplications() {
 		$files = new FileArray();
 
-		$project = $this->getMock( '\Mend\Metrics\Project\Project', array(), array(), '', false );
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$builder = $this->getMock(
 			'\Mend\Metrics\Report\Builder\DuplicationReportBuilder',

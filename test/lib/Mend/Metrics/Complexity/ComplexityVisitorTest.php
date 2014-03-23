@@ -10,11 +10,11 @@ class ComplexityVisitorTest extends \TestCase {
 		$ifNode = $this->getIfNode();
 		$otherNode = $this->getOtherNode();
 
-		$visitor = $this->getMock(
-			'\Mend\Metrics\Complexity\ComplexityVisitor',
-			array( 'addResult' ),
-			array( array( 'PHPParser_Node_Stmt_If' ) )
-		);
+		$visitor = $this->getMockBuilder( '\Mend\Metrics\Complexity\ComplexityVisitor' )
+			->setMethods( array( 'addResult' ) )
+			->setConstructorArgs( array( array( 'PHPParser_Node_Stmt_If' ) ) )
+			->getMock();
+
 		$visitor->expects( self::once() )->method( 'addResult' );
 
 		$visitor->enterNode( $ifNode );

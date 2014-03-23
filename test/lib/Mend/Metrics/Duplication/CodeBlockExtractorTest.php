@@ -73,12 +73,19 @@ PHP;
 	 * @param CodeBlockArray $blocks
 	 */
 	public function testGetCodeBlocksFromFile( array $sourceLines, CodeBlockArray $blocks ) {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getName' ), array( $this->getFileName() ) );
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setMethods( array( 'getName' ) )
+			->setConstructorArgs( array( $this->getFileName() ) )
+			->getMock();
+
 		$file->expects( self::any() )
 			->method( 'getName' )
 			->will( self::returnValue( $this->getFileName() ) );
 
-		$extractor = $this->getMock( '\Mend\Metrics\Duplication\CodeBlockExtractor', array( 'getFileSourceLines' ) );
+		$extractor = $this->getMockBuilder( '\Mend\Metrics\Duplication\CodeBlockExtractor' )
+			->setMethods( array( 'getFileSourceLines' ) )
+			->getMock();
+
 		$extractor->expects( self::any() )
 			->method( 'getFileSourceLines' )
 			->will( self::returnValue( $sourceLines ) );
@@ -180,10 +187,15 @@ PHP;
 	}
 
 	public function testGetCodeBlocks() {
-		$extractor = $this->getMock( '\Mend\Metrics\Duplication\CodeBlockExtractor', array( 'getCodeBlocksFromFile' ) );
+		$extractor = $this->getMockBuilder( '\Mend\Metrics\Duplication\CodeBlockExtractor' )
+			->setMethods( array( 'getCodeBlocksFromFile' ) )
+			->getMock();
 
 		$files = new FileArray();
-		$files[] = $this->getMock( '\Mend\IO\FileSystem\File', array(), array( $this->getFileName() ) );
+
+		$files[] = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setConstructorArgs( array( $this->getFileName() ) )
+			->getMock();
 
 		$extractor->expects( self::exactly( count( $files ) ) )
 			->method( 'getCodeBlocksFromFile' );
@@ -197,11 +209,10 @@ PHP;
 	 * @param string $source
 	 */
 	public function testGetFileSourceLines( $source ) {
-		$file = $this->getMock(
-			'\Mend\IO\FileSystem\File',
-			array( 'getExtension', 'getName' ),
-			array( $this->getFileName() )
-		);
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setMethods( array( 'getExtension', 'getName' ) )
+			->setConstructorArgs( array( $this->getFileName() ) )
+			->getMock();
 
 		$file->expects( self::any() )
 			->method( 'getExtension' )

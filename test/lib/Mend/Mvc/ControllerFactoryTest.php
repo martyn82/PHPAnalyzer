@@ -127,19 +127,27 @@ class ControllerFactoryTest extends \TestCase {
 	}
 
 	private function createContext() {
-		return $this->getMock( '\Mend\Mvc\Context', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Mvc\Context' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createViewRenderer() {
-		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Mvc\View\ViewRenderer' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createRequest() {
-		return $this->getMock( '\Mend\Network\Web\WebRequest', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Network\Web\WebRequest' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createResponse() {
-		return $this->getMock( '\Mend\Network\Web\WebResponse', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Network\Web\WebResponse' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 }
 

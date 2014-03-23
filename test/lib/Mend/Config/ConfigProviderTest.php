@@ -102,7 +102,10 @@ class ConfigProviderTest extends \TestCase {
 	}
 
 	public function testGetDefault() {
-		$reader = $this->getMock( '\Mend\Config\ArrayConfigReader', array(), array( array() ) );
+		$reader = $this->getMockBuilder( '\Mend\Config\ArrayConfigReader' )
+			->setConstructorArgs( array( array() ) )
+			->getMock();
+
 		$provider = new ConfigProvider( $reader );
 		$default = 'defaultString';
 
@@ -110,7 +113,10 @@ class ConfigProviderTest extends \TestCase {
 	}
 
 	public function testGetDefaultNull() {
-		$reader = $this->getMock( '\Mend\Config\ArrayConfigReader', array(), array( array() ) );
+		$reader = $this->getMockBuilder( '\Mend\Config\ArrayConfigReader' )
+			->setConstructorArgs( array( array() ) )
+			->getMock();
+
 		$provider = new ConfigProvider( $reader );
 		$default = null;
 

@@ -4,7 +4,11 @@ namespace Mend\Metrics\Duplication;
 class CodeBlockTableTest extends \TestCase {
 	public function testAdd() {
 		$table = new CodeBlockTable();
-		$block = $this->getMock( '\Mend\Metrics\Duplication\CodeBlock', array(), array(), '', false );
+
+		$block = $this->getMockBuilder( '\Mend\Metrics\Duplication\CodeBlock' )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$table[] = $block;
 
 		self::assertEquals( array( $block ), $table[ 0 ] );

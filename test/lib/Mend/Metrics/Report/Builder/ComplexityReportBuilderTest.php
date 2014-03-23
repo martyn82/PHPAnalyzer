@@ -18,21 +18,19 @@ class ComplexityReportBuilderTest extends \TestCase {
 	 * @param integer $sizeCategory
 	 */
 	public function testAnalyzeComplexity( $complexity, $complexityCategory, $methodSize, $sizeCategory ) {
-		$unitSizeResult = $this->getMock(
-			'\Mend\Metrics\UnitSize\UnitSizeResult',
-			array( 'getUnitSize' ),
-			array( $methodSize, $sizeCategory )
-		);
+		$unitSizeResult = $this->getMockBuilder( '\Mend\Metrics\UnitSize\UnitSizeResult' )
+			->setMethods( array( 'getUnitSize' ) )
+			->setConstructorArgs( array( $methodSize, $sizeCategory ) )
+			->getMock();
 
 		$unitSizeResult->expects( self::any() )
 			->method( 'getUnitSize' )
 			->will( self::returnValue( $methodSize ) );
 
-		$complexityResult = $this->getMock(
-			'\Mend\Metrics\Complexity\ComplexityResult',
-			array( 'getLevel' ),
-			array( $complexity, $complexityCategory )
-		);
+		$complexityResult = $this->getMockBuilder( '\Mend\Metrics\Complexity\ComplexityResult' )
+			->setMethods( array( 'getLevel' ) )
+			->setConstructorArgs( array( $complexity, $complexityCategory ) )
+			->getMock();
 
 		$complexityResult->expects( self::any() )
 			->method( 'getLevel' )
@@ -40,13 +38,10 @@ class ComplexityReportBuilderTest extends \TestCase {
 
 		$node = $this->getMock( '\Mend\Parser\Node\Node' );
 
-		$method = $this->getMock(
-			'\Mend\Source\Code\Model\Method',
-			array( 'getNode', 'unitSize', 'complexity' ),
-			array(),
-			'',
-			false
-		);
+		$method = $this->getMockBuilder( '\Mend\Source\Code\Model\Method' )
+			->setMethods( array( 'getNode', 'unitSize', 'complexity' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$method->expects( self::any() )
 			->method( 'getNode' )
@@ -87,11 +82,10 @@ class ComplexityReportBuilderTest extends \TestCase {
 			->method( 'methods' )
 			->will( self::returnValue( $methodPartition ) );
 
-		$codePartition = $this->getMock(
-			'\Mend\Metrics\Report\Partition\CodePartition',
-			array( 'getRelative', 'getAbsolute' ),
-			array( 1, 1 )
-		);
+		$codePartition = $this->getMockBuilder( '\Mend\Metrics\Report\Partition\CodePartition' )
+			->setMethods( array( 'getRelative', 'getAbsolute' ) )
+			->setConstructorArgs( array( 1, 1 ) )
+			->getMock();
 
 		$codePartition->expects( self::any() )
 			->method( 'getAbsolute' )
@@ -107,7 +101,9 @@ class ComplexityReportBuilderTest extends \TestCase {
 			->method( 'totalLinesOfCode' )
 			->will( self::returnValue( $codePartition ) );
 
-		$project = $this->getMock( '\Mend\Metrics\Project\Project', array(), array(), '', false );
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$builder = $this->getMock(
 			'\Mend\Metrics\Report\Builder\ComplexityReportBuilder',

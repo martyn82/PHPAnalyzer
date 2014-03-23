@@ -10,7 +10,9 @@ class PackagePartitionTest extends \TestCase {
 		$relative = (float) mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
 
 		$packages = new PackageHashTable();
-		$packages[] = $this->getMock( '\Mend\Source\Code\Model\Package', array(), array(), '', false );
+		$packages[] = $this->getMockBuilder( '\Mend\Source\Code\Model\Package' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$partition = new PackagePartition( $absolute, $relative, $packages );
 

@@ -73,15 +73,22 @@ class RestControllerTest extends \TestCase {
 	}
 
 	private function createContext() {
-		return $this->getMock( '\Mend\Mvc\Context', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Mvc\Context' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createViewRenderer() {
-		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Mvc\View\ViewRenderer' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createRequest( $method, Url $url ) {
-		$request = $this->getMock( '\Mend\Network\Web\WebRequest', array( 'getMethod', 'getUrl' ), array( $url ) );
+		$request = $this->getMockBuilder( '\Mend\Network\Web\WebRequest' )
+			->setMethods( array( 'getMethod', 'getUrl' ) )
+			->setConstructorArgs( array( $url ) )
+			->getMock();
 
 		$request->expects( self::any() )
 			->method( 'getUrl' )
@@ -95,7 +102,10 @@ class RestControllerTest extends \TestCase {
 	}
 
 	private function createResponse( Url $url ) {
-		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array( 'getHeaders' ), array( $url ) );
+		$response = $this->getMockBuilder( '\Mend\Network\Web\WebResponse' )
+			->setMethods( array( 'getHeaders' ) )
+			->setConstructorArgs( array( $url ) )
+			->getMock();
 
 		$response->expects( self::any() )
 			->method( 'getHeaders' )
@@ -105,7 +115,10 @@ class RestControllerTest extends \TestCase {
 	}
 
 	private function createFactory( Controller $controller = null ) {
-		$factory = $this->getMock( '\Mend\Mvc\ControllerFactory', array( 'createController' ), array( array() ) );
+		$factory = $this->getMockBuilder( '\Mend\Mvc\ControllerFactory' )
+			->setMethods( array( 'createController' ) )
+			->setConstructorArgs( array( array() ) )
+			->getMock();
 
 		$factory->expects( self::any() )
 			->method( 'createController' )

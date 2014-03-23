@@ -19,7 +19,10 @@ abstract class ReportFormatterTest extends \TestCase {
 	}
 
 	protected function getReport( array $reportArray ) {
-		$report = $this->getMock( '\Mend\Metrics\Project\ProjectReport', array( 'toArray' ), array(), '', false );
+		$report = $this->getMockBuilder( '\Mend\Metrics\Project\ProjectReport' )
+			->setMethods( array( 'toArray' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$report->expects( self::any() )
 			->method( 'toArray' )

@@ -11,7 +11,10 @@ class MethodPartitionTest extends \TestCase {
 		$absolute = mt_rand( 0, PHP_INT_MAX );
 		$relative = (float) mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
 
-		$method = $this->getMock( '\Mend\Source\Code\Model\Method', array(), array(), '', false );
+		$method = $this->getMockBuilder( '\Mend\Source\Code\Model\Method' )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$methods = new MethodArray();
 		$methods[] = $method;
 

@@ -49,7 +49,10 @@ PHP;
 		$url = new SourceUrl( Url::createFromString( 'file://' ) );
 		$classModel = new ClassModel( $node, $url );
 
-		$method = $this->getMock( '\Mend\Source\Code\Model\Method', array(), array(), '', false );
+		$method = $this->getMockBuilder( '\Mend\Source\Code\Model\Method' )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$methods = new MethodArray();
 		$methods[] = $method;
 		$classModel->methods( $methods );

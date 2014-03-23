@@ -24,7 +24,10 @@ class ResourceControllerTest extends \TestCase {
 		$controller = new DummyResourceController( $request, $response, $factory, $renderer, $context );
 		$controller->dispatchAction( $action );
 
-		$result = $this->getMock( '\Mend\Rest\ResourceResult', array(), array( array() ) );
+		$result = $this->getMockBuilder( '\Mend\Rest\ResourceResult' )
+			->setConstructorArgs( array( array() ) )
+			->getMock();
+
 		$controller->setResult( $result );
 
 		self::assertEquals( $result, $controller->getResult() );
@@ -66,7 +69,9 @@ class ResourceControllerTest extends \TestCase {
 	}
 
 	private function createResponse( Url $url ) {
-		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array(), array( $url ) );
+		$response = $this->getMockBuilder( '\Mend\Network\Web\WebResponse' )
+			->setConstructorArgs( array( $url ) )
+			->getMock();
 
 		$map = $this->getMock( '\Mend\Collections\Map' );
 
@@ -78,17 +83,16 @@ class ResourceControllerTest extends \TestCase {
 	}
 
 	private function createFactory() {
-		return $this->getMock( '\Mend\Mvc\ControllerFactory', array(), array( array() ) );
+		return $this->getMockBuilder( '\Mend\Mvc\ControllerFactory' )
+			->setConstructorArgs( array( array() ) )
+			->getMock();
 	}
 
 	private function createViewRenderer() {
-		$renderer = $this->getMock(
-			'\Mend\Mvc\View\ViewRenderer',
-			array( 'isEnabled', 'isDisabled' ),
-			array(),
-			'',
-			false
-		);
+		$renderer = $this->getMockBuilder( '\Mend\Mvc\View\ViewRenderer' )
+			->setMethods( array( 'isEnabled', 'isDisabled' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$renderer->expects( self::any() )
 			->method( 'isEnabled' )
@@ -102,7 +106,9 @@ class ResourceControllerTest extends \TestCase {
 	}
 
 	private function createContext() {
-		return $this->getMock( '\Mend\Mvc\Context', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Mvc\Context' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 }
 

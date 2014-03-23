@@ -13,7 +13,10 @@ class CodeBlockPartitionTest extends \TestCase {
 		$blocks = new CodeBlockTable();
 
 		$url = Url::createFromString( 'file://' );
-		$sourceUrl = $this->getMock( '\Mend\Source\Code\Location\SourceUrl', array(), array( $url ) );
+		$sourceUrl = $this->getMockBuilder( '\Mend\Source\Code\Location\SourceUrl' )
+			->setConstructorArgs( array( $url ) )
+			->getMock();
+
 		$blocks[] = new CodeBlock( $sourceUrl, array(), 1 );
 
 		$partition = new CodeBlockPartition( $absolute, $relative, $blocks );

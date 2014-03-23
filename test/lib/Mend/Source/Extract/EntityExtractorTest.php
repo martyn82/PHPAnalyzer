@@ -46,7 +46,9 @@ class Foo {
 PHP;
 
 	public function testEntityExtracting() {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array( '/tmp/foo' ) );
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setConstructorArgs( array( '/tmp/foo' ) )
+			->getMock();
 
 		$extractor = $this->getMock(
 			'\Mend\Source\Extract\EntityExtractor',
@@ -76,7 +78,9 @@ PHP;
 	}
 
 	public function testEntityExtractingNoPackages() {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array( '/tmp/foo' ) );
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setConstructorArgs( array( '/tmp/foo' ) )
+			->getMock();
 
 		$extractor = $this->getMock(
 			'\Mend\Source\Extract\EntityExtractor',
@@ -101,7 +105,9 @@ PHP;
 	}
 
 	public function testGetFileSource() {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array(), array(), '', false );
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$extractor = $this->getMock(
 			'\Mend\Source\Extract\EntityExtractor',
@@ -109,13 +115,10 @@ PHP;
 			array( $file, new PHPParserAdapter(), new PHPNodeMapper() )
 		);
 
-		$sourceExtractor = $this->getMock(
-			'\Mend\Source\Extract\SourceFileExtractor',
-			array(),
-			array( $file ),
-			'',
-			false
-		);
+		$sourceExtractor = $this->getMockBuilder( '\Mend\Source\Extract\SourceFileExtractor' )
+			->setConstructorArgs( array( $file ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$extractor->expects( self::any() )
 			->method( 'getSourceExtractor' )

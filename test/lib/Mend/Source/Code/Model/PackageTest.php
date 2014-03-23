@@ -7,12 +7,18 @@ class PackageTest extends \TestCase {
 	public function testAccessors() {
 		$node = $this->getMock( '\Mend\Parser\Node\Node' );
 		$url = Url::createFromString( 'file://' );
-		$sourceUrl = $this->getMock( '\Mend\Source\Code\Location\SourceUrl', array(), array( $url ) );
+
+		$sourceUrl = $this->getMockBuilder( '\Mend\Source\Code\Location\SourceUrl' )
+			->setConstructorArgs( array( $url ) )
+			->getMock();
 
 		$package = new Package( $node, $sourceUrl );
 
 		$classes = new ClassModelArray();
-		$classes[] = $this->getMock( '\Mend\Source\Code\Model\ClassModel', array(), array(), '', false );
+		$classes[] = $this->getMockBuilder( '\Mend\Source\Code\Model\ClassModel' )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$package->classes( $classes );
 
 		self::assertEquals( $node->getName(), $package->getName() );

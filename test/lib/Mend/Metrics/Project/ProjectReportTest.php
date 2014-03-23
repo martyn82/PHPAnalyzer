@@ -3,9 +3,15 @@ namespace Mend\Metrics\Project;
 
 class ProjectReportTest extends \TestCase {
 	public function testAddReport() {
-		$root = $this->getMock( '\Mend\IO\FileSystem\Directory', array(), array( '/tmp' ) );
-		$project = $this->getMock( '\Mend\Metrics\Project\Project', array(), array( 'name', 'key', $root ) );
-		$report = $this->getMock( '\Mend\Metrics\Report\Report', array(), array() );
+		$root = $this->getMockBuilder( '\Mend\IO\FileSystem\Directory' )
+			->setConstructorArgs( array( '/tmp' ) )
+			->getMock();
+
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->setConstructorArgs( array( 'name', 'key', $root ) )
+			->getMock();
+
+		$report = $this->getMock( '\Mend\Metrics\Report\Report' );
 		$dateTime = new \DateTime();
 
 		$projectReport = new ProjectReport( $project, $dateTime );
@@ -31,8 +37,14 @@ class ProjectReportTest extends \TestCase {
 	 * @expectedException \InvalidArgumentException
 	 */
 	public function testGetUndefinedReport() {
-		$root = $this->getMock( '\Mend\IO\FileSystem\Directory', array(), array( '/foo' ) );
-		$project = $this->getMock( '\Mend\Metrics\Project\Project', array(), array( 'name', 'key', $root ) );
+		$root = $this->getMockBuilder( '\Mend\IO\FileSystem\Directory' )
+			->setConstructorArgs( array( '/foo' ) )
+			->getMock();
+
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->setConstructorArgs( array( 'name', 'key', $root ) )
+			->getMock();
+
 		$report = new ProjectReport( $project );
 		$report->getReport( 'report1' );
 	}

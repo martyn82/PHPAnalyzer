@@ -11,11 +11,11 @@ class DuplicationReportTest extends \TestCase {
 		self::assertEquals( $empty, $report->duplications() );
 
 		$blocks = $this->getMock( '\Mend\Metrics\Duplication\CodeBlockTable' );
-		$duplications = $this->getMock(
-			'\Mend\Metrics\Report\Partition\CodeBlockPartition',
-			array(),
-			array( 12, 10, $blocks )
-		);
+
+		$duplications = $this->getMockBuilder( '\Mend\Metrics\Report\Partition\CodeBlockPartition' )
+			->setConstructorArgs( array( 12, 10, $blocks ) )
+			->getMock();
+
 		$report->duplications( $duplications );
 
 		self::assertEquals( $duplications, $report->duplications() );

@@ -7,7 +7,7 @@ class AutoloaderTest extends \TestCase {
 		$map = $this->createPathToNamespaceMap();
 		$this->files = array_keys( $map );
 
-		$this->loader = $this->getMock( 'Autoloader', array( 'includeFile' ), array() );
+		$this->loader = $this->getMock( 'Autoloader', array( 'includeFile' ) );
 		$this->loader->expects( self::any() )
 			->method( 'includeFile' )
 			->will( self::returnCallback( array( $this, 'includeFileStub' ) ) );

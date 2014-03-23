@@ -34,13 +34,10 @@ class UnitSizeReportBuilderTest extends \TestCase {
 			->method( 'getFileName' )
 			->will( self::returnValue( 'test:///foo/bar.php' ) );
 
-		$method = $this->getMock(
-			'\Mend\Source\Code\Model\Method',
-			array( 'getSourceUrl', 'unitSize' ),
-			array(),
-			'',
-			false
-		);
+		$method = $this->getMockBuilder( '\Mend\Source\Code\Model\Method' )
+			->setMethods( array( 'getSourceUrl', 'unitSize' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$method->expects( self::any() )
 			->method( 'getSourceUrl' )
@@ -53,13 +50,10 @@ class UnitSizeReportBuilderTest extends \TestCase {
 		$methods = new MethodArray();
 		$methods[] = $method;
 
-		$methodPartition = $this->getMock(
-			'\Mend\Metrics\Report\Partition\MethodPartition',
-			array( 'getMethods' ),
-			array(),
-			'',
-			false
-		);
+		$methodPartition = $this->getMockBuilder( '\Mend\Metrics\Report\Partition\MethodPartition' )
+			->setMethods( array( 'getMethods' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$methodPartition->expects( self::any() )
 			->method( 'getMethods' )
@@ -74,31 +68,27 @@ class UnitSizeReportBuilderTest extends \TestCase {
 			->method( 'methods' )
 			->will( self::returnValue( $methodPartition ) );
 
-		$totalLinesOfCode = $this->getMock(
-			'\Mend\Metrics\Report\Partition\CodePartition',
-			array( 'getAbsolute' ),
-			array(),
-			'',
-			false
-		);
+		$totalLinesOfCode = $this->getMockBuilder( '\Mend\Metrics\Report\Partition\CodePartition' )
+			->setMethods( array( 'getAbsolute' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$totalLinesOfCode->expects( self::any() )
 			->method( 'getAbsolute' )
 			->will( self::returnValue( 10 ) );
 
-		$volumeReport = $this->getMock(
-			'\Mend\Metrics\Volume\VolumeReport',
-			array( 'totalLinesOfCode' ),
-			array(),
-			'',
-			false
-		);
+		$volumeReport = $this->getMockBuilder( '\Mend\Metrics\Volume\VolumeReport' )
+			->setMethods( array( 'totalLinesOfCode' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$volumeReport->expects( self::any() )
 			->method( 'totalLinesOfCode' )
 			->will( self::returnValue( $totalLinesOfCode ) );
 
-		$project = $this->getMock( '\Mend\Metrics\Project\Project' , array(), array(), '', false );
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$builder = new UnitSizeReportBuilder( $project );
 

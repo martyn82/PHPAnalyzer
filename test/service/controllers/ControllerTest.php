@@ -21,7 +21,9 @@ abstract class ControllerTest extends \TestCase {
 	}
 
 	protected function createResponse( Url $url ) {
-		$response = $this->getMock( '\Mend\Network\Web\WebResponse', array(), array( $url ) );
+		$response = $this->getMockBuilder( '\Mend\Network\Web\WebResponse' )
+			->setConstructorArgs( array( $url ) )
+			->getMock();
 
 		$response->expects( self::any() )
 			->method( 'getHeaders' )
@@ -31,14 +33,20 @@ abstract class ControllerTest extends \TestCase {
 	}
 
 	protected function createFactory() {
-		return $this->getMock( '\Mend\Mvc\ControllerFactory', array(), array( array() ) );
+		return $this->getMockBuilder( '\Mend\Mvc\ControllerFactory' )
+			->setConstructorArgs( array( array() ) )
+			->getMock();
 	}
 
 	protected function createViewRenderer() {
-		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Mvc\View\ViewRenderer' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	protected function createContext() {
-		return $this->getMock( '\Mend\Mvc\Context', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Mvc\Context' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 }

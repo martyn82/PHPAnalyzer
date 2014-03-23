@@ -6,7 +6,10 @@ use Mend\Metrics\Report\Partition\CodePartition;
 class VolumeReportTest extends \TestCase {
 	public function testAccessors() {
 		$report = new VolumeReport();
-		$partition = $this->getMock( '\Mend\Metrics\Report\Partition\CodePartition', array(), array( 305010, 100 ) );
+		$partition = $this->getMockBuilder( '\Mend\Metrics\Report\Partition\CodePartition' )
+			->setConstructorArgs( array( 305010, 100 ) )
+			->getMock();
+
 		$empty = CodePartition::createEmpty();
 
 		self::assertEquals( $empty, $report->totalLines() );

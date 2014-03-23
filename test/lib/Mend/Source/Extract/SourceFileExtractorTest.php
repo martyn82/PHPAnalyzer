@@ -52,14 +52,15 @@ PHP;
 	 * @param array $lines
 	 */
 	public function testSourceLines( $source, array $lines ) {
-		$file = $this->getMock(
-			'\Mend\IO\FileSystem\File',
-			array( 'getExtension' ),
-			array( $this->getFileName() ),
-			'',
-			false
-		);
-		$file->expects( self::any() )->method( 'getExtension' )->will( self::returnValue( 'php' ) );
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setMethods( array( 'getExtension' ) )
+			->setConstructorArgs( array( $this->getFileName() ) )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$file->expects( self::any() )
+			->method( 'getExtension' )
+			->will( self::returnValue( 'php' ) );
 
 		$extractor = $this->getMock(
 			'\Mend\Source\Extract\SourceFileExtractor',
@@ -104,13 +105,11 @@ PHP;
 	public function testGetFileSource( $source ) {
 		$name = $this->getFileName();
 
-		$file = $this->getMock(
-			'\Mend\IO\FileSystem\File',
-			array( 'getExtension', 'getName' ),
-			array( $name ),
-			'',
-			false
-		);
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setMethods( array( 'getExtension', 'getName' ) )
+			->setConstructorArgs( array( $name ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$file->expects( self::any() )
 			->method( 'getName' )

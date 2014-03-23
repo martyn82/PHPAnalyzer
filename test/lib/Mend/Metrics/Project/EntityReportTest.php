@@ -20,11 +20,11 @@ class EntityReportTest extends \TestCase {
 		self::assertEquals( $emptyClasses, $report->classes() );
 
 		$methodArray = $this->getMock( '\Mend\Source\Code\Model\MethodArray' );
-		$methods = $this->getMock(
-			'\Mend\Metrics\Report\Partition\MethodPartition',
-			array(),
-			array( 10, 12, $methodArray )
-		);
+
+		$methods = $this->getMockBuilder( '\Mend\Metrics\Report\Partition\MethodPartition' )
+			->setConstructorArgs( array( 10, 12, $methodArray ) )
+			->getMock();
+
 		$report->methods( $methods );
 
 		self::assertEquals( $methods, $report->methods() );

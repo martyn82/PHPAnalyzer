@@ -15,7 +15,10 @@ class PackageHashTableTest extends \TestCase {
 	 */
 	public function testTypeCheck() {
 		$table = new PackageHashTable();
-		$method = $this->getMock( '\Mend\Source\Code\Model\Method', array(), array(), '', false );
+		$method = $this->getMockBuilder( '\Mend\Source\Code\Model\Method' )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$table[] = $method;
 
 		self::fail( "Expected a type error." );

@@ -107,7 +107,9 @@ class FrontControllerTest extends \TestCase {
 	}
 
 	private function createViewRenderer() {
-		return $this->getMock( '\Mend\Mvc\View\ViewRenderer', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Mvc\View\ViewRenderer' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createController( WebRequest $request, WebResponse $response ) {
@@ -131,20 +133,25 @@ class FrontControllerTest extends \TestCase {
 		$factory = $this->createFactory( null );
 
 		$controller = $this->getMock(
-				'\Mend\Mvc\Controller\PageController',
-				array( 'getControllerName', 'getActionName', 'dispatchAction' ),
-				array( $request, $response, $factory, $renderer, $context )
+			'\Mend\Mvc\Controller\PageController',
+			array( 'getControllerName', 'getActionName', 'dispatchAction' ),
+			array( $request, $response, $factory, $renderer, $context )
 		);
 
 		return $controller;
 	}
 
 	private function createContext() {
-		return $this->getMock( '\Mend\Mvc\Context', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Mvc\Context' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createFactory( PageController $controller = null ) {
-		$factory = $this->getMock( '\Mend\Mvc\ControllerFactory', array( 'createController' ), array( array() ) );
+		$factory = $this->getMockBuilder( '\Mend\Mvc\ControllerFactory' )
+			->setMethods( array( 'createController' ) )
+			->setConstructorArgs( array( array() ) )
+			->getMock();
 
 		if ( !is_null( $controller ) ) {
 			$controller->expects( self::any() )
@@ -163,7 +170,9 @@ class FrontControllerTest extends \TestCase {
 	}
 
 	private function createResponse( Url $url ) {
-		return $this->getMock( '\Mend\Network\Web\WebResponse', array(), array( $url ) );
+		return $this->getMockBuilder( '\Mend\Network\Web\WebResponse' )
+			->setConstructorArgs( array( $url ) )
+			->getMock();
 	}
 
 	private function createUrl( $urlString ) {

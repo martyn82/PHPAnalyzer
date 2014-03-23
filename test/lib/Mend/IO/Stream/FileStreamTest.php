@@ -30,13 +30,10 @@ abstract class FileStreamTest extends \TestCase {
 
 	protected function getFile() {
 		$name = $this->getProtocol() . '/tmp/foo';
-		$file = $this->getMock(
-			'\Mend\IO\FileSystem\File',
-			array( 'getName' ),
-			array( $name ),
-			'',
-			false
-		);
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setMethods( array( 'getName' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$file->expects( self::any() )
 			->method( 'getName' )

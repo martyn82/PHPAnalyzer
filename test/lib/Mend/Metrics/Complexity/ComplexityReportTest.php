@@ -14,7 +14,9 @@ class ComplexityReportTest extends \TestCase {
 		self::assertEquals( $empty, $report->veryHigh() );
 
 		$methods = $this->getMock( '\Mend\Source\Code\Model\MethodArray' );
-		$low = $this->getMock( '\Mend\Metrics\Report\Partition\MethodPartition', array(), array( 12, 10, $methods ) );
+		$low = $this->getMockBuilder( '\Mend\Metrics\Report\Partition\MethodPartition' )
+			->setConstructorArgs( array( 12, 10, $methods ) )
+			->getMock();
 		$report->low( $low );
 
 		self::assertEquals( $low, $report->low() );

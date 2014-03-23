@@ -18,22 +18,20 @@ class FileStreamReaderTest extends FileStreamTest {
 		if ( is_null( $file ) ) {
 			$name = $this->getProtocol() . '/tmp/foo';
 
-			$file = $this->getMock(
-				'\Mend\IO\FileSystem\File',
-				array( 'getName' ),
-				array( $name )
-			);
+			$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+				->setMethods( array( 'getName' ) )
+				->setConstructorArgs( array( $name ) )
+				->getMock();
 
 			$file->expects( self::any() )
 				->method( 'getName' )
 				->will( self::returnValue( $name ) );
 		}
 
-		return $this->getMock(
-			'\Mend\IO\Stream\FileStreamReader',
-			$methods,
-			array( $file )
-		);
+		return $this->getMockBuilder( '\Mend\IO\Stream\FileStreamReader' )
+				->setMethods( $methods )
+				->setConstructorArgs( array( $file ) )
+				->getMock();
 	}
 
 	public function testConstructor() {
@@ -99,13 +97,10 @@ class FileStreamReaderTest extends FileStreamTest {
 	public function testOpen() {
 		$name = $this->getProtocol() . '/tmp/foo';
 
-		$file = $this->getMock(
-			'\Mend\IO\FileSystem\File',
-			array( 'getName' ),
-			array( $name ),
-			'',
-			false
-		);
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setMethods( array( 'getName' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$file->expects( self::any() )
 			->method( 'getName' )

@@ -15,19 +15,20 @@ class ReportBuilderTest extends \TestCase {
 	}
 
 	public function testAccessors() {
-		$root = $this->getMock( '\Mend\IO\FileSystem\Directory', array( 'getName' ), array(), '', false );
+		$root = $this->getMockBuilder( '\Mend\IO\FileSystem\Directory' )
+			->setMethods( array( 'getName' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$root->expects( self::any() )
 			->method( 'getName' )
 			->will( self::returnValue( 'test:///foo' ) );
 
-		$project = $this->getMock(
-			'\Mend\Metrics\Project\Project',
-			array( 'getRoot' ),
-			array( 'key', 'name', $root ),
-			'',
-			false
-		);
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->setMethods( array( 'getRoot' ) )
+			->setConstructorArgs( array( 'key', 'name', $root ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$project->expects( self::any() )
 			->method( 'getRoot' )
@@ -53,10 +54,16 @@ class ReportBuilderTest extends \TestCase {
 		// second call is from cache
 		self::assertEquals( $factory, $builder->getFactoryByType( FactoryCreator::EXTENSION_PHP ) );
 
-		$phpNode = $this->getMock( '\Mend\Parser\Node\PHPNode', array(), array(), '', false );
+		$phpNode = $this->getMockBuilder( '\Mend\Parser\Node\PHPNode' )
+			->disableOriginalConstructor()
+			->getMock();
+
 		self::assertEquals( $factory, $builder->getFactoryByNode( $phpNode ) );
 
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array(), '', false );
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setMethods( array( 'getExtension' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$file->expects( self::any() )
 			->method( 'getExtension' )
@@ -82,10 +89,16 @@ class ReportBuilderTest extends \TestCase {
 	 * @expectedException \UnexpectedValueException
 	 */
 	public function testGetFactoryByUnknownNode() {
-		$project = $this->getMock( '\Mend\Metrics\Project\Project', array(), array(), '', false );
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$builder = new DummyReportBuilder( $project );
 
-		$node = $this->getMock( '\Mend\Parser\Node\Node', array(), array(), '', false );
+		$node = $this->getMockBuilder( '\Mend\Parser\Node\Node' )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$builder->getFactoryByNode( $node );
 
 		self::fail( "Test should have triggered an exception." );

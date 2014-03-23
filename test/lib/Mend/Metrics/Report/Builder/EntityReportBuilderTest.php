@@ -17,33 +17,35 @@ class EntityReportBuilderTest extends \TestCase {
 
 	public function testExtractEntities() {
 		$files = new FileArray();
-		$files[] = $this->getMock( '\Mend\IO\FileSystem\File', array(), array(), '', false );
-		$project = $this->getMock( '\Mend\Metrics\Project\Project', array(), array(), '', false );
+		$files[] = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$packages = new PackageArray();
 		$packages[] = Package::createDefault();
 
 		$methods = new MethodArray();
-		$methods[] = $this->getMock( '\Mend\Source\Code\Model\Method', array(), array(), '', false );
+		$methods[] = $this->getMockBuilder( '\Mend\Source\Code\Model\Method' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$classes = new ClassModelArray();
-		$classes[] = $this->getMock( '\Mend\Source\Code\Model\ClassModel', array(), array(), '', false );
+		$classes[] = $this->getMockBuilder( '\Mend\Source\Code\Model\ClassModel' )
+			->disableOriginalConstructor()
+			->getMock();
 
-		$sourceExtractor = $this->getMock(
-			'\Mend\Source\Extract\SourceFileExtractor',
-			array(),
-			array(),
-			'',
-			false
-		);
+		$sourceExtractor = $this->getMockBuilder( '\Mend\Source\Extract\SourceFileExtractor' )
+			->disableOriginalConstructor()
+			->getMock();
 
-		$entityExtractor = $this->getMock(
-			'\Mend\Source\Extract\EntityExtractor',
-			array( 'getPackages', 'getClasses', 'getMethods', 'getSourceExtractor' ),
-			array(),
-			'',
-			false
-		);
+		$entityExtractor = $this->getMockBuilder( '\Mend\Source\Extract\EntityExtractor' )
+			->setMethods( array( 'getPackages', 'getClasses', 'getMethods', 'getSourceExtractor' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$entityExtractor->expects( self::any() )
 			->method( 'getPackages' )

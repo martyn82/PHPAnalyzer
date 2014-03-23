@@ -5,7 +5,9 @@ class ProjectTest extends \TestCase {
 	public function testAccessors() {
 		$name = 'TestProject';
 		$key = 'test';
-		$root = $this->getMock( '\Mend\IO\FileSystem\Directory', array(), array( '/tmp/foo' ) );
+		$root = $this->getMockBuilder( '\Mend\IO\FileSystem\Directory' )
+			->setConstructorArgs( array( '/tmp/foo' ) )
+			->getMock();
 
 		$project = new Project( $name, $key, $root );
 

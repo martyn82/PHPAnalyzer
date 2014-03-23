@@ -177,12 +177,14 @@ PHP;
 	public function testUnitSizeAnalysis( array $lines, $startLine, $endLine, $size, $category ) {
 		$analyzer = $this->getMock(
 			'\Mend\Metrics\UnitSize\UnitSizeAnalyzer',
-			array( 'getSourceLines' ),
-			array()
+			array( 'getSourceLines' )
 		);
 		$analyzer->expects( self::any() )->method( 'getSourceLines' )->will( self::returnValue( $lines ) );
 
-		$node = $this->getMock( '\PHPParser_Node_Stmt_Function', array(), array( 'fooMethod' ) );
+		$node = $this->getMockBuilder( '\PHPParser_Node_Stmt_Function' )
+			->setConstructorArgs( array( 'fooMethod' ) )
+			->getMock();
+
 		$url = new SourceUrl( Url::createFromString( "file:///tmp/foo.php#({$startLine},0),({$endLine},10)" ) );
 		$method = new Method( new PHPNode( $node ), $url );
 
@@ -210,13 +212,11 @@ PHP;
 	public function testGetSourceLines() {
 		$name = \FileSystem::PROTOCOL . '://tmp/foo';
 
-		$file = $this->getMock(
-			'\Mend\IO\FileSystem\File',
-			array( 'getExtension', 'getName' ),
-			array( $name ),
-			'',
-			false
-		);
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setMethods( array( 'getExtension', 'getName' ) )
+			->setConstructorArgs( array( $name ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$file->expects( self::any() )
 			->method( 'getExtension' )

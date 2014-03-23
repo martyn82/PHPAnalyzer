@@ -10,7 +10,9 @@ class ClassPartitionTest extends \TestCase {
 		$relative = (float) mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
 
 		$classes = new ClassModelArray();
-		$classes[] = $this->getMock( '\Mend\Source\Code\Model\ClassModel', array(), array(), '', false );
+		$classes[] = $this->getMockBuilder( '\Mend\Source\Code\Model\ClassModel' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$partition = new ClassPartition( $absolute, $relative, $classes );
 

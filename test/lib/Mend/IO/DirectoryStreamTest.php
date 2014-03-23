@@ -7,16 +7,28 @@ use Mend\IO\FileSystem\FileSystem;
 
 class DirectoryStreamTest extends \TestCase {
 	public function testDirectoryReturns() {
-		$directory = $this->getMock( '\Mend\IO\FileSystem\Directory', array( 'getName' ), array( '/tmp' ) );
-		$directory->expects( self::any() )->method( 'getName' )->will( self::returnValue( '/tmp' ) );
+		$directory = $this->getMockBuilder( '\Mend\IO\FileSystem\Directory' )
+			->setMethods( array( 'getName' ) )
+			->setConstructorArgs( array( '/tmp' ) )
+			->getMock();
+
+		$directory->expects( self::any() )
+			->method( 'getName' )
+			->will( self::returnValue( '/tmp' ) );
 
 		$stream = new DirectoryStream( $directory );
 		self::assertEquals( $directory, $stream->getDirectory() );
 	}
 
 	public function testIteratorReturns() {
-		$directory = $this->getMock( '\Mend\IO\FileSystem\Directory', array( 'getName' ), array( '/tmp' ) );
-		$directory->expects( self::any() )->method( 'getName' )->will( self::returnValue( '/tmp' ) );
+		$directory = $this->getMockBuilder( '\Mend\IO\FileSystem\Directory' )
+			->setMethods( array( 'getName' ) )
+			->setConstructorArgs( array( '/tmp' ) )
+			->getMock();
+
+		$directory->expects( self::any() )
+			->method( 'getName' )
+			->will( self::returnValue( '/tmp' ) );
 
 		$stream = new DirectoryStream( $directory );
 		self::assertTrue( $stream->getIterator() instanceof \DirectoryIterator );
@@ -71,9 +83,8 @@ class DirectoryStreamTest extends \TestCase {
 	private function createIterator( $path, $fileName = null ) {
 		$isFile = !empty( $fileName );
 
-		$iterator = $this->getMock(
-			'\DirectoryIterator',
-			array(
+		$iterator = $this->getMockBuilder( '\DirectoryIterator' )
+			->setMethods( array(
 				'current',
 				'valid',
 				'next',
@@ -81,11 +92,10 @@ class DirectoryStreamTest extends \TestCase {
 				'isFile',
 				'getPath',
 				'getFilename'
-			),
-			array( $path . ( $isFile ? '' : FileSystem::DIRECTORY_SEPARATOR . $fileName ) ),
-			'',
-			false
-		);
+			) )
+			->setConstructorArgs( array( $path . ( $isFile ? '' : FileSystem::DIRECTORY_SEPARATOR . $fileName ) ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$iterator->expects( self::any() )->method( 'isDir' )->will( self::returnValue( !$isFile ) );
 		$iterator->expects( self::any() )->method( 'isFile' )->will( self::returnValue( $isFile ) );

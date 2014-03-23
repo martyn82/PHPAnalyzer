@@ -6,7 +6,11 @@ use Mend\Network\Web\Url;
 class CodeBlockTest extends \TestCase {
 	public function testAccessors() {
 		$url = Url::createFromString( 'file://' );
-		$sourceUrl = $this->getMock( '\Mend\Source\Code\Location\SourceUrl', array(), array( $url ) );
+
+		$sourceUrl = $this->getMockBuilder( '\Mend\Source\Code\Location\SourceUrl' )
+			->setConstructorArgs( array( $url ) )
+			->getMock();
+
 		$sourceLines = array( 1 => 'foo', 2 => 'bar' );
 		$index = mt_rand( 1, PHP_INT_MAX );
 

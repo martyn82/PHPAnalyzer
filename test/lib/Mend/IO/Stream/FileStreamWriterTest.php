@@ -7,11 +7,11 @@ use Mend\IO\FileSystem\File;
 
 class FileStreamWriterTest extends FileStreamTest {
 	public function testStreamInterface() {
-		$streamWriter = $this->getMock(
-			'\Mend\IO\Stream\StreamWriter',
-			array( 'open', 'close', 'write', 'isOpen', 'isClosed', 'isReadable', 'isWritable' ),
-			array()
-		);
+		$streamWriter = $this->getMockBuilder( '\Mend\IO\Stream\StreamWriter' )
+			->setMethods( array( 'open', 'close', 'write', 'isOpen', 'isClosed', 'isReadable', 'isWritable' ) )
+			->setConstructorArgs( array() )
+			->getMock();
+
 		$streamWriter->expects( self::once() )->method( 'open' );
 		$streamWriter->expects( self::once() )->method( 'close' );
 		$streamWriter->expects( self::exactly( 4 ) )->method( 'write' );
@@ -37,11 +37,10 @@ class FileStreamWriterTest extends FileStreamTest {
 			$file = $this->getFile();
 		}
 
-		return $this->getMock(
-			'\Mend\IO\Stream\FileStreamWriter',
-			$methods,
-			array( $file )
-		);
+		return $this->getMockBuilder( '\Mend\IO\Stream\FileStreamWriter' )
+			->setMethods( $methods )
+			->setConstructorArgs( array( $file ) )
+			->getMock();
 	}
 
 	public function testConstructor() {

@@ -14,7 +14,10 @@ class UnitSizeReportTest extends \TestCase {
 		self::assertEquals( $empty, $report->veryLarge() );
 
 		$methods = $this->getMock( '\Mend\Source\Code\Model\MethodArray' );
-		$small = $this->getMock( '\Mend\Metrics\Report\Partition\MethodPartition', array(), array( 12, 10, $methods ) );
+		$small = $this->getMockBuilder( '\Mend\Metrics\Report\Partition\MethodPartition' )
+			->setConstructorArgs( array( 12, 10, $methods ) )
+			->getMock();
+
 		$report->small( $small );
 
 		self::assertEquals( $small, $report->small() );

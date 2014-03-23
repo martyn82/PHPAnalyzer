@@ -163,13 +163,11 @@ class ApplicationTest extends \TestCase {
 
 
 	private function createContext( $contentType, $templateFileSuffix ) {
-		$context = $this->getMock(
-			'\Mend\Mvc\Context',
-			array( 'getCharacterSet', 'getTemplateFileSuffix', 'getContentType' ),
-			array( $contentType, $templateFileSuffix ),
-			'',
-			false
-		);
+		$context = $this->getMockBuilder( '\Mend\Mvc\Context' )
+			->setMethods( array( 'getCharacterSet', 'getTemplateFileSuffix', 'getContentType' ) )
+			->setConstructorArgs( array( $contentType, $templateFileSuffix ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$context->expects( self::any() )
 			->method( 'getCharacterSet' )
@@ -187,13 +185,9 @@ class ApplicationTest extends \TestCase {
 	}
 
 	private function createController() {
-		$controller = $this->getMock(
-			'\Mend\Mvc\Controller\PageController',
-			array(),
-			array(),
-			'',
-			false
-		);
+		$controller = $this->getMockBuilder( '\Mend\Mvc\Controller\PageController' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		return $controller;
 	}
@@ -205,21 +199,21 @@ class ApplicationTest extends \TestCase {
 		Context $context = null,
 		$contextClassName = null
 	) {
-		$config = $this->getMock(
-			'\Mend\Config\ConfigProvider',
-			array(),
-			array( 'getArray', 'getString' ),
-			'',
-			false
-		);
+		$config = $this->getMockBuilder( '\Mend\Config\ConfigProvider' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$config->expects( self::any() )
 			->method( 'getString' )
 			->will(
 				self::returnCallback(
-					function ( $key )
-						use ( $withFactory, $withFrontController, $customFrontController, $context, $contextClassName )
-					{
+					function ( $key ) use (
+						$withFactory,
+						$withFrontController,
+						$customFrontController,
+						$context,
+						$contextClassName
+					) {
 						switch ( $key ) {
 							case ApplicationConfigKey::CONTROLLER_FACTORY:
 								return $withFactory ? '\Mend\MockControllerFactory' : null;

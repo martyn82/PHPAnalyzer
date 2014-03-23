@@ -50,7 +50,9 @@ class LayoutTest extends \TestCase {
 	}
 
 	private function createCulture() {
-		return $this->getMock( '\Mend\I18n\Culture', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\I18n\Culture' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createFile( $location ) {

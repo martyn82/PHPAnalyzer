@@ -5,7 +5,9 @@ use Mend\IO\FileSystem\FileArray;
 
 class VolumeReportBuilderTest extends \TestCase {
 	public function testExtractVolume() {
-		$project = $this->getMock( '\Mend\Metrics\Project\Project', array(), array(), '', false );
+		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array( 'test:///foo.php' ) );
 

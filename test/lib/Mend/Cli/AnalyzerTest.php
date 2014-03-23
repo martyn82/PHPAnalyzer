@@ -48,7 +48,11 @@ INI;
 		$variableMapper = array( $this, 'variableMapper' );
 		$analyzer = new DummyAnalyzer( $options, $variableMapper );
 
-		$command = $this->getMock( '\Mend\Cli\Command\AnalyzeCommand', array( 'run' ), array(), '', false );
+		$command = $this->getMockBuilder( '\Mend\Cli\Command\AnalyzeCommand' )
+			->disableOriginalConstructor()
+			->setMethods( array( 'run' ) )
+			->getMock();
+
 		$command->expects( self::any() )
 			->method( 'run' )
 			->will( self::returnValue( new CommandResult( 'foo', Status::STATUS_OK ) ) );

@@ -111,7 +111,9 @@ class DataMapperTest extends \TestCase {
 	}
 
 	private function createResultSet() {
-		return $this->getMock( '\Mend\Data\Storage\ResultSet', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\Data\Storage\ResultSet' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createCriteria() {

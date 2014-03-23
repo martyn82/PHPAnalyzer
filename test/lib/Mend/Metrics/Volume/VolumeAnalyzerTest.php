@@ -113,7 +113,11 @@ PHP;
 	}
 
 	public function testGetSourceExtractors() {
-		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array(), '', false );
+		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->setMethods( array( 'getExtension' ) )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$file->expects( self::any() )
 			->method( 'getExtension' )
 			->will( self::returnValue( 'php' ) );

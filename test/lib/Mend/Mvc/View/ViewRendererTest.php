@@ -93,7 +93,9 @@ class ViewRendererTest extends \TestCase {
 	}
 
 	private function createFile() {
-		return $this->getMock( '\Mend\IO\FileSystem\File', array(), array(), '', false );
+		return $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
+			->disableOriginalConstructor()
+			->getMock();
 	}
 
 	private function createViewOptions( $enabled ) {

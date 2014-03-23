@@ -29,13 +29,11 @@ INI;
 	 * @param mixed $expectedValue
 	 */
 	public function testReadIni( $iniContents, $searchKey, $expectedValue ) {
-		$stream = $this->getMock(
-			'\Mend\IO\Stream\FileStreamReader',
-			array( 'read', 'open', 'close' ),
-			array(),
-			'',
-			false
-		);
+		$stream = $this->getMockBuilder( '\Mend\IO\Stream\FileStreamReader' )
+			->disableOriginalConstructor()
+			->setMethods( array( 'read', 'open', 'close' ) )
+			->getMock();
+
 		$stream->expects( self::any() )
 			->method( 'read' )
 			->will( self::returnValue( $iniContents ) );
@@ -50,13 +48,11 @@ INI;
 	 * @expectedException Mend\Config\ConfigurationException
 	 */
 	public function testReadIniNonExistent() {
-		$stream = $this->getMock(
-			'\Mend\IO\Stream\FileStreamReader',
-			array( 'read', 'open', 'close' ),
-			array(),
-			'',
-			false
-		);
+		$stream = $this->getMockBuilder( '\Mend\IO\Stream\FileStreamReader' )
+			->disableOriginalConstructor()
+			->setMethods( array( 'read', 'open', 'close' ) )
+			->getMock();
+
 		$stream->expects( self::any() )
 			->method( 'read' )
 			->will( self::returnValue( self::$INI_CONTENTS ) );
@@ -77,13 +73,10 @@ INI;
 	}
 
 	public function testReload() {
-		$stream = $this->getMock(
-			'\Mend\IO\Stream\FileStreamReader',
-			array( 'read', 'open', 'close', 'isOpen' ),
-			array(),
-			'',
-			false
-		);
+		$stream = $this->getMockBuilder( '\Mend\IO\Stream\FileStreamReader' )
+			->disableOriginalConstructor()
+			->setMethods( array( 'read', 'open', 'close', 'isOpen' ) )
+			->getMock();
 
 		$contents = self::$INI_CONTENTS; // first run
 

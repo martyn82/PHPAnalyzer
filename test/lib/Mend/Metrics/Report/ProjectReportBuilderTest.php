@@ -11,7 +11,11 @@ class ProjectReportBuilderTest extends \TestCase {
 	}
 
 	public function testProjectReportBuilder() {
-		$root = $this->getMock( '\Mend\IO\FileSystem\Directory', array( 'getName' ), array( 'test:///foo' ) );
+		$root = $this->getMockBuilder( '\Mend\IO\FileSystem\Directory' )
+			->setMethods( array( 'getName' ) )
+			->setConstructorArgs( array( 'test:///foo' ) )
+			->getMock();
+
 		$root->expects( self::any() )
 			->method( 'getName' )
 			->will( self::returnValue( 'test:///foo' ) );
