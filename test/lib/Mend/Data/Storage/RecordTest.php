@@ -13,6 +13,8 @@ class RecordTest extends \TestCase {
 
 		self::assertEquals( 1893, $record->getValue( 'id' ) );
 		self::assertEquals( 'foo', $record->getValue( 'name' ) );
+
+		self::assertEquals( $fields, $record->getFields() );
 	}
 
 	/**

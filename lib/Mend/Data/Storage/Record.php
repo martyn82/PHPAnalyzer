@@ -40,4 +40,13 @@ class Record {
 
 		return $this->fields->get( $field );
 	}
+
+	/**
+	 * Retrieves all fields.
+	 *
+	 * @return Map
+	 */
+	public function getFields() {
+		return $this->fields;
+	}
 }
