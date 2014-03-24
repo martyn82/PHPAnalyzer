@@ -15,6 +15,10 @@ class RecordTest extends \TestCase {
 		self::assertEquals( 'foo', $record->getValue( 'name' ) );
 
 		self::assertEquals( $fields, $record->getFields() );
+
+		$record->setValue( 'name', 'bar' );
+
+		self::assertEquals( 'bar', $record->getValue( 'name' ) );
 	}
 
 	/**
@@ -28,9 +32,18 @@ class RecordTest extends \TestCase {
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */
-	public function testInvalidField() {
+	public function testGetInvalidField() {
 		$fields = new Map( array( 'id' => 1 ) );
 		$record = new Record( $fields );
 		$record->getValue( 'foo' );
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testSetInvalidField() {
+		$fields = new Map( array( 'id' => 1 ) );
+		$record = new Record( $fields );
+		$record->setValue( 'foo', 'bar' );
 	}
 }

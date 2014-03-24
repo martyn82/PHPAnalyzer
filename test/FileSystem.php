@@ -19,6 +19,8 @@ class FileSystem {
 
 	private static $dirCursor = 0;
 
+	private static $statModeResult = null;
+
 	/**
 	 * @var resource
 	 */
@@ -33,6 +35,7 @@ class FileSystem {
 		self::$filesize = 1;
 		self::$opendirResult = true;
 		self::$readdirResult = array( '.' => self::DIR_MODE, '..' => self::FILE_MODE );
+		self::$statModeResult = null;
 
 		self::$dirCursor = 0;
 	}
@@ -66,6 +69,10 @@ class FileSystem {
 		self::$readdirResult = $result;
 	}
 
+	public static function setStatModeResult( $result ) {
+		self::$statModeResult = $result;
+	}
+
 	public function stream_open( $path, $mode, $options, & $openedPath ) {
 		return self::$fopenResult;
 	}
@@ -79,7 +86,7 @@ class FileSystem {
 			'size' => self::$filesize,
 			'mode' => ( isset( self::$readdirResult[ basename( $path ) ] )
 				? self::$readdirResult[ basename( $path ) ]
-				: null )
+				: self::$statModeResult )
 		);
 	}
 

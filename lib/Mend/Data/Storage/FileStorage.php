@@ -1,78 +1,87 @@
 <?php
 namespace Mend\Data\Storage;
 
-use Mend\IO\FileSystem\Directory;
+use Mend\Collections\Map;
+use Mend\Data\DataPage;
+use Mend\Data\SortOptions;
+use Mend\Data\Storage\Handler\FileStorageHandler;
 
 class FileStorage extends Storage {
 	/**
-	 * @var Directory
+	 * @var FileStorageHandler
 	 */
-	private $directory;
+	private $handler;
 
 	/**
 	 * Constructs a new FileStorage instance.
 	 *
-	 * @param Directory $directory
+	 * @param FileStorageHandler $handler
 	 */
-	public function __construct( Directory $directory ) {
-		$this->directory = $directory;
+	public function __construct( FileStorageHandler $handler ) {
+		$this->handler = $handler;
 	}
 
 	/**
-	 * @see Storage::read()
+	 * @see Storage::select()
+	 *
+	 * @throws \InvalidArgumentException
 	 */
-	public function read( $type, $id ) {
-		$dataDir = $this->directory;
-		$stream = new DirectoryStream( $dataDir );
-		$dirIterator = $stream->getIterator();
-		$dataFiles = new FileArray();
-
-		foreach ( $dirIterator as $iterator ) {
-			if ( !$iterator->isFile() || $iterator->getExtension() != 'json' ) {
-				continue;
-			}
-
-			if ( !is_null( $id ) && substr( $iterator->getFilename(), 0, strlen( $id ) ) != $id ) {
-				continue;
-			}
-
-			if ( $iterator->getSize() == 0 ) {
-				continue;
-			}
-
-			$dataFiles[] = new File(
-				$iterator->getPath()
-				. FileSystem::DIRECTORY_SEPARATOR
-				. $iterator->getFilename()
-			);
+	public function select( $entity, Map $criteria, SortOptions $sortOptions, DataPage $dataPage ) {
+		if ( !$this->handler->entityExists( $entity ) ) {
+			throw new \InvalidArgumentException( "Entity does not exist: '{$entity}'." );
 		}
 
-		$projects = array();
+		$records = $this->handler->find( $entity );
+		$totalCount = $records->size();
 
-		foreach ( $dataFiles as $file ) {
-			/* @var $file File */
-			$reader = new FileStreamReader( $file );
-			$reader->open();
-			$contents = $reader->read();
-			$reader->close();
-
-			$report = json_decode( $contents, true );
-
-			if ( !isset( $projects[ $report[ 'project' ][ 'key' ] ] ) ) {
-				$projects[ $report[ 'project' ][ 'key' ] ] = array( $report );
-			}
-			else {
-				$projects[ $report[ 'project' ][ 'key' ] ][] = $report;
-			}
-		}
-
-		return $projects;
+		return new ResultSet( $records, $dataPage, $totalCount );
 	}
 
-	public function create() {}
-	public function update() {}
-	public function delete() {}
-	public function search() {}
+	/**
+	 * @see Storage::insert()
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function insert( $entity, RecordSet $records ) {
+		if ( !$this->handler->entityExists( $entity ) ) {
+			throw new \InvalidArgumentException( "Entity does not exist: '{$entity}'." );
+		}
 
-	private function sort() {}
+		$records = $this->handler->save( $entity, $records );
+		$totalCount = $records->size();
+
+		return new ResultSet( $records, new DataPage(), $totalCount );
+	}
+
+	/**
+	 * @see Storage::update()
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function update( $entity, RecordSet $records ) {
+		if ( !$this->handler->entityExists( $entity ) ) {
+			throw new \InvalidArgumentException( "Entity does not exist: '{$entity}'." );
+		}
+
+		$records = $this->handler->save( $entity, $records );
+		$totalCount = $records->size();
+
+		return new ResultSet( $records, new DataPage(), $totalCount );
+	}
+
+	/**
+	 * @see Storage::delete()
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function delete( $entity, RecordSet $records ) {
+		if ( !$this->handler->entityExists( $entity ) ) {
+			throw new \InvalidArgumentException( "Entity does not exist: '{$entity}'." );
+		}
+
+		$records = $this->handler->delete( $entity, $records );
+		$totalCount = $records->size();
+
+		return new ResultSet( $records, new DataPage(), $totalCount );
+	}
 }

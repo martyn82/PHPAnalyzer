@@ -42,6 +42,22 @@ class Record {
 	}
 
 	/**
+	 * Sets a field value.
+	 *
+	 * @param string $field
+	 * @param mixed $value
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function setValue( $field, $value ) {
+		if ( !$this->fields->hasKey( $field ) ) {
+			throw new \InvalidArgumentException( "Field does not exist in record: '{$field}'." );
+		}
+
+		$this->fields->set( $field, $value );
+	}
+
+	/**
 	 * Retrieves all fields.
 	 *
 	 * @return Map

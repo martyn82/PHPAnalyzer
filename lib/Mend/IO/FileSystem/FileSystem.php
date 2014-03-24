@@ -21,6 +21,11 @@ interface FileSystem {
 	function exists();
 
 	/**
+	 * Deletes this file system object.
+	 */
+	function delete();
+
+	/**
 	 * Determines whether the file system object is a directory.
 	 *
 	 * @return boolean

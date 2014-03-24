@@ -62,6 +62,13 @@ class Directory implements FileSystem {
 	}
 
 	/**
+	 * @see FileSystem::delete()
+	 */
+	public function delete() {
+		return \rmdir( $this->location );
+	}
+
+	/**
 	 * @see FileSystem::__toString()
 	 */
 	public function __toString() {

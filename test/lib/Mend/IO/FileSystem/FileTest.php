@@ -4,8 +4,16 @@ namespace Mend\IO\FileSystem;
 use Mend\IO\FileSystem\File;
 
 class FileTest extends \TestCase {
+	public function setUp() {
+		\FileSystem::resetResults();
+	}
+
+	public function tearDown() {
+		\FileSystem::resetResults();
+	}
+
 	public function testNewFileValid() {
-		$file = new File( '/tmp/some' );
+		$file = new File( 'test:///tmp/some' );
 		self::assertTrue( $file instanceof File );
 	}
 
@@ -18,46 +26,58 @@ class FileTest extends \TestCase {
 	}
 
 	public function testFileName() {
-		$location = '/tmp/file';
+		$location = 'test:///tmp/file';
 		$file = new File( $location );
 		self::assertEquals( $location, $file->getName() );
 	}
 
 	public function testFileExtension() {
-		$location = '/tmp/file';
+		$location = 'test:///tmp/file';
 		$file = new File( $location );
 		self::assertEquals( '', $file->getExtension() );
 
-		$location = '/tmp/file.txt';
+		$location = 'test:///tmp/file.txt';
 		$file = new File( $location );
 		self::assertEquals( 'txt', $file->getExtension() );
 
-		$location = '/tmp/file.default.properties';
+		$location = 'test:///tmp/file.default.properties';
 		$file = new File( $location );
 		self::assertEquals( 'properties', $file->getExtension() );
 	}
 
 	public function testFileToString() {
-		$location = '/tmp/file';
+		$location = 'test:///tmp/file';
 		$file = new File( $location );
 		self::assertEquals( $location, (string) $file );
 	}
 
 	public function testFileExists() {
-		$location = '/tmp';
+		$location = 'test:///tmp';
 		$file = new File( $location );
 		self::assertTrue( $file->exists() );
 	}
 
 	public function testFileIsDirectory() {
-		$location = '/tmp';
+		\FileSystem::setStatModeResult( \FileSystem::FILE_MODE );
+
+		$location = 'test:///tmp';
 		$file = new File( $location );
-		self::assertTrue( $file->isDirectory() );
+		self::assertFalse( $file->isDirectory() );
 	}
 
 	public function testFileIsFile() {
-		$location = '/tmp';
+		\FileSystem::setStatModeResult( \FileSystem::FILE_MODE );
+
+		$location = 'test:///tmp';
 		$file = new File( $location );
-		self::assertFalse( $file->isFile() );
+		self::assertTrue( $file->isFile() );
+	}
+
+	public function testDelete() {
+		$location = 'test:///tmp/file.foo';
+		$file = new File( $location );
+		$file->delete();
+
+		self::assertTrue( true );
 	}
 }

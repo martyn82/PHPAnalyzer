@@ -68,6 +68,13 @@ class File implements FileSystem {
 	}
 
 	/**
+	 * @see FileSystem::delete()
+	 */
+	public function delete() {
+		return \unlink( $this->location );
+	}
+
+	/**
 	 * @see FileSystem::__toString()
 	 */
 	public function __toString() {
