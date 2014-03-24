@@ -7,14 +7,7 @@ use Mend\Data\DataMapper;
 use Mend\Data\DataPage;
 use Mend\Data\Repository;
 use Mend\Data\SortOptions;
-
-use Mend\IO\DirectoryStream;
 use Mend\IO\FileSystem\Directory;
-use Mend\IO\FileSystem\File;
-use Mend\IO\FileSystem\FileArray;
-use Mend\IO\FileSystem\FileSystem;
-use Mend\IO\Stream\FileStreamReader;
-
 use Mend\Metrics\Project\EntityReport;
 use Mend\Metrics\Project\ProjectReport;
 use Mend\Metrics\Report\ReportType;

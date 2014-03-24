@@ -50,4 +50,11 @@ class DirectoryTest extends \TestCase {
 		$directory = new Directory( $location );
 		self::assertFalse( $directory->isFile() );
 	}
+
+	public function testIterator() {
+		$location = '/tmp';
+		$directory = new Directory( $location );
+		$iterator = $directory->iterator();
+		self::assertInstanceOf( '\DirectoryIterator', $iterator );
+	}
 }

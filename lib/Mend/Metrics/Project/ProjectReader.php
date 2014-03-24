@@ -2,7 +2,6 @@
 namespace Mend\Metrics\Project;
 
 use Mend\Collections\Map;
-use Mend\IO\DirectoryStream;
 use Mend\IO\FileSystem\Directory;
 use Mend\IO\FileSystem\File;
 use Mend\IO\FileSystem\FileArray;
@@ -75,8 +74,7 @@ class ProjectReader {
 	 * @return FileArray
 	 */
 	private function getFilesFromDirectory( Directory $directory, array $extensions = null ) {
-		$stream = new DirectoryStream( $directory );
-		$files = $this->getFilesFromStream( $stream->getIterator(), $extensions );
+		$files = $this->getFilesFromStream( $directory->iterator(), $extensions );
 		return new FileArray( $files );
 	}
 

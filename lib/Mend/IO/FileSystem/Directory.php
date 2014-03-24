@@ -67,4 +67,13 @@ class Directory implements FileSystem {
 	public function __toString() {
 		return $this->location;
 	}
+
+	/**
+	 * Retrieves an iterator to iterate over the contents.
+	 *
+	 * @return \DirectoryIterator
+	 */
+	public function iterator() {
+		return new \DirectoryIterator( $this->getName() );
+	}
 }

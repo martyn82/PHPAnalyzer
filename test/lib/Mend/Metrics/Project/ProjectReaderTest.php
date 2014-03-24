@@ -42,6 +42,10 @@ class ProjectReaderTest extends \TestCase {
 			->method( 'getName' )
 			->will( self::returnValue( $this->getDirName() ) );
 
+		$root->expects( self::any() )
+			->method( 'iterator' )
+			->will( self::returnValue( new \DirectoryIterator( $this->getDirName() ) ) );
+
 		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
 			->setMethods( array( 'getRoot' ) )
 			->setConstructorArgs( array( 'foo', 'bar', $root ) )
@@ -78,6 +82,10 @@ class ProjectReaderTest extends \TestCase {
 		$root->expects( self::any() )
 			->method( 'getName' )
 			->will( self::returnValue( $this->getDirName() ) );
+
+		$root->expects( self::any() )
+			->method( 'iterator' )
+			->will( self::returnValue( new \DirectoryIterator( $this->getDirName() ) ) );
 
 		$project = $this->getMockBuilder( '\Mend\Metrics\Project\Project' )
 			->setMethods( array( 'getRoot' ) )

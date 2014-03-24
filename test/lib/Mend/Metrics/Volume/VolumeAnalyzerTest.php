@@ -1,7 +1,6 @@
 <?php
 namespace Mend\Metrics\Volume;
 
-use Mend\IO\DirectoryStream;
 use Mend\IO\FileSystem\Directory;
 use Mend\IO\FileSystem\File;
 use Mend\IO\FileSystem\FileArray;
