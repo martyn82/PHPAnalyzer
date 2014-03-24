@@ -13,7 +13,8 @@ class Map {
 	 * @param array $data
 	 */
 	public function __construct( array $data = array() ) {
-		$this->data = $data;
+		$this->data = array();
+		$this->addAll( $data );
 	}
 
 	/**
