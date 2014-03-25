@@ -48,7 +48,7 @@ class DirectoryTest extends \TestCase {
 	}
 
 	public function testDirectoryIsDirectory() {
-		\FileSystem::setStatModeResult( \FileSystem::DIR_MODE );
+		\FileSystem::setStatModeResult( octdec( \FileSystem::MODE_DIRECTORY ) );
 
 		$location = 'test:///tmp';
 		$directory = new Directory( $location );
@@ -72,6 +72,7 @@ class DirectoryTest extends \TestCase {
 		$location = 'test:///tmp';
 		$directory = new Directory( $location );
 		$directory->delete();
+
 		self::assertTrue( true );
 	}
 }

@@ -1,7 +1,6 @@
 <?php
 namespace Mend\Cli;
 
-use Mend\IO\Stream\IsReadable;
 use Mend\Logging\Logger;
 use Mend\Logging\StreamHandler;
 use Mend\IO\Stream\NullStreamWriter;
@@ -19,13 +18,12 @@ memory = 200M
 INI;
 
 	public function setUp() {
-		IsReadable::$result = true;
 		\FileSystem::resetResults();
+		\FileSystem::setStatModeResult( octdec( \FileSystem::MODE_FILE ) + octdec( \FileSystem::MODE_READ_ALL ) );
 		Logger::registerHandler( new StreamHandler( new NullStreamWriter() ) );
 	}
 
 	public function tearDown() {
-		IsReadable::$result = false;
 		\FileSystem::resetResults();
 	}
 

@@ -92,6 +92,8 @@ class UnitSizeReportBuilderTest extends \TestCase {
 
 		$builder = new UnitSizeReportBuilder( $project );
 
+		\FileSystem::setStatModeResult( octdec( \FileSystem::MODE_FILE ) + octdec( \FileSystem::MODE_READ_ALL ) );
+
 		$self = $builder->analyzeUnitSize( $entityReport, $volumeReport );
 
 		self::assertEquals( $builder, $self );

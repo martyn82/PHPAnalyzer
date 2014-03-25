@@ -2,20 +2,19 @@
 namespace Mend\Data\Storage\Handler;
 
 use Mend\Collections\Map;
-use Mend\IO\Stream\IsReadable;
-use Mend\IO\Stream\IsWritable;
 
 class DefaultFileStorageHandlerTest extends \TestCase {
 	public function setUp() {
 		\FileSystem::resetResults();
-		IsReadable::$result = null;
-		IsWritable::$result = null;
+		\FileSystem::setStatModeResult(
+			octdec( \FileSystem::MODE_FILE )
+			+ octdec( \FileSystem::MODE_READ_ALL )
+			+ octdec( \FileSystem::MODE_WRITE_ALL )
+		);
 	}
 
 	public function tearDown() {
 		\FileSystem::resetResults();
-		IsReadable::$result = null;
-		IsWritable::$result = null;
 	}
 
 	public function testEntityExists() {
@@ -65,7 +64,6 @@ class DefaultFileStorageHandlerTest extends \TestCase {
 			->method( 'iterator' )
 			->will( self::returnValue( $iterator ) );
 
-		IsReadable::$result = true;
 		\FileSystem::setFReadResult(
 			json_encode(
 				array( 'id' => 42, 'foo' => 'bar', 'baz' => 'bow' ),
@@ -80,8 +78,6 @@ class DefaultFileStorageHandlerTest extends \TestCase {
 	}
 
 	public function testSave() {
-		IsWritable::$result = true;
-
 		$recordSet = $this->createRecordSet();
 		$records = $this->createRecords( 1 );
 
@@ -101,6 +97,8 @@ class DefaultFileStorageHandlerTest extends \TestCase {
 			->method( 'getName' )
 			->will( self::returnValue( 'test:///foo' ) );
 
+		\FileSystem::setFReadResult( '{"foo": "bar"}' );
+
 		$handler = new DefaultFileStorageHandler( $entities );
 		$result = $handler->save( 'foo', $recordSet );
 
@@ -108,8 +106,6 @@ class DefaultFileStorageHandlerTest extends \TestCase {
 	}
 
 	public function testDelete() {
-		IsWritable::$result = true;
-
 		$recordSet = $this->createRecordSet();
 		$records = $this->createRecords( 1 );
 
@@ -190,9 +186,15 @@ class DefaultFileStorageHandlerTest extends \TestCase {
 		$records = array();
 
 		for ( $i = 0; $i < $count; $i++ ) {
-			$records[] = $this->getMockBuilder( '\Mend\Data\Storage\Record' )
+			$record = $this->getMockBuilder( '\Mend\Data\Storage\Record' )
 				->disableOriginalConstructor()
 				->getMock();
+
+			$record->expects( self::any() )
+				->method( 'getFields' )
+				->will( self::returnValue( new Map() ) );
+
+			$records[] = $record;
 		}
 
 		return $records;

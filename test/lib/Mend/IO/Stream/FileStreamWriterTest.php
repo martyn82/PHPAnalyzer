@@ -173,8 +173,6 @@ class FileStreamWriterTest extends FileStreamTest {
 		$file = $this->getFile();
 		$writer = new FileStreamWriter( $file );
 
-		IsWritable::$result = true;
-
 		self::assertTrue( $writer->isWritable() );
 	}
 }

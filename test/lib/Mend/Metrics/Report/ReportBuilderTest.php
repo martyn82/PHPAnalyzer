@@ -76,9 +76,9 @@ class ReportBuilderTest extends \TestCase {
 
 		\FileSystem::setReadDirResult(
 			array(
-				'.' => \FileSystem::DIR_MODE,
-				'..' => \FileSystem::DIR_MODE,
-				'foo' => \FileSystem::FILE_MODE
+				'.' => \FileSystem::MODE_DIRECTORY,
+				'..' => \FileSystem::MODE_DIRECTORY,
+				'foo' => \FileSystem::MODE_FILE
 			)
 		);
 

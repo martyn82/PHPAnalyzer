@@ -5,7 +5,7 @@ abstract class HandleStreamTest extends \TestCase {
 	private $handle;
 
 	protected function createHandle( $mode ) {
-		$fileName = \FileSystem::PROTOCOL . ':///foo';
+		$fileName = \FileSystem::SCHEME . ':///foo';
 		$this->handle = fopen( $fileName, $mode );
 		return $this->handle;
 	}

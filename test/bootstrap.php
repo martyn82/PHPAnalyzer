@@ -6,7 +6,6 @@ define( 'SERVICE_DIR', \realpath( __DIR__ . "/../service" ) );
 
 require_once __DIR__ . "/TestCase.php";
 require_once __DIR__ . "/FileSystem.php";
-require_once __DIR__ . "/FileSystemExt.php";
 
 if ( !isset( $autoLoader ) ) {
 	$autoLoader = new \Autoloader();

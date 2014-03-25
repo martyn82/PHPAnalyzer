@@ -4,7 +4,7 @@ namespace Mend\IO\Stream;
 use Mend\IO\FileSystem\File;
 
 abstract class FileStreamTest extends \TestCase {
-	const FS_PROTOCOL = \FileSystem::PROTOCOL;
+	const FS_PROTOCOL = \FileSystem::SCHEME;
 
 	public function setUp() {
 		\FileSystem::resetResults();
@@ -31,13 +31,21 @@ abstract class FileStreamTest extends \TestCase {
 	protected function getFile() {
 		$name = $this->getProtocol() . '/tmp/foo';
 		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
-			->setMethods( array( 'getName' ) )
+			->setMethods( array( 'getName', 'canRead', 'canWrite' ) )
 			->disableOriginalConstructor()
 			->getMock();
 
 		$file->expects( self::any() )
 			->method( 'getName' )
 			->will( self::returnValue( $name ) );
+
+		$file->expects( self::any() )
+			->method( 'canRead' )
+			->will( self::returnValue( true ) );
+
+		$file->expects( self::any() )
+			->method( 'canWrite' )
+			->will( self::returnValue( true ) );
 
 		return $file;
 	}

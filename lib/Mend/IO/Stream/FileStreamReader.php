@@ -100,6 +100,6 @@ class FileStreamReader extends StreamReader {
 	 * @see Stream::isReadable()
 	 */
 	public function isReadable() {
-		return is_readable( $this->file->getName() );
+		return $this->file->canRead();
 	}
 }

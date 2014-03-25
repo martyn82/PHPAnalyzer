@@ -58,18 +58,20 @@ class FileTest extends \TestCase {
 	}
 
 	public function testFileIsDirectory() {
-		\FileSystem::setStatModeResult( \FileSystem::FILE_MODE );
+		\FileSystem::setStatModeResult( octdec( \FileSystem::MODE_FILE ) );
 
 		$location = 'test:///tmp';
 		$file = new File( $location );
+
 		self::assertFalse( $file->isDirectory() );
 	}
 
 	public function testFileIsFile() {
-		\FileSystem::setStatModeResult( \FileSystem::FILE_MODE );
+		\FileSystem::setStatModeResult( octdec( \FileSystem::MODE_FILE ) );
 
 		$location = 'test:///tmp';
 		$file = new File( $location );
+
 		self::assertTrue( $file->isFile() );
 	}
 
@@ -79,5 +81,23 @@ class FileTest extends \TestCase {
 		$file->delete();
 
 		self::assertTrue( true );
+	}
+
+	public function testCanWrite() {
+		\FileSystem::setStatModeResult( octdec( \FileSystem::MODE_FILE ) + octdec( \FileSystem::MODE_WRITE_ALL ) );
+
+		$location = 'test:///tmp/file';
+		$file = new File( $location );
+
+		self::assertTrue( $file->canWrite() );
+	}
+
+	public function testCanRead() {
+		\FileSystem::setStatModeResult( octdec( \FileSystem::MODE_FILE ) + octdec( \FileSystem::MODE_READ_ALL ) );
+
+		$location = 'test:///tmp/file';
+		$file = new File( $location );
+
+		self::assertTrue( $file->canRead() );
 	}
 }

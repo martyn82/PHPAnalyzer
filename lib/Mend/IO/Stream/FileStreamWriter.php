@@ -100,6 +100,6 @@ class FileStreamWriter extends StreamWriter {
 	 * @see Stream::isWritable()
 	 */
 	public function isWritable() {
-		return is_writable( $this->file->getName() );
+		return $this->file->canWrite();
 	}
 }

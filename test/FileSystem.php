@@ -2,20 +2,24 @@
 
 $wrappers = stream_get_wrappers();
 
-if ( !in_array( FileSystem::PROTOCOL, $wrappers ) ) {
-	stream_wrapper_register( FileSystem::PROTOCOL, 'FileSystem' );
+if ( !in_array( \FileSystem::SCHEME, $wrappers ) ) {
+	stream_wrapper_register( \FileSystem::SCHEME, 'FileSystem' );
 }
 
 class FileSystem {
-	const PROTOCOL = 'test';
-	const DIR_MODE = 040777;
-	const FILE_MODE = 0100666;
+	const SCHEME = 'test';
+
+	const MODE_DIRECTORY = '0040000';
+	const MODE_FILE = '0100000';
+
+	const MODE_READ_ALL = '00444';
+	const MODE_WRITE_ALL = '00222';
 
 	private static $fopenResult = true;
 	private static $freadResult = null;
 	private static $filesize = 1;
 	private static $opendirResult = true;
-	private static $readdirResult = array( '.' => self::DIR_MODE, '..' => self::FILE_MODE );
+	private static $readdirResult = array();
 
 	private static $dirCursor = 0;
 
@@ -30,12 +34,15 @@ class FileSystem {
 	 * Resets custom results to their defaults.
 	 */
 	public static function resetResults() {
+		self::$statModeResult = null;
 		self::$fopenResult = true;
 		self::$freadResult = null;
 		self::$filesize = 1;
 		self::$opendirResult = true;
-		self::$readdirResult = array( '.' => self::DIR_MODE, '..' => self::FILE_MODE );
-		self::$statModeResult = null;
+		self::$readdirResult = array(
+			'.' => self::MODE_DIRECTORY,
+			'..' => self::MODE_DIRECTORY
+		);
 
 		self::$dirCursor = 0;
 	}
@@ -85,13 +92,16 @@ class FileSystem {
 		return array(
 			'size' => self::$filesize,
 			'mode' => ( isset( self::$readdirResult[ basename( $path ) ] )
-				? self::$readdirResult[ basename( $path ) ]
+				? octdec( self::$readdirResult[ basename( $path ) ] )
 				: self::$statModeResult )
 		);
 	}
 
 	public function dir_readdir() {
-		if ( count( self::$readdirResult ) == 0 || self::$dirCursor > count( self::$readdirResult ) - 1 ) {
+		if (
+			count( self::$readdirResult ) == 0
+			|| self::$dirCursor > count( self::$readdirResult ) - 1
+		) {
 			return false;
 		}
 

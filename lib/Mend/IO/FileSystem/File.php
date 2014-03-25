@@ -75,6 +75,24 @@ class File implements FileSystem {
 	}
 
 	/**
+	 * Returns true if the file is writable.
+	 *
+	 * @return boolean
+	 */
+	public function canWrite() {
+		return \is_writable( $this->location );
+	}
+
+	/**
+	 * Returns true if the file is readable.
+	 *
+	 * @return boolean
+	 */
+	public function canRead() {
+		return \is_readable( $this->location );
+	}
+
+	/**
 	 * @see FileSystem::__toString()
 	 */
 	public function __toString() {

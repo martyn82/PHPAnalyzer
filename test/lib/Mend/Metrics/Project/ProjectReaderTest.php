@@ -13,7 +13,7 @@ class ProjectReaderTest extends \TestCase {
 	}
 
 	private function getDirName() {
-		return \FileSystem::PROTOCOL . ':///foo';
+		return \FileSystem::SCHEME . ':///foo';
 	}
 
 	public function testConstructor() {
@@ -57,8 +57,8 @@ class ProjectReaderTest extends \TestCase {
 
 		$entries = array(
 			basename( $this->getDirName() ) => array(
-				'.' => \FileSystem::DIR_MODE,
-				'..' => \FileSystem::DIR_MODE
+				'.' => \FileSystem::MODE_DIRECTORY,
+				'..' => \FileSystem::MODE_DIRECTORY
 			)
 		);
 
@@ -99,11 +99,11 @@ class ProjectReaderTest extends \TestCase {
 		$rootName = $this->getDirName();
 
 		$entries = array(
-			'.' => \FileSystem::DIR_MODE,
-			'..' => \FileSystem::DIR_MODE,
-			'bar.php' => \FileSystem::FILE_MODE,
-			'bar.ext' => \FileSystem::FILE_MODE,
-			'baz' => \FileSystem::DIR_MODE
+			'.' => \FileSystem::MODE_DIRECTORY,
+			'..' => \FileSystem::MODE_DIRECTORY,
+			'bar.php' => \FileSystem::MODE_FILE,
+			'bar.ext' => \FileSystem::MODE_FILE,
+			'baz' => \FileSystem::MODE_DIRECTORY
 		);
 
 		\FileSystem::setReadDirResult( $entries );

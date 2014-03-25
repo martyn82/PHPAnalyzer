@@ -14,6 +14,7 @@ use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 use Mend\Rest\ResourceController;
 use Mend\Rest\ResourceResult;
+use Model\Project\Project;
 
 class ProjectsController extends ResourceController {
 	/**
@@ -53,19 +54,17 @@ class ProjectsController extends ResourceController {
 		$sortOptions->addSortField( 'key', SortDirection::ASCENDING );
 
 		$dataPage = new DataPage( self::RESULTS_PER_PAGE, $this->getOffset() );
-
-		$totalCount = 0;
-		$results = $projectRepository->all( $sortOptions, $dataPage, $totalCount );
+		$results = $projectRepository->all( $sortOptions, $dataPage );
 
 		$result = new ResourceResult(
 			array_map(
-				function ( ProjectRecord $record ) {
+				function ( Project $record ) {
 					return $record->toArray();
 				},
-				$results
+				$results->toArray()
 			),
 			$this->getPageNumber(),
-			$totalCount,
+			$results->getTotalCount(),
 			self::RESULTS_PER_PAGE
 		);
 

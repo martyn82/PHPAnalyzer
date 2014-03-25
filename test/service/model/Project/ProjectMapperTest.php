@@ -43,7 +43,7 @@ class ProjectMapperTest extends \TestCase {
 	}
 
 	public function testInsert() {
-		$fields = array( 'name' => 'Foo', 'key' => 'bar', 'root' => 'foo:///tmp' );
+		$fields = array( 'name' => 'Foo', 'key' => 'bar', 'path' => 'foo:///tmp' );
 
 		$storage = $this->createStorage();
 		$mapper = new DummyProjectMapper( $storage );
@@ -79,7 +79,7 @@ class ProjectMapperTest extends \TestCase {
 	}
 
 	public function testUpdate() {
-		$fields = array( 'name' => 'Foo', 'key' => 'bar', 'root' => 'foo:///tmp' );
+		$fields = array( 'name' => 'Foo', 'key' => 'bar', 'path' => 'foo:///tmp' );
 
 		$storage = $this->createStorage();
 		$mapper = new DummyProjectMapper( $storage );

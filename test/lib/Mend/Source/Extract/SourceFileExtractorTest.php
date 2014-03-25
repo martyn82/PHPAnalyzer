@@ -3,7 +3,6 @@ namespace Mend\Source\Extract;
 
 use Mend\IO\FileSystem\File;
 use Mend\IO\Stream\FileStreamReader;
-use Mend\IO\Stream\IsReadable;
 
 class SourceFileExtractorTest extends \TestCase {
 	private static $CODE_FRAGMENT_1 = <<<PHP
@@ -34,12 +33,14 @@ PHP;
 	}
 
 	private function getFileName() {
-		return \FileSystem::PROTOCOL . ':///tmp/foo';
+		return \FileSystem::SCHEME . ':///tmp/foo';
 	}
 
 	public function testFilterCreation() {
 		$file = $this->getMock( '\Mend\IO\FileSystem\File', array( 'getExtension' ), array( $this->getFileName() ) );
-		$file->expects( self::any() )->method( 'getExtension' )->will( self::returnValue( 'php' ) );
+		$file->expects( self::any() )
+			->method( 'getExtension' )
+			->will( self::returnValue( 'php' ) );
 
 		$extractor = new SourceFileExtractor( $file );
 		self::assertTrue( $extractor->getSourceLineFilter() instanceof \Mend\Source\Filter\PHPSourceLineFilter );
@@ -106,7 +107,7 @@ PHP;
 		$name = $this->getFileName();
 
 		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
-			->setMethods( array( 'getExtension', 'getName' ) )
+			->setMethods( array( 'getExtension', 'getName', 'canRead' ) )
 			->setConstructorArgs( array( $name ) )
 			->disableOriginalConstructor()
 			->getMock();
@@ -119,8 +120,11 @@ PHP;
 			->method( 'getExtension' )
 			->will( self::returnValue( 'php' ) );
 
+		$file->expects( self::any() )
+			->method( 'canRead' )
+			->will( self::returnValue( true ) );
+
 		\FileSystem::setFReadResult( $source );
-		IsReadable::$result = true;
 
 		$extractor = new SourceFileExtractor( $file );
 		$source = $extractor->getFileSource();

@@ -3,7 +3,6 @@ namespace Mend\Cli\Command;
 
 use Mend\Cli\AnalyzeOptions;
 use Mend\Cli\Options;
-use Mend\IO\Stream\IsReadable;
 
 // mock functions {
 function realpath( $path ) {
@@ -33,12 +32,11 @@ memory = 200
 INI;
 
 	public function setUp() {
-		IsReadable::$result = true;
 		\FileSystem::resetResults();
+		\FileSystem::setStatModeResult( octdec( \FileSystem::MODE_FILE ) + octdec( \FileSystem::MODE_READ_ALL ) );
 	}
 
 	public function tearDown() {
-		IsReadable::$result = false;
 		\FileSystem::resetResults();
 	}
 

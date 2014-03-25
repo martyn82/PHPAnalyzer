@@ -8,7 +8,6 @@ use Mend\Parser\Node\PHPNode;
 use Mend\Source\Code\Location\SourceUrl;
 use Mend\Source\Code\Model\Method;
 use Mend\Source\Extract\SourceFileExtractor;
-use Mend\IO\Stream\IsReadable;
 
 class UnitSizeAnalyzerTest extends \TestCase {
 	private static $CODE_FRAGMENT_1 = <<<PHP
@@ -210,10 +209,10 @@ PHP;
 	}
 
 	public function testGetSourceLines() {
-		$name = \FileSystem::PROTOCOL . '://tmp/foo';
+		$name = \FileSystem::SCHEME . '://tmp/foo';
 
 		$file = $this->getMockBuilder( '\Mend\IO\FileSystem\File' )
-			->setMethods( array( 'getExtension', 'getName' ) )
+			->setMethods( array( 'getExtension', 'getName', 'canRead' ) )
 			->setConstructorArgs( array( $name ) )
 			->disableOriginalConstructor()
 			->getMock();
@@ -226,7 +225,10 @@ PHP;
 			->method( 'getName' )
 			->will( self::returnValue( $name ) );
 
-		IsReadable::$result = true;
+		$file->expects( self::any() )
+			->method( 'canRead' )
+			->will( self::returnValue( true ) );
+
 		\FileSystem::setFReadResult( self::$CODE_FRAGMENT_1 );
 
 		$analyzer = new DummyUnitSizeAnalyzer();

@@ -85,9 +85,9 @@ class DefaultFileStorageHandler extends FileStorageHandler {
 		}
 
 		$directory = $this->getEntityPath( $entity );
-		$this->createFileArrayFromRecordSet( $directory, $records );
+		$files = $this->createFileArrayFromRecordSet( $directory, $records );
 
-		return new RecordSet( array() );
+		return $this->createRecordSetFromFileArray( $files );
 	}
 
 	/**

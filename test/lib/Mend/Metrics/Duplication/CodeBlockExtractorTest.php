@@ -7,7 +7,6 @@ use Mend\Network\Web\Url;
 use Mend\Source\Code\Location\Location;
 use Mend\Source\Code\Location\SourceUrl;
 use Mend\Source\Extract\SourceFileExtractor;
-use Mend\IO\Stream\IsReadable;
 
 class CodeBlockExtractorTest extends \TestCase {
 	private static $BLOCK_SIZE = 6;
@@ -55,7 +54,7 @@ function foo() {
 PHP;
 
 	private function getFileName() {
-		return \FileSystem::PROTOCOL . ':///tmp/foo';
+		return \FileSystem::SCHEME . ':///tmp/foo';
 	}
 
 	public function setUp() {
@@ -222,7 +221,7 @@ PHP;
 			->method( 'getName' )
 			->will( self::returnValue( $this->getFileName() ) );
 
-		IsReadable::$result = true;
+		\FileSystem::setStatModeResult( octdec( \FileSystem::MODE_FILE ) + octdec( \FileSystem::MODE_READ_ALL ) );
 		\FileSystem::setFReadResult( $source );
 
 		$sourceExtractor = new SourceFileExtractor( $file );

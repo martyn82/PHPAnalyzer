@@ -166,8 +166,6 @@ class FileStreamReaderTest extends FileStreamTest {
 		$file = $this->getFile();
 		$reader = new FileStreamReader( $file );
 
-		IsReadable::$result = true;
-
 		self::assertTrue( $reader->isReadable() );
 	}
 

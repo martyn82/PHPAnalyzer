@@ -99,20 +99,24 @@ abstract class FileStorageHandler {
 	 */
 	protected function createFileFromRecord( Directory $directory, Record $record ) {
 		$data = $record->getFields();
-		// @todo abstract the json knowledge
-		$contents = json_encode( $data, JSON_NUMERIC_CHECK );
 
-		$identity = !empty( $data[ 'id' ] ) ? $data[ 'id' ] : uniqid( 'record_' );
+		$identity = $data->hasKey( 'id' )
+			? $data->get( 'id' )
+			: uniqid( 'record_' );
+
+		$data->set( 'id', $identity );
+		$record->setValue( 'id', $identity );
+
+		// @todo abstract the json knowledge
+		$contents = json_encode( $data->toArray(), JSON_NUMERIC_CHECK );
+
 		$file = new File( $directory->getName() . FileSystem::DIRECTORY_SEPARATOR . $identity . '.json' );
 
 		$writer = new FileStreamWriter( $file );
 		$writer->open();
 
 		$writer->write( $contents );
-
 		$writer->close();
-
-		$record->setValue( 'id', $identity );
 
 		return $file;
 	}

@@ -24,9 +24,12 @@ class ProjectMapper extends DataMapper {
 	protected function createDataObjectFromRecord( Record $record ) {
 		$name = $record->getValue( 'name' );
 		$key = $record->getValue( 'key' );
-		$root = $record->getValue( 'root' );
+		$root = $record->getValue( 'path' );
 
-		return new Project( $name, $key, new Directory( $root ) );
+		$project = new Project( $name, $key, new Directory( $root ) );
+		$project->setIdentity( $record->getValue( 'id' ) );
+
+		return $project;
 	}
 
 	/**
@@ -34,7 +37,10 @@ class ProjectMapper extends DataMapper {
 	 */
 	protected function createRecordFromDataObject( DataObject $object ) {
 		$objectArray = $object->toArray();
+
 		$fields = new Map( $objectArray );
+		$fields->set( 'id', $object->getIdentity() );
+
 		return new Record( $fields );
 	}
 
