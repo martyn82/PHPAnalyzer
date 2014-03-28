@@ -26,15 +26,15 @@ class ProjectRepository implements Repository {
 	/**
 	 * @see Repository::matching()
 	 */
-	public function matching( Map $criteria, SortOptions $sortOptions, DataPage $page ) {
-		return array();
+	public function matching( Map $criteria, SortOptions $sortOptions, DataPage $dataPage ) {
+		return $this->mapper->select( $criteria, $sortOptions, $dataPage );
 	}
 
 	/**
 	 * @see Repository::all()
 	 */
 	public function all( SortOptions $sortOptions, DataPage $page ) {
-		return new DataObjectCollection();
+		return $this->mapper->select( new Map(), $sortOptions, $page );
 	}
 
 	/**

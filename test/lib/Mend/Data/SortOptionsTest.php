@@ -4,7 +4,7 @@ namespace Mend\Data;
 class SortOptionsTest extends \TestCase {
 	public function testEmpty() {
 		$options = new SortOptions();
-		self::assertEquals( array(), $options->toArray() );
+		self::assertEquals( array(), $options->getOptions()->toArray() );
 	}
 
 	/**
@@ -21,7 +21,7 @@ class SortOptionsTest extends \TestCase {
 
 		self::assertEquals(
 			$sort,
-			$options->toArray()
+			$options->getOptions()->toArray()
 		);
 	}
 
@@ -36,7 +36,7 @@ class SortOptionsTest extends \TestCase {
 		);
 
 		$options->addSortField( $field1, $dir1 );
-		self::assertEquals( $data, $options->toArray() );
+		self::assertEquals( $data, $options->getOptions()->toArray() );
 
 		$field2 = 'bar';
 		$dir2 = SortDirection::DESCENDING;
@@ -47,7 +47,7 @@ class SortOptionsTest extends \TestCase {
 		);
 
 		$options->addSortField( $field2, $dir2, true );
-		self::assertEquals( $newData, $options->toArray() );
+		self::assertEquals( $newData, $options->getOptions()->toArray() );
 	}
 
 	public function sortOptionProvider() {

@@ -19,8 +19,8 @@ class DataPage {
 	 * @param integer $offset
 	 */
 	public function __construct( $limit = null, $offset = 0 ) {
-		$this->limit = (int) $limit;
-		$this->offset = (int) $offset;
+		$this->limit = abs( (int) $limit );
+		$this->offset = abs( (int) $offset );
 	}
 
 	/**

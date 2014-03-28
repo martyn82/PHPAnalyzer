@@ -9,11 +9,11 @@ interface Repository {
 	 *
 	 * @param Map $criteria
 	 * @param SortOptions $sortOptions
-	 * @param DataPage $page
+	 * @param DataPage $dataPage
 	 *
 	 * @return DataObjectCollection
 	 */
-	function matching( Map $criteria, SortOptions $sortOptions, DataPage $page );
+	function matching( Map $criteria, SortOptions $sortOptions, DataPage $dataPage );
 
 	/**
 	 * Retrieves all objects.

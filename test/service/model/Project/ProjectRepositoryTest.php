@@ -29,6 +29,32 @@ class ProjectRepositoryTest extends \TestCase {
 		self::assertInstanceOf( '\Mend\Data\DataObjectCollection', $results );
 	}
 
+	public function testAll() {
+		$mapper = $this->createMapper();
+
+		$mapper->expects( self::once() )
+			->method( 'select' )
+			->will( self::returnValue( new DataObjectCollection() ) );
+
+		$repository = new ProjectRepository( $mapper );
+		$results = $repository->all( new SortOptions(), new DataPage() );
+
+		self::assertInstanceOf( '\Mend\Data\DataObjectCollection', $results );
+	}
+
+	public function testMatching() {
+		$mapper = $this->createMapper();
+
+		$mapper->expects( self::once() )
+			->method( 'select' )
+			->will( self::returnValue( new DataObjectCollection() ) );
+
+		$repository = new ProjectRepository( $mapper );
+		$results = $repository->matching( new Map(), new SortOptions(), new DataPage() );
+
+		self::assertInstanceOf( '\Mend\Data\DataObjectCollection', $results );
+	}
+
 	private function createMapper() {
 		return $this->getMockBuilder( '\Mend\Data\DataMapper' )
 			->disableOriginalConstructor()

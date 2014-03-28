@@ -1,6 +1,8 @@
 <?php
 namespace Mend\Data;
 
+use Mend\Collections\Map;
+
 class SortOptions {
 	/**
 	 * @var array
@@ -33,12 +35,11 @@ class SortOptions {
 	}
 
 	/**
-	 * Retrieves the sort options as a multi-dimensional array.
-	 * Each entry in the array is a key-value pair of field name and sort direction.
+	 * Retrieves the sort options.
 	 *
-	 * @return array
+	 * @return Map
 	 */
-	public function toArray() {
-		return $this->sortOptions;
+	public function getOptions() {
+		return new Map( $this->sortOptions );
 	}
 }

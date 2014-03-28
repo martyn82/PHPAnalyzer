@@ -14,7 +14,11 @@ use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 use Mend\Rest\ResourceController;
 use Mend\Rest\ResourceResult;
+
 use Model\Project\Project;
+use Model\Project\ProjectRepository;
+use Model\Project\ProjectMapper;
+use Mend\Data\Storage\FileStorage;
 
 class ProjectsController extends ResourceController {
 	/**
@@ -38,37 +42,37 @@ class ProjectsController extends ResourceController {
 		ControllerFactory $factory,
 		ViewRenderer $renderer,
 		Context $context,
-		Repository $repository = null
+		Repository $repository
 	) {
 		parent::__construct( $request, $response, $factory, $renderer, $context );
-		$this->repository = $repository ? : new ProjectRepository();
+		$this->repository = $repository;
 	}
 
 	/**
 	 * @see ResourceController::actionIndex()
 	 */
 	public function actionIndex() {
-		$projectRepository = $this->repository;
+// 		$projectRepository = $this->repository;
 
-		$sortOptions = new SortOptions();
-		$sortOptions->addSortField( 'key', SortDirection::ASCENDING );
+// 		$sortOptions = new SortOptions();
+// 		$sortOptions->addSortField( 'key', SortDirection::ASCENDING );
 
-		$dataPage = new DataPage( self::RESULTS_PER_PAGE, $this->getOffset() );
-		$results = $projectRepository->all( $sortOptions, $dataPage );
+// 		$dataPage = new DataPage( self::RESULTS_PER_PAGE, $this->getOffset() );
+// 		$results = $projectRepository->all( $sortOptions, $dataPage );
 
-		$result = new ResourceResult(
-			array_map(
-				function ( Project $record ) {
-					return $record->toArray();
-				},
-				$results->toArray()
-			),
-			$this->getPageNumber(),
-			$results->getTotalCount(),
-			self::RESULTS_PER_PAGE
-		);
+// 		$result = new ResourceResult(
+// 			array_map(
+// 				function ( Project $record ) {
+// 					return $record->toArray();
+// 				},
+// 				$results->toArray()
+// 			),
+// 			$this->getPageNumber(),
+// 			$results->getTotalCount(),
+// 			self::RESULTS_PER_PAGE
+// 		);
 
-		$this->setResult( $result );
+// 		$this->setResult( $result );
 	}
 
 	/**
