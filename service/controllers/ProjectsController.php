@@ -5,6 +5,7 @@ use Mend\Data\DataPage;
 use Mend\Data\Repository;
 use Mend\Data\SortDirection;
 use Mend\Data\SortOptions;
+use Mend\Data\Storage\FileStorage;
 use Mend\IO\FileSystem\Directory;
 use Mend\Metrics\Project\ProjectReport;
 use Mend\Mvc\Context;
@@ -18,7 +19,9 @@ use Mend\Rest\ResourceResult;
 use Model\Project\Project;
 use Model\Project\ProjectRepository;
 use Model\Project\ProjectMapper;
-use Mend\Data\Storage\FileStorage;
+use Mend\Data\Storage\Handler\DefaultFileStorageHandler;
+use Mend\Data\Storage\Handler\EntityMap;
+use Mend\Data\Storage\Record;
 
 class ProjectsController extends ResourceController {
 	/**
@@ -27,65 +30,42 @@ class ProjectsController extends ResourceController {
 	private $repository;
 
 	/**
-	 * Constructs a new ProjectController instance.
-	 *
-	 * @param WebRequest $request
-	 * @param WebResponse $response
-	 * @param ControllerFactory $factory
-	 * @param ViewRenderer $renderer
-	 * @param Context $context
-	 * @param Repository $repository
-	 */
-	public function __construct(
-		WebRequest $request,
-		WebResponse $response,
-		ControllerFactory $factory,
-		ViewRenderer $renderer,
-		Context $context,
-		Repository $repository
-	) {
-		parent::__construct( $request, $response, $factory, $renderer, $context );
-		$this->repository = $repository;
-	}
-
-	/**
 	 * @see ResourceController::actionIndex()
 	 */
 	public function actionIndex() {
-// 		$projectRepository = $this->repository;
+		$projectRepository = $this->getRepository();
 
-// 		$sortOptions = new SortOptions();
-// 		$sortOptions->addSortField( 'key', SortDirection::ASCENDING );
+		$sortOptions = new SortOptions();
+		$sortOptions->addSortField( 'key', SortDirection::ASCENDING );
 
-// 		$dataPage = new DataPage( self::RESULTS_PER_PAGE, $this->getOffset() );
-// 		$results = $projectRepository->all( $sortOptions, $dataPage );
+		$dataPage = new DataPage( self::RESULTS_PER_PAGE, $this->getOffset() );
+		$results = $projectRepository->all( $sortOptions, $dataPage );
 
-// 		$result = new ResourceResult(
-// 			array_map(
-// 				function ( Project $record ) {
-// 					return $record->toArray();
-// 				},
-// 				$results->toArray()
-// 			),
-// 			$this->getPageNumber(),
-// 			$results->getTotalCount(),
-// 			self::RESULTS_PER_PAGE
-// 		);
+		$result = new ResourceResult(
+			array_map(
+				function ( Project $project ) {
+					return $project->toArray();
+				},
+				$results->toArray()
+			),
+			$this->getPageNumber(),
+			$results->getTotalCount(),
+			self::RESULTS_PER_PAGE
+		);
 
-// 		$this->setResult( $result );
+		$this->setResult( $result );
 	}
 
 	/**
 	 * @see ResourceController::actionRead()
 	 */
 	public function actionRead() {
-		$projectRepository = $this->repository;
+		$projectRepository = $this->getRepository();
 		$project = $projectRepository->get( $this->getResourceId() );
 
 		$result = new ResourceResult(
 			array(
 				'project' => $project->toArray(),
-				'reports' => $project->reports
 			)
 		);
 
@@ -106,4 +86,33 @@ class ProjectsController extends ResourceController {
 	 * @see ResourceController::actionDelete()
 	 */
 	public function actionDelete() {}
+
+	/**
+	 * Sets the repository.
+	 *
+	 * @param Repository $repository
+	 */
+	public function setRepository( Repository $repository ) {
+		$this->repository = $repository;
+	}
+
+	/**
+	 * @return Repository
+	 */
+	private function getRepository() {
+		if ( is_null( $this->repository ) ) {
+			$entities = new EntityMap(
+				array(
+					'project' => new Directory( 'data/projects' )
+				)
+			);
+
+			$handler = new DefaultFileStorageHandler( $entities );
+			$storage = new FileStorage( $handler );
+			$mapper = new ProjectMapper( $storage );
+			$this->repository = new ProjectRepository( $mapper );
+		}
+
+		return $this->repository;
+	}
 }

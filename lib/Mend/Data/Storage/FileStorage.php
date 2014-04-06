@@ -31,7 +31,13 @@ class FileStorage extends Storage {
 			throw new \InvalidArgumentException( "Entity does not exist: '{$entity}'." );
 		}
 
-		$records = $this->handler->find( $entity );
+		$identity = null;
+
+		if ( $criteria->hasKey( 'id' ) ) {
+			$identity = $criteria->get( 'id' );
+		}
+
+		$records = $this->handler->find( $entity, $identity );
 		$totalCount = $records->size();
 
 		return new ResultSet( $records, $dataPage, $totalCount );

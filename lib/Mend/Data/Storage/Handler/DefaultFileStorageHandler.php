@@ -1,14 +1,14 @@
 <?php
 namespace Mend\Data\Storage\Handler;
 
+use Mend\Data\DataPage;
+use Mend\Data\Storage\Record;
+use Mend\Data\Storage\RecordSet;
+use Mend\Data\Storage\ResultSet;
 use Mend\IO\FileSystem\Directory;
 use Mend\IO\FileSystem\File;
 use Mend\IO\FileSystem\FileArray;
 use Mend\IO\FileSystem\FileSystem;
-use Mend\Data\Storage\Record;
-use Mend\Data\Storage\RecordSet;
-use Mend\Data\Storage\ResultSet;
-use Mend\Data\DataPage;
 
 class DefaultFileStorageHandler extends FileStorageHandler {
 	/**

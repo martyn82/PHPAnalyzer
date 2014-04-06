@@ -42,6 +42,13 @@ class ProjectRepository implements Repository {
 	 */
 	public function get( $identity ) {
 		$criteria = new Map( array( 'id' => $identity ) );
-		return $this->mapper->select( $criteria, new SortOptions(), new DataPage() );
+		$collection = $this->mapper->select( $criteria, new SortOptions(), new DataPage() );
+
+		if ( $collection->isEmpty() ) {
+			throw new \UnexpectedValueException( "Object not found: project with identity '{$identity}'" );
+		}
+
+		$array = $collection->toArray();
+		return $array[ 0 ];
 	}
 }

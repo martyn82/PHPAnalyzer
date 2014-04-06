@@ -5,12 +5,25 @@ use Mend\Collections\Map;
 use Mend\Data\DataObjectCollection;
 use Mend\Data\DataPage;
 use Mend\Data\SortOptions;
+use Mend\IO\FileSystem\Directory;
 
 class ProjectRepositoryTest extends \TestCase {
 	public function testGet() {
 		$criteria = new Map( array( 'id' => 1 ) );
 		$sortOptions = new SortOptions();
 		$dataPage = new DataPage();
+
+		$collection = $this->getMockBuilder( '\Mend\Data\DataObjectCollection' )
+			->setMethods( array( 'isEmpty', 'toArray' ) )
+			->getMock();
+
+		$collection->expects( self::once() )
+			->method( 'isEmpty' )
+			->will( self::returnValue( false ) );
+
+		$collection->expects( self::once() )
+			->method( 'toArray' )
+			->will( self::returnValue( array( new Project( 'foo', 'bar', new Directory( 'baz' ) ) ) ) );
 
 		$mapper = $this->createMapper();
 
@@ -21,12 +34,12 @@ class ProjectRepositoryTest extends \TestCase {
 				self::equalTo( $sortOptions ),
 				self::equalTo( $dataPage )
 			)
-			->will( self::returnValue( new DataObjectCollection() ) );
+			->will( self::returnValue( $collection ) );
 
 		$repository = new ProjectRepository( $mapper );
-		$results = $repository->get( 1 );
+		$result = $repository->get( 1 );
 
-		self::assertInstanceOf( '\Mend\Data\DataObjectCollection', $results );
+		self::assertInstanceOf( '\Model\Project\Project', $result );
 	}
 
 	public function testAll() {

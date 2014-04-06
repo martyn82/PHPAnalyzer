@@ -1,7 +1,11 @@
 <?php
 namespace Mend\Rest;
 
+use Mend\Data\Repository;
+use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\Controller\PageController;
+use Mend\Network\Web\WebRequest;
+use Mend\Network\Web\WebResponse;
 
 abstract class ResourceController extends PageController {
 	const PARAMETER_PAGE = 'page';
