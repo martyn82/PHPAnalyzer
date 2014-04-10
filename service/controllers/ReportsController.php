@@ -6,9 +6,6 @@ use Mend\Data\Repository;
 use Mend\Data\SortDirection;
 use Mend\Data\SortOptions;
 use Mend\Data\Storage\FileStorage;
-use Mend\Data\Storage\Handler\DefaultFileStorageHandler;
-use Mend\Data\Storage\Handler\EntityMap;
-use Mend\Data\Storage\Record;
 use Mend\IO\FileSystem\Directory;
 use Mend\Metrics\Project\ProjectReport;
 use Mend\Mvc\Context;
@@ -19,12 +16,17 @@ use Mend\Network\Web\WebResponse;
 use Mend\Rest\ResourceController;
 use Mend\Rest\ResourceResult;
 
-use Model\Project\Project;
-use Model\Project\ProjectRepository;
-use Model\Project\ProjectMapper;
+use Model\Report\Report;
+use Model\Report\ReportRepository;
+use Model\Report\ReportMapper;
 
+use Mend\Data\Storage\Handler\DefaultFileStorageHandler;
+use Mend\Data\Storage\Handler\EntityMap;
+use Mend\Data\Storage\Record;
+use Mend\Network\Web\HttpStatus;
+use Mend\Collections\Map;
 
-class ProjectsController extends ResourceController {
+class ReportsController extends ResourceController {
 	/**
 	 * @var Repository
 	 */
@@ -34,39 +36,23 @@ class ProjectsController extends ResourceController {
 	 * @see ResourceController::actionIndex()
 	 */
 	public function actionIndex() {
-		$repository = $this->getRepository();
-
-		$sortOptions = new SortOptions();
-		$sortOptions->addSortField( 'key', SortDirection::ASCENDING );
-
-		$dataPage = new DataPage( self::RESULTS_PER_PAGE, $this->getOffset() );
-		$results = $repository->all( $sortOptions, $dataPage );
-
-		$result = new ResourceResult(
-			array_map(
-				function ( Project $project ) {
-					return $project->toArray();
-				},
-				$results->toArray()
-			),
-			$this->getPageNumber(),
-			$results->getTotalCount(),
-			self::RESULTS_PER_PAGE
-		);
-
-		$this->setResult( $result );
+		throw new \RuntimeException( "Invalid action 'index' for resource 'reports'.", HttpStatus::STATUS_BAD_REQUEST );
 	}
 
 	/**
 	 * @see ResourceController::actionRead()
 	 */
 	public function actionRead() {
-		$projectRepository = $this->getRepository();
-		$project = $projectRepository->get( $this->getResourceId() );
+		$repository = $this->getRepository();
+		$criteria = new Map( array( 'id' => $this->getResourceId() ) );
+		$reports = $repository->matching( $criteria, new SortOptions(), new DataPage() );
 
 		$result = new ResourceResult(
-			array(
-				'project' => $project->toArray()
+			array_map(
+				function ( Report $report ) {
+					return array( 'report' => $report->toArray() );
+				},
+				$reports->toArray()
 			)
 		);
 
@@ -104,14 +90,14 @@ class ProjectsController extends ResourceController {
 		if ( is_null( $this->repository ) ) {
 			$entities = new EntityMap(
 				array(
-					'project' => new Directory( 'data/reports' )
+					'report' => new Directory( 'data/reports' )
 				)
 			);
 
 			$handler = new DefaultFileStorageHandler( $entities );
 			$storage = new FileStorage( $handler );
-			$mapper = new ProjectMapper( $storage );
-			$this->repository = new ProjectRepository( $mapper );
+			$mapper = new ReportMapper( $storage );
+			$this->repository = new ReportRepository( $mapper );
 		}
 
 		return $this->repository;

@@ -32,11 +32,11 @@ class ServiceController extends PageController {
 	}
 
 	private function getProjects() {
-		return $this->get( 'projects' );
+		return $this->get( 'reports' );
 	}
 
 	private function getReports( $projectId ) {
-		return $this->get( 'projects/' . $projectId );
+		return $this->get( 'reports/' . $projectId );
 	}
 
 	private function get( $uri ) {

@@ -41,7 +41,14 @@ class RestController extends FrontController {
 				throw new \Exception( "Invalid method: '{$method}'." );
 		}
 
-		$this->dispatch( $controllerName, $actionName );
+		try {
+			$this->dispatch( $controllerName, $actionName );
+		}
+		catch ( \RuntimeException $e ) {
+			$response = $this->getResponse();
+			$response->setStatusCode( $e->getCode() );
+			$response->setStatusDescription( $e->getMessage() );
+		}
 	}
 
 	/**

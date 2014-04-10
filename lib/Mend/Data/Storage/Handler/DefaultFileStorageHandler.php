@@ -54,9 +54,8 @@ class DefaultFileStorageHandler extends FileStorageHandler {
 			if ( is_null( $identity ) ) {
 				$files[] = $this->createFile( $entry );
 			}
-			else if ( $entry->getFilename() == "{$identity}.{$fileExtension}" ) {
+			else if ( preg_match( "/{$identity}.*\.{$fileExtension}/", $entry->getFilename() ) > 0 ) {
 				$files[] = $this->createFile( $entry );
-				break;
 			}
 		}
 

@@ -1,5 +1,5 @@
 <?php
-namespace Model\Project;
+namespace Model\Report;
 
 use Mend\Collections\Map;
 use Mend\Data\DataMapper;
@@ -8,14 +8,14 @@ use Mend\Data\DataPage;
 use Mend\Data\Repository;
 use Mend\Data\SortOptions;
 
-class ProjectRepository implements Repository {
+class ReportRepository implements Repository {
 	/**
 	 * @var DataMapper
 	 */
 	private $mapper;
 
 	/**
-	 * Constructs a new ProjectRepository instance.
+	 * Constructs a new ReportRepository instance.
 	 *
 	 * @param DataMapper $mapper
 	 */
@@ -34,28 +34,7 @@ class ProjectRepository implements Repository {
 	 * @see Repository::all()
 	 */
 	public function all( SortOptions $sortOptions, DataPage $page ) {
-		$collection = $this->mapper->select( new Map(), $sortOptions, $page );
-		$projects = $collection->toArray();
-
-		$unique = array_reduce(
-			$projects,
-			function ( array $result, Project $project ) {
-				if ( !isset( $result[ $project->getKey() ] ) ) {
-					$result[ $project->getKey() ] = $project;
-				}
-
-				return $result;
-			},
-			array()
-		);
-
-		$result = new DataObjectCollection();
-
-		foreach ( $unique as $project ) {
-			$result->add( $project );
-		}
-
-		return $result;
+		return $this->mapper->select( new Map(), $sortOptions, $page );
 	}
 
 	/**

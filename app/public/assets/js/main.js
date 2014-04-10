@@ -16,10 +16,13 @@ google.setOnLoadCallback( function () {
 	serviceConsumer = new RESTClient();
 
 	serviceConsumer.get( serviceLocation + '?id=' + projectId, true, function ( response ) {
-		var results = response.bodyJSON.results,
-			project = results.project,
-			reports = results.reports;
+		var reports = response.bodyJSON.results;
 
+		if ( reports.length == 0 ) {
+			return;
+		}
+		
+		var project = reports[ 0 ].report.project;
 		setProjectDetails( project );
 		
 		var projectReports = [];

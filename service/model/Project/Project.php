@@ -24,7 +24,7 @@ class Project extends \Mend\Metrics\Project\Project implements DataObject {
 	}
 
 	/**
-	 * @see DataObject::toArray()
+	 * @see Project::toArray()
 	 */
 	public function toArray() {
 		return parent::toArray();

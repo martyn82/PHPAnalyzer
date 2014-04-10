@@ -1,5 +1,5 @@
 <?php
-namespace Model\Project;
+namespace Model\Report;
 
 use Mend\Collections\Map;
 use Mend\Data\DataMapper;
@@ -9,29 +9,30 @@ use Mend\Data\DataPage;
 use Mend\Data\SortOptions;
 use Mend\Data\Storage\Record;
 use Mend\IO\FileSystem\Directory;
+use Mend\Metrics\Report\ReportType;
+use Mend\Metrics\Report\ProjectReportBuilder;
+use Mend\Metrics\Complexity\ComplexityReport;
+use Mend\Metrics\Report\Partition\MethodPartition;
+use Mend\Metrics\Complexity\ComplexityRisk;
+use Mend\Source\Code\Model\MethodArray;
+use Mend\Source\Code\Model\Method;
 
-class ProjectMapper extends DataMapper {
+class ReportMapper extends DataMapper {
 	/**
 	 * @see DataMapper::getEntity()
 	 */
 	protected function getEntity() {
-		return 'project';
+		return 'report';
 	}
 
 	/**
 	 * @see DataMapper::createDataObjectFromRecord()
 	 */
 	protected function createDataObjectFromRecord( Record $record ) {
-		$projectRecord = $record->getValue( 'project' );
+		$report = new Report( $record );
+		$report->setIdentity( $record->getValue( 'dateTime' ) );
 
-		$name = $projectRecord[ 'name' ];
-		$key = $projectRecord[ 'key' ];
-		$root = $projectRecord[ 'path' ];
-
-		$project = new Project( $name, $key, new Directory( $root ) );
-		$project->setIdentity( $key );
-
-		return $project;
+		return $report;
 	}
 
 	/**
@@ -41,7 +42,7 @@ class ProjectMapper extends DataMapper {
 		$objectArray = $object->toArray();
 
 		$fields = new Map( $objectArray );
-		$fields->set( 'key', $object->getIdentity() );
+		$fields->set( 'id', $object->getIdentity() );
 
 		return new Record( $fields );
 	}
