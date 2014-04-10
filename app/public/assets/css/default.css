@@ -12,8 +12,12 @@ body {
 var {
 	display: none;
 }
+.loading {
+	opacity: 0.2;
+	transition: opacity 2s;
+}
 .tab-sheet {
-	height: 600px;
+	height: auto;
 }
 .chart {
 	float: left;
@@ -21,10 +25,12 @@ var {
 	width: 600px;
 }
 .data-list {
+	border: 1px solid #ccc;
+	clear: both;
 	float: left;
-	height: 100%;
+	height: auto;
 	list-style: none;
 	overflow: scroll;
 	white-space: nowrap;
-	width: 50%;
+	width: 100%;
 }

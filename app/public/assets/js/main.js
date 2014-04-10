@@ -9,8 +9,9 @@ var serviceConsumer,
 
 google.load( 'visualization', '1.0', { 'packages': [ 'corechart' ] } );
 google.setOnLoadCallback( function () {
-	var projectId = document.getElementById( 'project-id' ).getAttribute( 'data-value' );
+	setLoading( true );
 	
+	var projectId = document.getElementById( 'project-id' ).getAttribute( 'data-value' );
 	var tabView = new TabView( document.getElementById( 'tabs' ) );
 
 	serviceConsumer = new RESTClient();
@@ -36,8 +37,26 @@ google.setOnLoadCallback( function () {
 		drawComplexityTimeChart( projectReports );
 		drawUnitSizeTimeChart( projectReports );
 		drawDuplicationTimeChart( projectReports );
+		
+		setLoading( false );
 	} );
 } );
+
+function setLoading( loading ) {
+	bodyClass = typeof bodyClass == 'undefined' ? document.body.getAttribute( 'class' ) || '' : bodyClass;
+	var bodyClasses = bodyClass.split( ' ' );
+
+	if ( loading ) {
+		bodyClasses.push( 'loading' );
+		document.body.setAttribute( 'class', bodyClasses.join( ' ' ).trim() );
+	}
+	else if ( bodyClass ) {
+		document.body.setAttribute( 'class', bodyClass );
+	}
+	else {
+		document.body.removeAttribute( 'class' );
+	}
+}
 
 function timeChartSelectionHandler( chart, reports, drawChartCallback, reportName ) {
 	var selection = chart.getSelection();
@@ -233,6 +252,29 @@ function drawComplexityChart( dateTime, report ) {
 		'title': 'Complexity risk partitions for ' + dateTime.toString(),
 		'colors': [ '#80ff00', '#ffff00', '#ff8000', '#df0101' ]
 	} );
+	
+	google.visualization.events.addListener( chart, 'select', function () {
+		var selection = chart.getSelection();
+		
+		if ( selection.length == 0 ) {
+			return;
+		}
+		
+		var row = selection[ 0 ].row + 1;
+
+		var heading = '<p><strong>Involved methods</strong></p>',
+			list = '<ul>',
+			item = '';
+
+		for ( var i = 0; i < report[ row ].methods.length; i++ ) {
+			var location = report[ row ].methods[ i ].location;
+			item = '<li><a href="' + location + '">' + location + '::' + report[ row ].methods[ i ].name + '</a></li>';
+			list += item;
+		}
+
+		list += '</ul>';
+		document.getElementById( 'methods-complexity' ).innerHTML = heading + list;
+	} );
 };
 
 function drawUnitSizeTimeChart( reports ) {
@@ -289,6 +331,29 @@ function drawUnitSizeChart( dateTime, report ) {
 		'title': 'Unit size partitions for ' + dateTime.toString(),
 		'colors': [ '#80ff00', '#ffff00', '#ff8000', '#df0101' ]
 	} );
+	
+	google.visualization.events.addListener( chart, 'select', function () {
+		var selection = chart.getSelection();
+		
+		if ( selection.length == 0 ) {
+			return;
+		}
+		
+		var row = selection[ 0 ].row + 1;
+
+		var heading = '<p><strong>Involved methods</strong></p>',
+			list = '<ul>',
+			item = '';
+
+		for ( var i = 0; i < report[ row ].methods.length; i++ ) {
+			var location = report[ row ].methods[ i ].location;
+			item = '<li><a href="' + location + '">' + location + '::' + report[ row ].methods[ i ].name + '</a></li>';
+			list += item;
+		}
+
+		list += '</ul>';
+		document.getElementById( 'methods-unitsize' ).innerHTML = heading + list;
+	} );
 };
 
 function drawDuplicationTimeChart( reports ) {
@@ -337,5 +402,41 @@ function drawDuplicationChart( dateTime, report ) {
 	chart.draw( table, {
 		'title': 'Duplication for ' + dateTime.toString(),
 		'colors': [ '#df0101', '#80ff00' ]
+	} );
+	
+	google.visualization.events.addListener( chart, 'select', function () {
+		var selection = chart.getSelection();
+		
+		if ( selection.length == 0 ) {
+			return;
+		}
+		
+		var heading = '<p><strong>Duplicated blocks</strong></p>',
+			list = '<dl>',
+			item = '';
+
+		for ( var i = 0; i < report.blocks.length; i++ ) {
+			var block = '';
+			
+			if ( report.blocks[ i ].length > 0 ) {
+				for ( var p in report.blocks[ i ][ 0 ].block ) {
+					block += p + ': ' + report.blocks[ i ][ 0 ].block[ p ] + "\n";
+				}
+			}
+			
+			list += '<dt><pre>' + block + '</pre></dt>';
+			list += '<dd><ul>';
+			
+			for ( var j = 0; j < report.blocks[ i ].length; j++ ) {
+				var location = report.blocks[ i ][ j ].location;
+				item += '<li><a href="' + location + '">' + location + '</a></li>';
+			}
+			
+			list += item;
+			list += '</ul></dd>';
+		}
+		
+		list += '</dl>';
+		document.getElementById( 'methods-duplication' ).innerHTML = heading + list;
 	} );
 };
