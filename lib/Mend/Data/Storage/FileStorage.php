@@ -3,6 +3,7 @@ namespace Mend\Data\Storage;
 
 use Mend\Collections\Map;
 use Mend\Data\DataPage;
+use Mend\Data\SortDirection;
 use Mend\Data\SortOptions;
 use Mend\Data\Storage\Handler\FileStorageHandler;
 
@@ -38,9 +39,57 @@ class FileStorage extends Storage {
 		}
 
 		$records = $this->handler->find( $entity, $identity );
+
+		if ( $sortOptions->getOptions()->getSize() > 0 ) {
+			$records = $this->sortRecords( $records, $sortOptions );
+		}
+
 		$totalCount = $records->size();
 
 		return new ResultSet( $records, $dataPage, $totalCount );
+	}
+
+	/**
+	 * Sorts the record set by sort options.
+	 *
+	 * @param RecordSet $records
+	 * @param SortOptions $sortOptions
+	 *
+	 * @return RecordSet
+	 */
+	private function sortRecords( RecordSet $records, SortOptions $sortOptions ) {
+		$sortFields = $sortOptions->getOptions();
+		$result = $records->toArray();
+
+		foreach ( $sortFields->toArray() as $option ) {
+			$direction = reset( $option );
+			$field = key( $option );
+
+			usort(
+				$result,
+				function ( Record $itemA, Record $itemB ) use ( $field, $direction ) {
+					$a = $itemA->getValue( $field );
+					$b = $itemB->getValue( $field );
+
+					if ( $field == 'dateTime' ) {
+						$a = \DateTime::createFromFormat( \DateTime::RFC2822, $a )->getTimestamp();
+						$b = \DateTime::createFromFormat( \DateTime::RFC2822, $b )->getTimestamp();
+					}
+
+					if ( $a == $b ) {
+						return 0;
+					}
+
+					if ( $direction == SortDirection::DESCENDING ) {
+						return $a > $b ? -1 : 1;
+					}
+
+					return $a > $b ? 1 : -1;
+				}
+			);
+		}
+
+		return new RecordSet( $result );
 	}
 
 	/**
