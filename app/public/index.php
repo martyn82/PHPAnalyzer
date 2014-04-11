@@ -5,6 +5,8 @@ use Mend\Config\IniConfigReader;
 use Mend\IO\FileSystem\File;
 use Mend\IO\Stream\FileStreamReader;
 
+ini_set( 'memory_limit', '1G' );
+
 require_once realpath( __DIR__ . "/.." ) . "/bootstrap.php";
 
 $file = new File( 'config/application.ini' );
