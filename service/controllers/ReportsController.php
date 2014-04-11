@@ -1,16 +1,21 @@
 <?php
 namespace Controller;
 
+use Mend\Collections\Map;
 use Mend\Data\DataPage;
 use Mend\Data\Repository;
 use Mend\Data\SortDirection;
 use Mend\Data\SortOptions;
 use Mend\Data\Storage\FileStorage;
+use Mend\Data\Storage\Handler\DefaultFileStorageHandler;
+use Mend\Data\Storage\Handler\EntityMap;
+use Mend\Data\Storage\Record;
 use Mend\IO\FileSystem\Directory;
 use Mend\Metrics\Project\ProjectReport;
 use Mend\Mvc\Context;
 use Mend\Mvc\ControllerFactory;
 use Mend\Mvc\View\ViewRenderer;
+use Mend\Network\Web\HttpStatus;
 use Mend\Network\Web\WebRequest;
 use Mend\Network\Web\WebResponse;
 use Mend\Rest\ResourceController;
@@ -19,12 +24,6 @@ use Mend\Rest\ResourceResult;
 use Model\Report\Report;
 use Model\Report\ReportRepository;
 use Model\Report\ReportMapper;
-
-use Mend\Data\Storage\Handler\DefaultFileStorageHandler;
-use Mend\Data\Storage\Handler\EntityMap;
-use Mend\Data\Storage\Record;
-use Mend\Network\Web\HttpStatus;
-use Mend\Collections\Map;
 
 class ReportsController extends ResourceController {
 	/**
@@ -44,8 +43,12 @@ class ReportsController extends ResourceController {
 	 */
 	public function actionRead() {
 		$repository = $this->getRepository();
+
 		$criteria = new Map( array( 'id' => $this->getResourceId() ) );
-		$reports = $repository->matching( $criteria, new SortOptions(), new DataPage() );
+		$sortOptions = new SortOptions();
+		$sortOptions->addSortField( 'dateTime', SortDirection::ASCENDING );
+
+		$reports = $repository->matching( $criteria, $sortOptions, new DataPage() );
 
 		$result = new ResourceResult(
 			array_map(
