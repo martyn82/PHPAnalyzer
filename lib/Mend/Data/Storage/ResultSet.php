@@ -24,7 +24,7 @@ class ResultSet {
 	 *
 	 * @param RecordSet $records
 	 * @param DataPage $dataPage
-	 * @param unknown $totalCount
+	 * @param integer $totalCount
 	 */
 	public function __construct( RecordSet $records, DataPage $dataPage, $totalCount ) {
 		$this->recordSet = $records;
